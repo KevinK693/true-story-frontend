@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React from "react";
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View>
@@ -12,21 +12,21 @@ export default function HomeScreen() {
       </View>
       <View>
         <TouchableOpacity
-          onPress={() => handleSubmit()}
+          onPress={() => navigation.navigate('Games')}
           style={styles.button}
           activeOpacity={0.8}
         >
           <Text style={styles.textbutton}>NOUVELLE PARTIE</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => handleSubmit()}
+          // onPress={() => handleSubmit()}
           style={styles.button}
           activeOpacity={0.8}
         >
           <Text style={styles.textbutton}>REJOINDRE</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => handleSubmit()}
+          // onPress={() => handleSubmit()}
           style={styles.button}
           activeOpacity={0.8}
         >
