@@ -5,7 +5,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View>
-        <Image style={styles.user} />
+        <Image style={styles.user} source={require("../assets/avatars/astronaut.png")}/>
       </View>
       <View>
         <Image style={styles.image} source={require("../assets/logo.png")} />
@@ -43,11 +43,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#FBF1F1',
   },
   user: {
-    width: 100,
-    height: 100,
+    width: 55,
+    height: 55,
     borderRadius: 50,
-    alignSelf: "center",
-    marginTop: 20,
+    alignSelf: "left",
+    marginTop: 40,
+    marginLeft: 30,
   },
   image: {
     width: 300,
@@ -63,7 +64,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 6,
     marginVertical: 20,
-    marginHorizontal:50,
+    marginHorizontal:45,
     padding: 30,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
