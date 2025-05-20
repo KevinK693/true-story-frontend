@@ -8,6 +8,7 @@ import HomeScreen from "./screens/HomeScreen";
 import ConnexionScreen from "./screens/ConnexionScreen";
 import GamesScreen from "./screens/GamesScreen";
 import InscriptionScreen from "./screens/InscriptionScreen";
+import CreateProfileScreen from "./screens/CreateProfileScreen";
 
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
@@ -51,6 +52,7 @@ export default function App() {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Connexion" component={ConnexionScreen} />
           <Stack.Screen name="Inscription" component={InscriptionScreen} />
+          <Stack.Screen name="CreateProfile" component={CreateProfileScreen} />
           <Stack.Screen name="TabNavigator" component={TabNavigator} />
         </Stack.Navigator>
       </NavigationContainer>
