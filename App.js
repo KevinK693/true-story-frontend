@@ -3,7 +3,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
 import HomeScreen from "./screens/HomeScreen";
 import ConnexionScreen from "./screens/ConnexionScreen";
 import GamesScreen from "./screens/GamesScreen";
@@ -12,10 +11,11 @@ import CreateProfileScreen from "./screens/CreateProfileScreen";
 
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
+import user from "./reducers/user";
 
 
 const store = configureStore({
-  reducer: {  },
+  reducer: { user },
 });
 
 const Stack = createNativeStackNavigator();
@@ -59,12 +59,3 @@ export default function App() {
     </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

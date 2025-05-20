@@ -1,11 +1,21 @@
-import { StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-export default function CreateProfileScreen({ navigation }) {
+export default function CreateProfileScreen() {
   return(
-    <View>
+    <SafeAreaView style={styles.container}>
       <Text>ProfileScreen</Text>
-    </View>
+    </SafeAreaView>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FBF1F1',
+    paddingTop: 40,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+  }
+})

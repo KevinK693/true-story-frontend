@@ -6,12 +6,16 @@ import {
   TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
+  Button
 } from "react-native";
 import React from "react";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch } from "react-redux";
+import { updateToken } from "../reducers/user";
 
 export default function ConnexionScreen({ navigation }) {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
@@ -40,6 +44,7 @@ export default function ConnexionScreen({ navigation }) {
           if (data.result) {
             navigation.navigate("CreateProfile");
             console.log("Inscription réussie");
+            dispatch(updateToken(data.token));
             setUsername("");
             setEmail("");
             setPassword("");
@@ -95,6 +100,7 @@ export default function ConnexionScreen({ navigation }) {
         </TouchableOpacity>
         <Text style={styles.text}>Ou connectez-vous via un autre compte</Text>
         <View style={styles.accountsContainer}></View>
+        <Button title="Temporary Profile" onPress={() => navigation.navigate("CreateProfile")}></Button>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -105,8 +111,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FBF1F1",
     alignItems: "center",
-    marginTop: 40,
-    padding: 20,
+    paddingTop: 40,
+    paddingHorizontal: 20,
   },
   title: {
     fontSize: 34,

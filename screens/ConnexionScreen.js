@@ -10,8 +10,11 @@ import {
 import React from "react";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch } from "react-redux";
+import { updateToken } from "../reducers/user";
 
 export default function ConnexionScreen({ navigation }) {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const BACKEND_URL = "http://10.0.3.229:3000"; // Remplacez par l'URL de votre backend
@@ -32,6 +35,7 @@ export default function ConnexionScreen({ navigation }) {
         if (data.result) {
           console.log("Connexion réussie");
           navigation.navigate("TabNavigator");
+          dispatch(updateToken(data.token));
           setEmail("");
           setPassword("");
         } else {
@@ -89,8 +93,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FBF1F1",
     alignItems: "center",
-    marginTop: 40,
-    padding: 20,
+    paddingTop: 40,
+    paddingHorizontal: 20,
   },
   title: {
     fontSize: 34,
