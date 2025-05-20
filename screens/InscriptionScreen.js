@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
-  Button
 } from "react-native";
 import React from "react";
 import { useState } from "react";
@@ -90,7 +89,6 @@ export default function ConnexionScreen({ navigation }) {
         </TouchableOpacity>
         <Text style={styles.text}>Ou inscrivez-vous via un autre compte</Text>
         <View style={styles.accountsContainer}></View>
-        <Button title="Temporary Profile Button" onPress={() => navigation.navigate("CreateProfile")}></Button>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

@@ -30,7 +30,6 @@ const avatars = [
   "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751157/viking_gxsl1c.png",
   "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751160/witch_mt3j0o.png",
   "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751159/ninja_hyowdl.png",
-  
 ];
 
 export default function CreateProfileScreen({ navigation }) {
@@ -41,6 +40,7 @@ export default function CreateProfileScreen({ navigation }) {
   const [image, setImage] = useState(null);
   const [invalidProfile, setInvalidProfile] = useState(false);
   const [avatarSelected, setAvatarSelected] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const user = useSelector((state) => state.user.value);
   const token = user.token;
@@ -56,7 +56,7 @@ export default function CreateProfileScreen({ navigation }) {
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 1,
+      quality: 0.3,
       base64: true,
       selectionLimit: 1,
     });
@@ -74,6 +74,7 @@ export default function CreateProfileScreen({ navigation }) {
   };
 
   const handleCreateProfile = () => {
+    setLoading(true);
     const formData = new FormData();
     formData.append("token", token);
     formData.append("nickname", pseudo);
@@ -84,9 +85,9 @@ export default function CreateProfileScreen({ navigation }) {
         name: "photo.jpg",
         type: "image/jpeg",
       });
-      setAvatarSelected(null)
+      setAvatarSelected(null);
     } else if (avatar) {
-      formData.append("avatarUrl", avatar)
+      formData.append("avatarUrl", avatar);
     }
 
     fetch(`${BACKEND_URL}/users/profile`, {
@@ -95,6 +96,7 @@ export default function CreateProfileScreen({ navigation }) {
     })
       .then((response) => response.json())
       .then((data) => {
+        setLoading(false);
         if (data.result) {
           navigation.navigate("TabNavigator");
           setImage(null);
@@ -142,7 +144,7 @@ export default function CreateProfileScreen({ navigation }) {
         {avatars.map((avatar, index) => (
           <Pressable key={index} onPress={() => pickAvatar(avatar)}>
             <Image
-               source={{ uri: avatar }}
+              source={{ uri: avatar }}
               style={{
                 width: 60,
                 height: 60,
@@ -166,6 +168,9 @@ export default function CreateProfileScreen({ navigation }) {
         <Text style={{ color: "red" }}>
           Veuillez choisir un pseudo et un avatar
         </Text>
+      ) : null}
+      {loading ? (
+        <Text style={{ marginTop: 10, color: "#65558F" }}>Chargement...</Text>
       ) : null}
     </SafeAreaView>
   );
