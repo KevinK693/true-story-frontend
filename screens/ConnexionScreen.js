@@ -1,13 +1,20 @@
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 import React from "react";
 import { useState } from "react";
-import InscriptionScreen from "./InscriptionScreen";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ConnexionScreen({ navigation }) {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Image source={require("../assets/logo.png")} />
-      <Text>Se connecter</Text>
+      <Text style={styles.title}>Se connecter</Text>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -21,17 +28,23 @@ export default function ConnexionScreen({ navigation }) {
           secureTextEntry
         />
       </View>
-      <Text style={styles.forgotPassword}>Mot de passe oublié ?</Text>
-      <TouchableOpacity onPress={() => navigation.navigate("TabNavigator")} style={styles.button} activeOpacity={0.8}>
+      <Text style={styles.link}>Mot de passe oublié ?</Text>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("TabNavigator")}
+        style={styles.button}
+        activeOpacity={0.8}
+      >
         <Text style={styles.buttonText}>Connexion</Text>
       </TouchableOpacity>
-      <Text>Ou connectez-vous via un autre compte</Text>
+      <Text style={styles.text}>Ou connectez-vous via un autre compte</Text>
       <View style={styles.accountsContainer}></View>
-      <TouchableOpacity onPress={() => navigation.navigate("InscriptionScreen")} style={styles.button} activeOpacity={0.8}>
-        <Text>Pas encore de compte ? Inscrivez-vous</Text>
-      </TouchableOpacity> 
-    </View>
-  )
+      <TouchableOpacity
+        onPress={() => navigation.navigate("Inscription")}
+      >
+        <Text style={styles.link}>Pas encore de compte ? Inscrivez-vous</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -39,6 +52,54 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FBF1F1",
     alignItems: "center",
-    justifyContent: "center",
+    marginTop: 40,
+    padding: 20
   },
+  title: {
+    fontSize: 34,
+    fontWeight: "bold",
+    marginTop: 40,
+    color: "#335561",
+  },
+  button: {
+    backgroundColor: '#65558F',
+    padding: 10,
+    borderRadius: 8,
+    width: '100%', 
+    marginTop: 70,
+    marginBottom: 10,
+    height: 50
+  }, 
+  buttonText: {
+    color: '#EADDFF',
+    fontSize: 20,
+    fontWeight: '600',
+    textAlign: 'center'
+  },
+  text: {
+    fontSize: 16,
+    color: "#335561",
+  }, 
+  inputContainer: {
+    width: '80%',
+    marginVertical: 20
+  },
+  input: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    padding: 10,
+    marginTop: 20,
+    fontSize: 16,
+    color: "#335561",
+    height: 50
+  },
+  link: {
+    fontSize: 16,
+    color: "#335561",
+    textDecorationLine: "underline",
+  }, 
+  accountsContainer: {
+    flexDirection: "row",
+    height: 100
+  }
 });
