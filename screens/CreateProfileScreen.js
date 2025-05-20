@@ -11,31 +11,41 @@ import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import * as ImagePicker from "expo-image-picker";
+import { useSelector } from "react-redux";
+
+const cloudinary_name = "dxgix5q4e"; // Remplacez par le nom de votre compte Cloudinary
 
 const avatars = [
-  require("../assets/avatars/astronaut.png"),
-  require("../assets/avatars/bun.png"),
-  require("../assets/avatars/captain.png"),
-  require("../assets/avatars/clown.png"),
-  require("../assets/avatars/girl.png"),
-  require("../assets/avatars/knight.png"),
-  require("../assets/avatars/mage.png"),
-  require("../assets/avatars/monster.png"),
-  require("../assets/avatars/mummy.png"),
-  require("../assets/avatars/mustach.png"),
-  require("../assets/avatars/robot.png"),
-  require("../assets/avatars/sloth.png"),
-  require("../assets/avatars/surgeon.png"),
-  require("../assets/avatars/viking.png"),
-  require("../assets/avatars/witch.png"),
-  require("../assets/avatars/ninja.png"),
+  "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751155/astronaut_mzo08o.png",
+  "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751158/bun_e0epoh.png",
+  "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751155/captain_lurdm1.png",
+  "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751159/clown_mtkoye.png",
+  "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751155/girl_xr1ilk.png",
+  "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751156/knight_zgjmpy.png",
+  "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751160/mage_oslowx.png",
+  "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751158/monster_aqcdkl.png",
+  "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751157/mummy_p7efwx.png",
+  "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751156/mustach_n2ycmf.png",
+  "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751155/robot_ztcpjs.png",
+  "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751155/sloth_qqpwoz.png",
+  "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751155/surgeon_dquvar.png",
+  "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751157/viking_gxsl1c.png",
+  "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751160/witch_mt3j0o.png",
+  "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751159/ninja_hyowdl.png",
+  
 ];
 
 export default function CreateProfileScreen({ navigation }) {
+  const BACKEND_URL = "http://10.0.3.229:3000"; // Remplacez par l'URL de votre backend
+
   const [pseudo, setPseudo] = useState("");
   const [avatar, setAvatar] = useState(null);
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState(null);
   const [invalidProfile, setInvalidProfile] = useState(false);
+  const [avatarSelected, setAvatarSelected] = useState(null);
+
+  const user = useSelector((state) => state.user.value);
+  const token = user.token;
 
   const pickImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -54,19 +64,53 @@ export default function CreateProfileScreen({ navigation }) {
     if (!result.canceled && result.assets.length > 0) {
       const selected = result.assets[0];
       setImage(selected.uri);
-      setAvatar(null);
+      setAvatarSelected(null);
     }
   };
 
+  const pickAvatar = (selectedAvatar) => {
+    setAvatar(selectedAvatar);
+    setImage(null);
+    setAvatarSelected(selectedAvatar);
+  };
+
   const handleCreateProfile = () => {
-    if (
-      (image === "" && pseudo.length === 0) ||
-      (pseudo.length === 0 && avatar === null)
-    ) {
+    if ((image === null && avatar === null) || pseudo.length === 0) {
       setInvalidProfile(true);
-    } else {
-      navigation.navigate("TabNavigator");
+      return;
     }
+
+    const formData = new FormData();
+    formData.append("token", token);
+    formData.append("nickname", pseudo);
+
+    if (image) {
+      formData.append("photoFromFront", {
+        uri: image,
+        name: "photo.jpg",
+        type: "image/jpeg",
+      });
+      setAvatarSelected(null)
+    } else if (avatar) {
+      formData.append("avatarUrl", avatar)
+    }
+
+    fetch(`${BACKEND_URL}/users/profile`, {
+      method: "PUT",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          navigation.navigate("TabNavigator");
+          setImage(null);
+          setAvatar(null);
+          setPseudo("");
+          setInvalidProfile(false);
+        } else {
+          console.log("Erreur lors de la création du profil :", data.error);
+        }
+      });
   };
 
   return (
@@ -90,11 +134,11 @@ export default function CreateProfileScreen({ navigation }) {
       ) : (
         <TouchableOpacity onPress={pickImage} style={{ position: "relative" }}>
           <Image
-            source={require("../assets/Avatar.png")}
+            source={require("../assets/emptyAvatar.png")}
             style={styles.image}
           />
           <View style={styles.editIcon}>
-            <FontAwesome5 name="edit" size={16} color="#EADDFF"/>
+            <FontAwesome5 name="edit" size={16} color="#EADDFF" />
           </View>
         </TouchableOpacity>
       )}
@@ -102,16 +146,16 @@ export default function CreateProfileScreen({ navigation }) {
       <Text style={styles.text}>Ou choisissez un avatar</Text>
       <View style={styles.avatarContainer}>
         {avatars.map((avatar, index) => (
-          <Pressable key={index} onPress={() => setAvatar(avatar)}>
+          <Pressable key={index} onPress={() => pickAvatar(avatar)}>
             <Image
-              source={avatar}
+               source={{ uri: avatar }}
               style={{
                 width: 60,
                 height: 60,
-                borderRadius: 25,
+                borderRadius: 50,
                 margin: 8,
-                borderWidth: avatar === image ? 2 : 0,
-                borderColor: "#335561",
+                borderWidth: avatar === avatarSelected ? 3 : 0,
+                borderColor: "#65558F",
               }}
             />
           </Pressable>

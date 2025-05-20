@@ -14,12 +14,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
 import { updateToken } from "../reducers/user";
 
-
 export default function ConnexionScreen({ navigation }) {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
   const [invalidEmail, setInvalidEmail] = useState(false);
 
   const BACKEND_URL = "http://10.0.3.229:3000"; // Remplacez par l'URL de votre backend
@@ -35,7 +33,6 @@ export default function ConnexionScreen({ navigation }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: username,
           email: email,
           password: password,
         }),
@@ -46,7 +43,6 @@ export default function ConnexionScreen({ navigation }) {
             navigation.navigate("CreateProfile");
             console.log("Inscription réussie");
             dispatch(updateToken(data.token));
-            setUsername("");
             setEmail("");
             setPassword("");
           } else {
@@ -63,13 +59,6 @@ export default function ConnexionScreen({ navigation }) {
         <Image source={require("../assets/logo.png")} />
         <Text style={styles.title}>S'inscrire</Text>
         <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Nom d'utilisateur"
-            placeholderTextColor="#A0A0A0"
-            value={username}
-            onChangeText={(text) => setUsername(text)}
-          />
           <TextInput
             style={styles.input}
             placeholder="Email"
@@ -99,7 +88,7 @@ export default function ConnexionScreen({ navigation }) {
         >
           <Text style={styles.buttonText}>Inscription</Text>
         </TouchableOpacity>
-        <Text style={styles.text}>Ou connectez-vous via un autre compte</Text>
+        <Text style={styles.text}>Ou inscrivez-vous via un autre compte</Text>
         <View style={styles.accountsContainer}></View>
         <Button title="Temporary Profile Button" onPress={() => navigation.navigate("CreateProfile")}></Button>
       </KeyboardAvoidingView>
@@ -126,7 +115,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     width: "100%",
-    marginTop: 20,
+    marginTop: 50,
     marginBottom: 20,
     height: 50,
   },
@@ -148,7 +137,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 8,
     padding: 10,
-    marginTop: 20,
+    marginTop: 30,
     fontSize: 16,
     color: "#335561",
     height: 50,
@@ -160,7 +149,7 @@ const styles = StyleSheet.create({
   },
   accountsContainer: {
     flexDirection: "row",
-    height: 100,
+    height: 130,
   },
   keyboardview: {
     flex: 1,

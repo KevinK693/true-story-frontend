@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
 } from "react-native";
-import React from "react";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
@@ -17,6 +16,7 @@ export default function ConnexionScreen({ navigation }) {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const BACKEND_URL = "http://10.0.3.229:3000"; // Remplacez par l'URL de votre backend
 
   const handleLogin = () => {
@@ -43,6 +43,7 @@ export default function ConnexionScreen({ navigation }) {
         }
       });
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView style={styles.keyboardview} behavior="padding">
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     width: "100%",
-    marginTop: 70,
+    marginTop: 50,
     marginBottom: 10,
     height: 50,
   },
@@ -141,7 +142,7 @@ const styles = StyleSheet.create({
   },
   accountsContainer: {
     flexDirection: "row",
-    height: 100,
+    height: 130,
   },
   keyboardview: {
     flex: 1,
