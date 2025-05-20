@@ -16,7 +16,10 @@ export default function GamesScreen() {
   const [selectedPlayers, setSelectedPlayers] = useState(null);
   const [selectedScenes, setSelectedScenes] = useState(null);
   const [selectedGenre, setSelectedGenre] = useState(null);
-  const [title, setTitle]= useState(null)
+  const [title, setTitle] = useState(null);
+ 
+  const [modalPlayersVisible, setModalPlayersVisible] = useState(false);
+  const [modalScenesVisible, setModalScenesVisible] = useState(false);
 
   const scenesOptions = [4, 8, 12, 16, 20, 24].map((num) => ({
     label: `${num}`,
@@ -65,7 +68,9 @@ export default function GamesScreen() {
       <View style={styles.nbr}>
         <View style={styles.nbrWithicon}>
           <Text style={styles.text}>Nombre de joueurs</Text>
-          <FontAwesome name="info-circle" size={18} style={styles.icon} />
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <FontAwesome name="info-circle" size={18} style={styles.icon} />
+          </TouchableOpacity>
         </View>
         <Dropdown
           style={styles.dropdown}
@@ -83,9 +88,11 @@ export default function GamesScreen() {
 
       {/* Nombre de scènes */}
       <View style={styles.nbr}>
-      <View style={styles.nbrWithicon}>
-        <Text style={styles.text}>Nombre de scènes</Text>
-        <FontAwesome name="info-circle" size={18} style={styles.icon} />
+        <View style={styles.nbrWithicon}>
+          <Text style={styles.text}>Nombre de scènes</Text>
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <FontAwesome name="info-circle" size={18} style={styles.icon} />
+          </TouchableOpacity>
         </View>
         <Dropdown
           style={styles.dropdown}
@@ -122,6 +129,46 @@ export default function GamesScreen() {
       <TouchableOpacity style={styles.button} activeOpacity={0.8}>
         <Text style={styles.textbutton}>SUIVANT</Text>
       </TouchableOpacity>
+
+      {/* Modal Joueurs */}
+      <Modal
+        transparent
+        visible={modalPlayersVisible}
+        animationType="fade"
+        onRequestClose={() => setModalPlayersVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setModalPlayersVisible(false)}>
+          <View style={styles.modal}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalText}>
+                Le nombre de joueurs détermine combien de participants seront
+                impliqués dans le jeu. Cela peut influencer la durée et la
+                complexité.
+              </Text>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
+      {/* Modal Scènes */}
+      <Modal
+        transparent
+        visible={modalScenesVisible}
+        animationType="fade"
+        onRequestClose={() => setModalScenesVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setModalScenesVisible(false)}>
+          <View style={styles.modal}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalText}>
+                Le nombre de scènes correspond aux étapes ou moments clés du
+                scénario. Plus il y a de scènes, plus le jeu est long.
+              </Text>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
     </View>
   );
 }
@@ -184,7 +231,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     backgroundColor: "#fff",
     width: 100,
-    justifyContent: "center", 
+    justifyContent: "center",
   },
   dropdowngenre: {
     borderWidth: 1,
@@ -228,5 +275,23 @@ const styles = StyleSheet.create({
   textButton: {
     fontSize: 12,
     color: "#6A4C93",
+  },
+  modal: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    width: 300,
+    alignItems: "center",
+  },
+  modalText: {
+    fontSize: 16,
+    fontFamily: "Noto Sans Gujarati",
+    textAlign: "center",
   },
 });
