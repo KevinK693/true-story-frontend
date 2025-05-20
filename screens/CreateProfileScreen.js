@@ -13,8 +13,6 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import * as ImagePicker from "expo-image-picker";
 import { useSelector } from "react-redux";
 
-const cloudinary_name = "dxgix5q4e"; // Remplacez par le nom de votre compte Cloudinary
-
 const avatars = [
   "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751155/astronaut_mzo08o.png",
   "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751158/bun_e0epoh.png",
@@ -48,6 +46,8 @@ export default function CreateProfileScreen({ navigation }) {
   const token = user.token;
 
   const pickImage = async () => {
+    setAvatar(null);
+    setAvatarSelected(null);
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
       alert("Permission requise pour accéder à la galerie.");
@@ -64,7 +64,6 @@ export default function CreateProfileScreen({ navigation }) {
     if (!result.canceled && result.assets.length > 0) {
       const selected = result.assets[0];
       setImage(selected.uri);
-      setAvatarSelected(null);
     }
   };
 
@@ -75,11 +74,6 @@ export default function CreateProfileScreen({ navigation }) {
   };
 
   const handleCreateProfile = () => {
-    if ((image === null && avatar === null) || pseudo.length === 0) {
-      setInvalidProfile(true);
-      return;
-    }
-
     const formData = new FormData();
     formData.append("token", token);
     formData.append("nickname", pseudo);
