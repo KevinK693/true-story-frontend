@@ -14,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
 import { updateToken } from "../reducers/user";
 
+
 export default function ConnexionScreen({ navigation }) {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
@@ -100,7 +101,7 @@ export default function ConnexionScreen({ navigation }) {
         </TouchableOpacity>
         <Text style={styles.text}>Ou connectez-vous via un autre compte</Text>
         <View style={styles.accountsContainer}></View>
-        <Button title="Temporary Profile" onPress={() => navigation.navigate("CreateProfile")}></Button>
+        <Button title="Temporary Profile Button" onPress={() => navigation.navigate("CreateProfile")}></Button>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
