@@ -8,7 +8,7 @@ export default function HomeScreen({ navigation }) {
   const [avatarUrl, setAvatarUrl] = useState(null);
   const user = useSelector((state) => state.user.value);
   const token = user.token;
-  const BACKEND_URL = "http://10.0.3.229:3000";
+  const BACKEND_URL = "http:///10.0.3.229:3000";
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/users/${token}`)

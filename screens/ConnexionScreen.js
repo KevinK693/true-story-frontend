@@ -17,7 +17,7 @@ export default function ConnexionScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const BACKEND_URL = "http://10.0.3.229:3000"; // Remplacez par l'URL de votre backend
+  const BACKEND_URL = "http:///10.0.3.229:3000"; // Remplacez par l'URL de votre backend
 
   const handleLogin = () => {
     fetch(`${BACKEND_URL}/users/signin`, {
