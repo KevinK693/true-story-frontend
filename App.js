@@ -10,6 +10,7 @@ import GamesScreen from "./screens/GamesScreen";
 import InscriptionScreen from "./screens/InscriptionScreen";
 import CreateProfileScreen from "./screens/CreateProfileScreen";
 import JoinGameScreen from "./screens/JoinGameScreen";
+import ProfileScreen from "./screens/ProfileScreen";
 
 import { persistStore, persistReducer } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
@@ -65,6 +66,7 @@ const RootApp = () => (
   <RootStack.Navigator screenOptions={{ headerShown: false }}>
     <RootStack.Screen name="MainTabs" component={TabNavigator} />
     <RootStack.Screen name="JoinGame" component={JoinGameScreen} />
+    <RootStack.Screen name="Profile" component={ProfileScreen} />
     {/* Ajouter ici d'autres écrans comme Continuer, Profil, etc. */}
   </RootStack.Navigator>
 );

@@ -11,7 +11,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import { removeToken, updateProfileStatus } from "../reducers/user";
+import { removeToken } from "../reducers/user";
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -34,12 +34,14 @@ export default function HomeScreen({ navigation }) {
 
   const handleLogout = () => {
     dispatch(removeToken());
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Image style={styles.user} source={{ uri: avatarUrl }} />
+        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+          <Image style={styles.user} source={{ uri: avatarUrl }} />
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => handleLogout()}>
           <FontAwesome5 name="sign-out-alt" size={30} color="#335561" />
         </TouchableOpacity>
