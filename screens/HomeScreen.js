@@ -27,7 +27,7 @@ export default function HomeScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       <View styles={styles.header}>
         <Image style={styles.user} source={{ uri: avatarUrl }} />
-        <FontAwesome5 name="logout" size={16} color="black" />
+        <FontAwesome5 name="sign-out-alt" size={16} color="black" />
       </View>
       <View>
         <Image style={styles.image} source={require("../assets/logo.png")} />
@@ -41,14 +41,14 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.textbutton}>NOUVELLE PARTIE</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          // onPress={() => handleSubmit()}
+          onPress={() => navigation.navigate("JoinGame")}
           style={styles.button}
           activeOpacity={0.8}
         >
           <Text style={styles.textbutton}>REJOINDRE</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate('JoinGame')}
+          // onPress={() => navigation.navigate('ResumeGame')}
           style={styles.button}
           activeOpacity={0.8}
         >
