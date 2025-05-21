@@ -14,13 +14,16 @@ import { useState } from "react";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function WaitingForPlayers() {
+export default function WaitingForPlayers({navigation}) {
   const BACKEND_URL = "http://10.0.3.229:3000"; // Remplacez par l'URL de votre backend
   return (
     <SafeAreaView style={styles.container}>
     <Text>
         Waiting
     </Text>
+    <TouchableOpacity onPress={() => navigation.navigate("StartingGame")}>
+        <Text>Start Game</Text>
+    </TouchableOpacity>
     </SafeAreaView>
   );
 }

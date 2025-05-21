@@ -49,7 +49,7 @@ export default function HomeScreen({ navigation }) {
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("Games")}
+          onPress={() => navigation.navigate("CreateGame")}
           style={styles.button}
           activeOpacity={0.8}
         >

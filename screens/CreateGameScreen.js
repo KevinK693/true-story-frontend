@@ -14,7 +14,7 @@ import { useState } from "react";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function GamesScreen() {
+export default function CreateGameScreen({navigation}) {
   const BACKEND_URL = "http://10.0.3.229:3000"; // Remplacez par l'URL de votre backend
 
   const [selectedPlayers, setSelectedPlayers] = useState(null);
@@ -98,7 +98,8 @@ export default function GamesScreen() {
                setImage(null);
                setSelectedPlayers(null)
                setSelectedScenes(null)
-              setSelectedGenre(null)         
+              setSelectedGenre(null)  
+                navigation.navigate("WaitingForPlayers");       
              } else {
                console.log("Erreur lors de la création du profil :", data.error);
              }

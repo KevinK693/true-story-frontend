@@ -5,12 +5,13 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 import HomeScreen from "./screens/HomeScreen";
 import ConnexionScreen from "./screens/ConnexionScreen";
-import GamesScreen from "./screens/GamesScreen";
+import CreateGameScreen from "./screens/CreateGameScreen";
 import InscriptionScreen from "./screens/InscriptionScreen";
 import CreateProfileScreen from "./screens/CreateProfileScreen";
 import JoinGameScreen from "./screens/JoinGameScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import WaitingForPlayersScreen from "./screens/WaitingForPlayersScreen";
+import StartingGameScreen from "./screens/StartingGameScreen";
 
 import { persistStore, persistReducer } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
@@ -47,7 +48,7 @@ const TabNavigator = () => (
     })}
   >
     <Tab.Screen name="Home" component={HomeScreen} />
-    <Tab.Screen name="Games" component={GamesScreen} />
+    <Tab.Screen name="CreateGame" component={CreateGameScreen} />
   </Tab.Navigator>
 );
 
@@ -61,7 +62,8 @@ const MainNavigator = () => {
           <RootStack.Screen name="MainTabs" component={TabNavigator} />
           <RootStack.Screen name="JoinGame" component={JoinGameScreen} />
           <RootStack.Screen name="Profile" component={ProfileScreen} />
-           <RootStack.Screen name="WaitingForPlayers" component={WaitingForPlayersScreen} />
+          <RootStack.Screen name="WaitingForPlayers" component={WaitingForPlayersScreen} />
+          <RootStack.Screen name="StartingGame" component={StartingGameScreen} />
         </RootStack.Navigator>
       ) : (
         <Stack.Navigator
