@@ -15,6 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Provider } from "react-redux";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import user from "./reducers/user";
+import { useSelector } from "react-redux";
 
 const reducers = combineReducers({ user });
 
@@ -56,21 +57,29 @@ const TabNavigator = () => {
   );
 };
 
+const AuthStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="Connexion" component={ConnexionScreen} />
+    <Stack.Screen name="Inscription" component={InscriptionScreen} />
+    <Stack.Screen name="CreateProfile" component={CreateProfileScreen} />
+  </Stack.Navigator>
+);
+
+const MainNavigator = () => {
+  const token = useSelector((state) => state.user.value.token);
+
+  return (
+    <NavigationContainer>
+      {token ? <TabNavigator /> : <AuthStack />}
+    </NavigationContainer>
+  );
+};
+
 export default function App() {
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>
-        <NavigationContainer>
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Connexion" component={ConnexionScreen} />
-            <Stack.Screen name="Inscription" component={InscriptionScreen} />
-            <Stack.Screen
-              name="CreateProfile"
-              component={CreateProfileScreen}
-            />
-            <Stack.Screen name="TabNavigator" component={TabNavigator} />
-          </Stack.Navigator>
-        </NavigationContainer>
+        <MainNavigator />
       </PersistGate>
     </Provider>
   );
