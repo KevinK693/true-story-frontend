@@ -1,42 +1,56 @@
-import { StyleSheet, Text, View, Image } from "react-native";
-import React from "react";
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 
-export default function JoinGame() {
-  <View>
-    <Image style={styles.user} source={require("../assets/avatar.png")} />
-    <Image
-      style={styles.tagSquare}
-      source={require("../assets/tag_square.png")}
-    />
-    <Text style={styles.textbutton}>REJOINDRE UNE PARTIE</Text>
-    <Text style={styles.textbutton}>ENTREZ LE CODE</Text>
-    <TextInput
-      style={styles.input}
-      placeholder="Code de la partie"
-      placeholderTextColor="#000"
-      onChangeText={(text) => setCode(text)}
-    />
-    <TouchableOpacity
-      onPress={() => navigation.navigate("Games")}
-      style={styles.button}
-      activeOpacity={0.8}
-    >
-      <Text style={styles.textbutton}>VALIDER</Text>
-    </TouchableOpacity>
-  </View>;
+export default function JoinGame({ navigation }) {
+  const [code, setCode] = useState("");
+
+  return (
+    <View style={styles.container}>
+      <Image style={styles.user} source={require("../assets/avatar.png")} />
+      <Image
+        style={styles.tagSquare}
+        source={require("../assets/tag_square.png")}
+      />
+      <Text style={styles.textbutton}>REJOINDRE UNE PARTIE</Text>
+      <Text style={styles.textbutton}>ENTREZ LE CODE</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Code de la partie"
+        placeholderTextColor="#000"
+        onChangeText={(text) => setCode(text)}
+        value={code}
+      />
+      <TouchableOpacity
+        onPress={() => navigation.navigate("Games")}
+        style={styles.button}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.textbutton}>VALIDER</Text>
+      </TouchableOpacity>
+    </View>
+  );
 }
 
-StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#fff",
+    padding: 20,
   },
   user: {
     width: 100,
     height: 100,
     borderRadius: 50,
+    marginBottom: 20,
   },
   tagSquare: {
     width: 50,
@@ -49,5 +63,24 @@ StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: "#000",
+    marginVertical: 10,
   },
-})
+  input: {
+    width: "80%",
+    height: 50,
+    borderColor: "#000",
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    marginVertical: 10,
+    fontSize: 18,
+    color: "#000",
+  },
+  button: {
+    backgroundColor: "#ddd",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginTop: 10,
+  },
+});
