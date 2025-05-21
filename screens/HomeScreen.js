@@ -1,45 +1,43 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TouchableOpacity,
-  Touchable,
-} from "react-native";
-import React from "react";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import { removeToken } from "../reducers/user";
+import { removeToken, updateAvatar } from "../reducers/user";
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
-  const [avatarUrl, setAvatarUrl] = useState(null);
   const user = useSelector((state) => state.user.value);
   const token = user.token;
   const BACKEND_URL = "http:///10.0.3.229:3000";
 
   useEffect(() => {
-    fetch(`${BACKEND_URL}/users/${token}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.result) {
-          setAvatarUrl(data.user.avatar);
-        } else {
-          console.log("Erreur de récupération de l'image");
-        }
-      });
-  }, []);
+    if (token) {
+      fetch(`${BACKEND_URL}/users/${token}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.result && data.user.avatar) {
+            // Si l'avatar du serveur est différent de celui dans Redux, mettre à jour Redux
+            if (data.user.avatar !== user.avatar) {
+              dispatch(updateAvatar(data.user.avatar));
+            }
+          } else {
+            console.log("Erreur de récupération de l'image");
+          }
+        });
+    }
+  }, [token]);
+
+  const avatarUrl = user.avatar;
 
   const handleLogout = () => {
     dispatch(removeToken());
-};
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+        <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
           <Image style={styles.user} source={{ uri: avatarUrl }} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleLogout()}>

@@ -10,7 +10,7 @@ import {
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
-import { updateToken } from "../reducers/user";
+import { updateToken, updateAvatar, updateNickname } from "../reducers/user";
 
 export default function ConnexionScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -35,6 +35,8 @@ export default function ConnexionScreen({ navigation }) {
         if (data.result) {
           console.log("Connexion réussie");
           dispatch(updateToken(data.token));
+          dispatch(updateAvatar(data.avatar));
+          dispatch(updateNickname(data.nickname)); 
           setEmail("");
           setPassword("");
         } else {
