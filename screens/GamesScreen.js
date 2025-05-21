@@ -20,12 +20,26 @@ export default function GamesScreen() {
   const [selectedPlayers, setSelectedPlayers] = useState(null);
   const [selectedScenes, setSelectedScenes] = useState(null);
   const [selectedGenre, setSelectedGenre] = useState(null);
+
   const [title, setTitle] = useState(null);
   const [image, setImage] = useState(null);
 
   const [modalPlayersVisible, setModalPlayersVisible] = useState(false);
   const [modalScenesVisible, setModalScenesVisible] = useState(false);
   const [modalImageVisible, setModalImageVisible] = useState(false);
+
+
+  const images = [
+    'https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834158/science-fiction_gniu4v.png', 
+    'https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834158/fantome_adnq8j.png', 
+    'https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834158/chapeau-de-cowboy_d1bafb.png', 
+    'https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834157/dragon_xabusn.png', 
+    'https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834157/reaction-chimique_ghl9fu.png', 
+    'https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834382/ovni_qla2gb.png', 
+    'https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834381/chalet_sa1x2p.png', 
+    'https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834382/comme_qtwh8d.png', 
+    'https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834381/molecule_zjn0wj.png'
+    ]
 
   const scenesOptions = [4, 8, 12, 16, 20, 24].map((num) => ({
     label: `${num}`,
@@ -59,35 +73,36 @@ export default function GamesScreen() {
     setModalImageVisible(true);
   };
 
-
   const handleSubmit = () => {
     if (!title || !selectedPlayers || !selectedScenes || !selectedGenre) {
       alert("Veuillez remplir tous les champs");
       return;
     }
-    const gameData = {
-      title: title,
-      nbPlayers: selectedPlayers,
-      nbScenes: selectedScenes,
-      genre: selectedGenre,
-    };
-    
-    console.log("DATA GAME =>", gameData);
-  
-    fetch(`${BACKEND_URL}/game/create`, {
+
+   const formData = new FormData();
+    formData.append("image", image);
+    formData.append("title", title);
+    formData.append("genre", selectedGenre)
+    formData.append("nbplayers", selectedPlayers)
+    formData.append("nbScenes", selectedScenes)
+   
+    fetch(`${BACKEND_URL}/games/create`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(gameData),
+      body: formData,
     })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Réponse du backend :", data);
-    })
-    .catch((error) => {
-      console.error("Erreur lors de la requête :", error);
-    });
+     .then((response) => response.json())
+     .then ((data) => {
+             if (data.result) {
+               dispatch(updateGame(data));
+               setTitle(null);
+               setImage(null);
+               setSelectedPlayers(null)
+               setSelectedScenes(null)
+              setSelectedGenre(null)         
+             } else {
+               console.log("Erreur lors de la création du profil :", data.error);
+             }
+           });
   }
 
   return (
@@ -240,7 +255,29 @@ export default function GamesScreen() {
       >
         <TouchableWithoutFeedback onPress={() => setModalImageVisible(false)}>
           <View style={styles.modal}>
-            <View style={styles.modalContainer}></View>
+          <View style={styles.modalImage}>
+  {images.map((imgUri, index) => (
+    <TouchableOpacity
+      key={index}
+      onPress={() => {
+        setImage(imgUri);
+        setModalImageVisible(false);
+      }}
+    >
+      <Image
+        source={{ uri: imgUri }}
+        style={{
+          width: 70,
+          height: 70,
+          margin: 10,
+          borderRadius: 10,
+          borderWidth: image === imgUri ? 3 : 1,
+          borderColor: image === imgUri ? "#65558F" : "#ccc",
+        }}
+      />
+    </TouchableOpacity>
+  ))}
+</View>
           </View>
         </TouchableWithoutFeedback>
       </Modal>
@@ -383,5 +420,11 @@ const styles = StyleSheet.create({
     paddingTop: 2,
     paddingLeft: 4,
     paddingBottom: 4,
+  },
+  modalImage: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    marginVertical: 20,
   },
 });

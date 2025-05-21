@@ -6,13 +6,15 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import * as ImagePicker from "expo-image-picker";
+import { updateAvatar } from "../reducers/user";
 
 export default function ProfileScreen() {
+  const dispatch = useDispatch();
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [nickname, setNickname] = useState(null);
   const [image, setImage] = useState(null);
@@ -61,31 +63,32 @@ export default function ProfileScreen() {
   };
 
   const handleModifications = () => {
-      const formData = new FormData();
-      formData.append("token", token);
-      formData.append("nickname", nickname);
-  
-      if (image) {
-        formData.append("photoFromFront", {
-          uri: image,
-          name: "photo.jpg",
-          type: "image/jpeg",
-        });
-      } 
-      fetch(`${BACKEND_URL}/users/profile`, {
-        method: "PUT",
-        body: formData,
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.result) {
-            setAvatarUrl(data.user.avatar)
-            setModified(true);
-          } else {
-            console.log("Erreur lors de la modification du profil :", data.error);
-          }
-        });
-    };
+    const formData = new FormData();
+    formData.append("token", token);
+    formData.append("nickname", nickname);
+
+    if (image) {
+      formData.append("photoFromFront", {
+        uri: image,
+        name: "photo.jpg",
+        type: "image/jpeg",
+      });
+    }
+    fetch(`${BACKEND_URL}/users/profile`, {
+      method: "PUT",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          setAvatarUrl(data.user.avatar);
+          dispatch(updateAvatar(data.user.avatar));
+          setModified(true);
+        } else {
+          console.log("Erreur lors de la modification du profil :", data.error);
+        }
+      });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -128,7 +131,7 @@ export default function ProfileScreen() {
       >
         <Text style={styles.buttonText}>Enregistrer modifications</Text>
       </TouchableOpacity>
-      { modified && <Text>Modifications enregistrées !</Text>}
+      {modified ? <Text>Modifications enregistrées !</Text> : null}
     </SafeAreaView>
   );
 }
