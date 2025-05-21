@@ -33,7 +33,7 @@ const avatars = [
 ];
 
 export default function CreateProfileScreen({ navigation }) {
-  const BACKEND_URL = "http:///10.0.3.229:3000"; // Remplacez par l'URL de votre backend
+  const BACKEND_URL = "http://10.0.3.229:3000"; // Remplacez par l'URL de votre backend
 
   const [pseudo, setPseudo] = useState("");
   const [avatar, setAvatar] = useState(null);

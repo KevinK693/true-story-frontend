@@ -15,6 +15,8 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function GamesScreen() {
+  const BACKEND_URL = "http://10.0.3.229:3000"; // Remplacez par l'URL de votre backend
+
   const [selectedPlayers, setSelectedPlayers] = useState(null);
   const [selectedScenes, setSelectedScenes] = useState(null);
   const [selectedGenre, setSelectedGenre] = useState(null);
@@ -55,8 +57,38 @@ export default function GamesScreen() {
 
   const pickImage = async () => {
     setModalImageVisible(true);
-    
   };
+
+
+  const handleSubmit = () => {
+    if (!title || !selectedPlayers || !selectedScenes || !selectedGenre) {
+      alert("Veuillez remplir tous les champs");
+      return;
+    }
+    const gameData = {
+      title: title,
+      nbPlayers: selectedPlayers,
+      nbScenes: selectedScenes,
+      genre: selectedGenre,
+    };
+    
+    console.log("DATA GAME =>", gameData);
+  
+    fetch(`${BACKEND_URL}/games/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(gameData),
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Réponse du backend :", data);
+    })
+    .catch((error) => {
+      console.error("Erreur lors de la requête :", error);
+    });
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -152,7 +184,11 @@ export default function GamesScreen() {
       </View>
 
       {/* Bouton */}
-      <TouchableOpacity style={styles.button} activeOpacity={0.8}>
+      <TouchableOpacity
+        style={styles.button}
+        activeOpacity={0.8}
+        onPress={handleSubmit}
+      >
         <Text style={styles.buttonText}>Suivant</Text>
       </TouchableOpacity>
 
@@ -204,9 +240,7 @@ export default function GamesScreen() {
       >
         <TouchableWithoutFeedback onPress={() => setModalImageVisible(false)}>
           <View style={styles.modal}>
-            <View style={styles.modalContainer}>
-              
-            </View>
+            <View style={styles.modalContainer}></View>
           </View>
         </TouchableWithoutFeedback>
       </Modal>
@@ -234,12 +268,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 40,
     backgroundColor: "white",
-    width: '80%',
+    width: "80%",
   },
   optionContainer: {
     flexDirection: "row",
     alignItems: "center",
-    width: '95%',
+    width: "95%",
     marginBottom: 20,
   },
   labelContainer: {
@@ -277,7 +311,7 @@ const styles = StyleSheet.create({
     marginLeft: 40,
   },
   genreContainer: {
-    width: '50%',
+    width: "50%",
     marginBottom: 20,
     alignItems: "center",
   },
