@@ -7,13 +7,12 @@ import {
   Pressable,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import * as ImagePicker from "expo-image-picker";
-import { useSelector } from "react-redux";
-
-const cloudinary_name = "dxgix5q4e"; // Remplacez par le nom de votre compte Cloudinary
+import { useDispatch } from "react-redux";
+import { updateToken } from "../reducers/user";
 
 const avatars = [
   "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751155/astronaut_mzo08o.png",
@@ -32,10 +31,9 @@ const avatars = [
   "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751157/viking_gxsl1c.png",
   "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751160/witch_mt3j0o.png",
   "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751159/ninja_hyowdl.png",
-  
 ];
 
-export default function CreateProfileScreen({ navigation }) {
+export default function CreateProfileScreen({ navigation, route }) {
   const BACKEND_URL = "http://10.0.3.229:3000"; // Remplacez par l'URL de votre backend
 
   const [pseudo, setPseudo] = useState("");
@@ -43,11 +41,14 @@ export default function CreateProfileScreen({ navigation }) {
   const [image, setImage] = useState(null);
   const [invalidProfile, setInvalidProfile] = useState(false);
   const [avatarSelected, setAvatarSelected] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const user = useSelector((state) => state.user.value);
-  const token = user.token;
+  const token = route.params.token;
+  const dispatch = useDispatch();
 
   const pickImage = async () => {
+    setAvatar(null);
+    setAvatarSelected(null);
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
       alert("Permission requise pour accéder à la galerie.");
@@ -56,7 +57,7 @@ export default function CreateProfileScreen({ navigation }) {
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 1,
+      quality: 0.3,
       base64: true,
       selectionLimit: 1,
     });
@@ -64,7 +65,6 @@ export default function CreateProfileScreen({ navigation }) {
     if (!result.canceled && result.assets.length > 0) {
       const selected = result.assets[0];
       setImage(selected.uri);
-      setAvatarSelected(null);
     }
   };
 
@@ -75,11 +75,7 @@ export default function CreateProfileScreen({ navigation }) {
   };
 
   const handleCreateProfile = () => {
-    if ((image === null && avatar === null) || pseudo.length === 0) {
-      setInvalidProfile(true);
-      return;
-    }
-
+    setLoading(true);
     const formData = new FormData();
     formData.append("token", token);
     formData.append("nickname", pseudo);
@@ -90,9 +86,9 @@ export default function CreateProfileScreen({ navigation }) {
         name: "photo.jpg",
         type: "image/jpeg",
       });
-      setAvatarSelected(null)
+      setAvatarSelected(null);
     } else if (avatar) {
-      formData.append("avatarUrl", avatar)
+      formData.append("avatarUrl", avatar);
     }
 
     fetch(`${BACKEND_URL}/users/profile`, {
@@ -101,8 +97,9 @@ export default function CreateProfileScreen({ navigation }) {
     })
       .then((response) => response.json())
       .then((data) => {
+        setLoading(false);
         if (data.result) {
-          navigation.navigate("TabNavigator");
+          dispatch(updateToken(token));
           setImage(null);
           setAvatar(null);
           setPseudo("");
@@ -123,7 +120,7 @@ export default function CreateProfileScreen({ navigation }) {
         value={pseudo}
         onChangeText={(text) => setPseudo(text)}
       />
-      <Text style={styles.text}>Importez une image de votre galerie</Text>
+      <Text>Importez une image de votre galerie</Text>
       {image ? (
         <TouchableOpacity onPress={pickImage}>
           <Image source={{ uri: image }} style={styles.image} />
@@ -148,7 +145,7 @@ export default function CreateProfileScreen({ navigation }) {
         {avatars.map((avatar, index) => (
           <Pressable key={index} onPress={() => pickAvatar(avatar)}>
             <Image
-               source={{ uri: avatar }}
+              source={{ uri: avatar }}
               style={{
                 width: 60,
                 height: 60,
@@ -172,6 +169,9 @@ export default function CreateProfileScreen({ navigation }) {
         <Text style={{ color: "red" }}>
           Veuillez choisir un pseudo et un avatar
         </Text>
+      ) : null}
+      {loading ? (
+        <Text style={{ marginTop: 10, color: "#65558F" }}>Chargement...</Text>
       ) : null}
     </SafeAreaView>
   );

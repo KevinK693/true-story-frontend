@@ -1,81 +1,125 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  Touchable,
+} from "react-native";
 import React from "react";
-
+import { useSelector, useDispatch } from "react-redux";
+import { useState, useEffect } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { removeToken } from "../reducers/user";
 
 export default function HomeScreen({ navigation }) {
+  const dispatch = useDispatch();
+  const [avatarUrl, setAvatarUrl] = useState(null);
+  const user = useSelector((state) => state.user.value);
+  const token = user.token;
+  const BACKEND_URL = "http:///10.0.3.229:3000";
+
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/users/${token}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          setAvatarUrl(data.user.avatar);
+        } else {
+          console.log("Erreur de récupération de l'image");
+        }
+      });
+  }, []);
+
+  const handleLogout = () => {
+    dispatch(removeToken());
+};
+
   return (
-    <View style={styles.container}>
-      <View>
-        <Image style={styles.user} source={require("../assets/avatars/astronaut.png")}/>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+          <Image style={styles.user} source={{ uri: avatarUrl }} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => handleLogout()}>
+          <FontAwesome5 name="sign-out-alt" size={30} color="#335561" />
+        </TouchableOpacity>
       </View>
       <View>
         <Image style={styles.image} source={require("../assets/logo.png")} />
       </View>
-      <View>
+      <View style={styles.buttonContainer}>
         <TouchableOpacity
-          onPress={() => navigation.navigate('Games')}
+          onPress={() => navigation.navigate("Games")}
           style={styles.button}
           activeOpacity={0.8}
         >
           <Text style={styles.textbutton}>NOUVELLE PARTIE</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          // onPress={() => handleSubmit()}
+          onPress={() => navigation.navigate("JoinGame")}
           style={styles.button}
           activeOpacity={0.8}
         >
           <Text style={styles.textbutton}>REJOINDRE</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          // onPress={() => handleSubmit()}
+          // onPress={() => navigation.navigate('ResumeGame')}
           style={styles.button}
           activeOpacity={0.8}
         >
           <Text style={styles.textbutton}>CONTINUER</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
-    backgroundColor: '#FBF1F1',
+    flex: 1,
+    backgroundColor: "#FBF1F1",
+    padding: 20,
   },
   user: {
     width: 55,
     height: 55,
     borderRadius: 50,
-    alignSelf: "left",
-    marginTop: 40,
-    marginLeft: 30,
   },
   image: {
     width: 300,
-    height:150,
+    height: 150,
     resizeMode: "contain",
     alignSelf: "center",
     marginVertical: 20,
   },
+  buttonContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   button: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: "#65558F", 
-    paddingHorizontal: 20,
+    alignItems: "center",
+    backgroundColor: "#65558F",
     borderRadius: 6,
     marginVertical: 20,
-    marginHorizontal:45,
     padding: 30,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.75,
     shadowRadius: 3.84,
+    width: "90%",
   },
   textbutton: {
-    color: "#EADDFF", 
+    color: "#EADDFF",
     fontFamily: "inter",
     fontSize: 25,
     fontWeight: "bold",
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 });

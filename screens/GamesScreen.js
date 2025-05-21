@@ -6,17 +6,26 @@ import {
   TouchableOpacity,
   Modal,
   Image,
+  TouchableWithoutFeedback,
 } from "react-native";
 import React from "react";
 import { Dropdown } from "react-native-element-dropdown";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function GamesScreen() {
+  const BACKEND_URL = "http://10.0.3.229:3000"; // Remplacez par l'URL de votre backend
+
   const [selectedPlayers, setSelectedPlayers] = useState(null);
   const [selectedScenes, setSelectedScenes] = useState(null);
   const [selectedGenre, setSelectedGenre] = useState(null);
-  const [title, setTitle]= useState(null)
+  const [title, setTitle] = useState(null);
+  const [image, setImage] = useState(null);
+
+  const [modalPlayersVisible, setModalPlayersVisible] = useState(false);
+  const [modalScenesVisible, setModalScenesVisible] = useState(false);
+  const [modalImageVisible, setModalImageVisible] = useState(false);
 
   const scenesOptions = [4, 8, 12, 16, 20, 24].map((num) => ({
     label: `${num}`,
@@ -46,13 +55,63 @@ export default function GamesScreen() {
     value: text,
   }));
 
+  const pickImage = async () => {
+    setModalImageVisible(true);
+  };
+
+
+  const handleSubmit = () => {
+    if (!title || !selectedPlayers || !selectedScenes || !selectedGenre) {
+      alert("Veuillez remplir tous les champs");
+      return;
+    }
+    const gameData = {
+      title: title,
+      nbPlayers: selectedPlayers,
+      nbScenes: selectedScenes,
+      genre: selectedGenre,
+    };
+    
+    console.log("DATA GAME =>", gameData);
+  
+    fetch(`${BACKEND_URL}/game/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(gameData),
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Réponse du backend :", data);
+    })
+    .catch((error) => {
+      console.error("Erreur lors de la requête :", error);
+    });
+  }
+
   return (
-    <View style={styles.container}>
-      {/* Logo */}
-      <View>
-        <Image style={styles.user} source={require("../assets/avatar.png")} />
-        <Image source={require("../assets/tag_square.png")} />
-      </View>
+    <SafeAreaView style={styles.container}>
+      {/* User */}
+      <Text style={styles.title}>Choisissez une image pour votre partie</Text>
+      {image ? (
+        <TouchableOpacity onPress={pickImage}>
+          <Image source={{ uri: image }} style={styles.image} />
+          <View style={styles.editIcon}>
+            <FontAwesome5 name="edit" size={16} color="#EADDFF" />
+          </View>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity onPress={pickImage} style={{ position: "relative" }}>
+          <Image
+            source={require("../assets/emptyAvatar.png")}
+            style={styles.image}
+          />
+          <View style={styles.editIcon}>
+            <FontAwesome5 name="edit" size={16} color="#EADDFF" />
+          </View>
+        </TouchableOpacity>
+      )}
 
       {/* Titre */}
       <TextInput
@@ -62,10 +121,12 @@ export default function GamesScreen() {
       />
 
       {/* Nombre de joueurs */}
-      <View style={styles.nbr}>
-        <View style={styles.nbrWithicon}>
+      <View style={styles.optionContainer}>
+        <View style={styles.labelContainer}>
           <Text style={styles.text}>Nombre de joueurs</Text>
-          <FontAwesome name="info-circle" size={18} style={styles.icon} />
+          <TouchableOpacity onPress={() => setModalPlayersVisible(true)}>
+            <FontAwesome5 name="info-circle" size={22} style={styles.icon} />
+          </TouchableOpacity>
         </View>
         <Dropdown
           style={styles.dropdown}
@@ -82,10 +143,12 @@ export default function GamesScreen() {
       </View>
 
       {/* Nombre de scènes */}
-      <View style={styles.nbr}>
-      <View style={styles.nbrWithicon}>
-        <Text style={styles.text}>Nombre de scènes</Text>
-        <FontAwesome name="info-circle" size={18} style={styles.icon} />
+      <View style={styles.optionContainer}>
+        <View style={styles.labelContainer}>
+          <Text style={styles.text}>Nombre de scènes</Text>
+          <TouchableOpacity onPress={() => setModalScenesVisible(true)}>
+            <FontAwesome5 name="info-circle" size={22} style={styles.icon} />
+          </TouchableOpacity>
         </View>
         <Dropdown
           style={styles.dropdown}
@@ -102,10 +165,12 @@ export default function GamesScreen() {
       </View>
 
       {/* Genre */}
-      <View>
-        <Text style={styles.text}>Choisir un genre</Text>
+      <View style={styles.genreContainer}>
+        <Text style={[styles.text, { textAlign: "center" }]}>
+          Choisir un genre
+        </Text>
         <Dropdown
-          style={styles.dropdowngenre}
+          style={styles.dropdownGenre}
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
           data={genresOPtions}
@@ -119,10 +184,67 @@ export default function GamesScreen() {
       </View>
 
       {/* Bouton */}
-      <TouchableOpacity style={styles.button} activeOpacity={0.8}>
-        <Text style={styles.textbutton}>SUIVANT</Text>
+      <TouchableOpacity
+        style={styles.button}
+        activeOpacity={0.8}
+        onPress={handleSubmit}
+      >
+        <Text style={styles.buttonText}>Suivant</Text>
       </TouchableOpacity>
-    </View>
+
+      {/* Modal Joueurs */}
+      <Modal
+        transparent
+        visible={modalPlayersVisible}
+        animationType="fade"
+        onRequestClose={() => setModalPlayersVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setModalPlayersVisible(false)}>
+          <View style={styles.modal}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalText}>
+                Le nombre de joueurs détermine combien de participants seront
+                impliqués dans le jeu. Cela influe sur le nombre de propositions
+                à votre disposition.
+              </Text>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
+      {/* Modal Scènes */}
+      <Modal
+        transparent
+        visible={modalScenesVisible}
+        animationType="fade"
+        onRequestClose={() => setModalScenesVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setModalScenesVisible(false)}>
+          <View style={styles.modal}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalText}>
+                Le nombre de scènes correspond aux étapes ou moments clés du
+                scénario. Plus il y a de scènes, plus le jeu est long.
+              </Text>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
+      {/* Modal Image */}
+      <Modal
+        transparent
+        visible={modalImageVisible}
+        animationType="fade"
+        onRequestClose={() => setModalImageVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setModalImageVisible(false)}>
+          <View style={styles.modal}>
+            <View style={styles.modalContainer}></View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+    </SafeAreaView>
   );
 }
 
@@ -132,48 +254,50 @@ const styles = StyleSheet.create({
     backgroundColor: "#FBF1F1",
     alignItems: "center",
     justifyContent: "center",
-  },
-  user: {
-    width: 50,
-    height: 50,
-    marginRight: 10,
-  },
-  nbr: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: 280,
-    marginBottom: 15,
-    marginEnd: 30,
-  },
-  nbrWithicon: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  icon: {
-    marginLeft: 5,
-    marginRight: 15,
+    paddingHorizontal: 20,
+    paddingTop: 40,
   },
   input: {
     borderWidth: 1,
     borderColor: "#263238",
     borderRadius: 10,
     paddingHorizontal: 15,
-    paddingVertical: 10,
+    height: 50,
     fontSize: 16,
     fontFamily: "Noto Sans Gujarati",
-    marginBottom: 20,
+    marginTop: 20,
+    marginBottom: 40,
     backgroundColor: "white",
-    width: 280,
+    width: "80%",
+  },
+  optionContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "95%",
+    marginBottom: 20,
+  },
+  labelContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  icon: {
+    marginLeft: 5,
+    marginRight: 10,
+    color: "#335561",
   },
   text: {
     fontSize: 20,
     fontFamily: "Noto Sans Gujarati",
-    color: "335561",
+    color: "#335561",
     fontWeight: "bold",
-    marginBottom: 5,
-    alignSelf: "flex-start",
-    marginRight: 15,
+  },
+  title: {
+    fontSize: 22,
+    fontFamily: "Noto Sans Gujarati",
+    color: "#335561",
+    fontWeight: "bold",
+    textAlign: "center",
   },
   dropdown: {
     borderWidth: 1,
@@ -181,20 +305,25 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 10,
     height: 45,
-    marginBottom: 20,
     backgroundColor: "#fff",
     width: 100,
-    justifyContent: "center", 
+    justifyContent: "center",
+    marginLeft: 40,
   },
-  dropdowngenre: {
+  genreContainer: {
+    width: "50%",
+    marginBottom: 20,
+    alignItems: "center",
+  },
+  dropdownGenre: {
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 10,
     paddingHorizontal: 10,
     height: 45,
-    marginBottom: 20,
+    marginTop: 10,
     backgroundColor: "#fff",
-    width: 160,
+    width: 200,
     justifyContent: "center",
   },
   placeholderStyle: {
@@ -206,27 +335,53 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   button: {
-    backgroundColor: "#6A4C93",
-    borderRadius: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    marginTop: 20,
-    width: 280,
+    backgroundColor: "#65558F",
+    padding: 10,
+    borderRadius: 8,
+    width: "80%",
+    marginTop: 50,
+    marginBottom: 10,
+    height: 50,
+  },
+  buttonText: {
+    color: "#EADDFF",
+    fontSize: 20,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  modal: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
     alignItems: "center",
   },
-  textbutton: {
-    fontFamily: "Noto Sans Gujarati",
-    color: "#fff",
+  modalContainer: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    width: 300,
+    alignItems: "center",
+  },
+  modalText: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Noto Sans Gujarati",
+    textAlign: "center",
   },
-  modalView: {
-    alignItems: "flex-end",
-    marginBottom: 5,
-    width: 20,
+  image: {
+    marginVertical: 20,
+    width: 90,
+    height: 90,
+    borderRadius: 50,
   },
-  textButton: {
-    fontSize: 12,
-    color: "#6A4C93",
+  editIcon: {
+    position: "absolute",
+    bottom: 20,
+    right: 0,
+    backgroundColor: "#65558F",
+    borderRadius: 5,
+    paddingRight: 2,
+    paddingTop: 2,
+    paddingLeft: 4,
+    paddingBottom: 4,
   },
 });

@@ -34,7 +34,6 @@ export default function ConnexionScreen({ navigation }) {
       .then((data) => {
         if (data.result) {
           console.log("Connexion réussie");
-          navigation.navigate("TabNavigator");
           dispatch(updateToken(data.token));
           setEmail("");
           setPassword("");
