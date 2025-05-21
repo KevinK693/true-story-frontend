@@ -13,10 +13,13 @@ import { Dropdown } from "react-native-element-dropdown";
 import { useState } from "react";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch } from "react-redux";
+import { updateGame } from "../reducers/game";
 
-export default function CreateGameScreen({navigation}) {
+export default function CreateGameScreen({ navigation }) {
   const BACKEND_URL = "http://10.0.3.229:3000"; // Remplacez par l'URL de votre backend
 
+  const dispatch = useDispatch();
   const [selectedPlayers, setSelectedPlayers] = useState(null);
   const [selectedScenes, setSelectedScenes] = useState(null);
   const [selectedGenre, setSelectedGenre] = useState(null);
@@ -28,18 +31,17 @@ export default function CreateGameScreen({navigation}) {
   const [modalScenesVisible, setModalScenesVisible] = useState(false);
   const [modalImageVisible, setModalImageVisible] = useState(false);
 
-
   const images = [
-    'https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834158/science-fiction_gniu4v.png', 
-    'https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834158/fantome_adnq8j.png', 
-    'https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834158/chapeau-de-cowboy_d1bafb.png', 
-    'https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834157/dragon_xabusn.png', 
-    'https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834157/reaction-chimique_ghl9fu.png', 
-    'https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834382/ovni_qla2gb.png', 
-    'https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834381/chalet_sa1x2p.png', 
-    'https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834382/comme_qtwh8d.png', 
-    'https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834381/molecule_zjn0wj.png'
-    ]
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834158/science-fiction_gniu4v.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834158/fantome_adnq8j.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834158/chapeau-de-cowboy_d1bafb.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834157/dragon_xabusn.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834157/reaction-chimique_ghl9fu.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834382/ovni_qla2gb.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834381/chalet_sa1x2p.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834382/comme_qtwh8d.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834381/molecule_zjn0wj.png",
+  ];
 
   const scenesOptions = [4, 8, 12, 16, 20, 24].map((num) => ({
     label: `${num}`,
@@ -79,32 +81,33 @@ export default function CreateGameScreen({navigation}) {
       return;
     }
 
-   const formData = new FormData();
+    const formData = new FormData();
     formData.append("image", image);
     formData.append("title", title);
-    formData.append("genre", selectedGenre)
-    formData.append("nbplayers", selectedPlayers)
-    formData.append("nbScenes", selectedScenes)
-   
+    formData.append("genre", selectedGenre);
+    formData.append("nbplayers", selectedPlayers);
+    formData.append("nbScenes", selectedScenes);
+
     fetch(`${BACKEND_URL}/games/create`, {
       method: "POST",
       body: formData,
     })
-     .then((response) => response.json())
-     .then ((data) => {
-             if (data.result) {
-               dispatch(updateGame(data));
-               setTitle(null);
-               setImage(null);
-               setSelectedPlayers(null)
-               setSelectedScenes(null)
-              setSelectedGenre(null)  
-                navigation.navigate("WaitingForPlayers");       
-             } else {
-               console.log("Erreur lors de la création du profil :", data.error);
-             }
-           });
-  }
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          console.log('Partie créée avec succès', data.result);
+          dispatch(updateGame(data));
+          setTitle(null);
+          setImage(null);
+          setSelectedPlayers(null);
+          setSelectedScenes(null);
+          setSelectedGenre(null);
+          navigation.navigate("WaitingForPlayers");
+        } else {
+          console.log("Erreur lors de la création du profil :", data.error);
+        }
+      });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -203,7 +206,7 @@ export default function CreateGameScreen({navigation}) {
       <TouchableOpacity
         style={styles.button}
         activeOpacity={0.8}
-        onPress={handleSubmit}
+        onPress={() => handleSubmit()}
       >
         <Text style={styles.buttonText}>Suivant</Text>
       </TouchableOpacity>
@@ -256,29 +259,29 @@ export default function CreateGameScreen({navigation}) {
       >
         <TouchableWithoutFeedback onPress={() => setModalImageVisible(false)}>
           <View style={styles.modal}>
-          <View style={styles.modalImage}>
-  {images.map((imgUri, index) => (
-    <TouchableOpacity
-      key={index}
-      onPress={() => {
-        setImage(imgUri);
-        setModalImageVisible(false);
-      }}
-    >
-      <Image
-        source={{ uri: imgUri }}
-        style={{
-          width: 70,
-          height: 70,
-          margin: 10,
-          borderRadius: 10,
-          borderWidth: image === imgUri ? 3 : 1,
-          borderColor: image === imgUri ? "#65558F" : "#ccc",
-        }}
-      />
-    </TouchableOpacity>
-  ))}
-</View>
+            <View style={styles.modalImage}>
+              {images.map((imgUri, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => {
+                    setImage(imgUri);
+                    setModalImageVisible(false);
+                  }}
+                >
+                  <Image
+                    source={{ uri: imgUri }}
+                    style={{
+                      width: 70,
+                      height: 70,
+                      margin: 10,
+                      borderRadius: 10,
+                      borderWidth: image === imgUri ? 3 : 1,
+                      borderColor: image === imgUri ? "#65558F" : "#ccc",
+                    }}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
         </TouchableWithoutFeedback>
       </Modal>
