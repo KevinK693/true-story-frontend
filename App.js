@@ -7,6 +7,7 @@ import ConnexionScreen from "./screens/ConnexionScreen";
 import GamesScreen from "./screens/GamesScreen";
 import InscriptionScreen from "./screens/InscriptionScreen";
 import CreateProfileScreen from "./screens/CreateProfileScreen";
+import JoinGameScreen from "./screens/JoinGameScreen";
 
 import { persistStore, persistReducer } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
@@ -62,6 +63,7 @@ const AuthStack = () => (
     <Stack.Screen name="Connexion" component={ConnexionScreen} />
     <Stack.Screen name="Inscription" component={InscriptionScreen} />
     <Stack.Screen name="CreateProfile" component={CreateProfileScreen} />
+    <Stack.Screen name="JoinGame" component={JoinGameScreen} />
   </Stack.Navigator>
 );
 

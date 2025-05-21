@@ -48,7 +48,7 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.textbutton}>REJOINDRE</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          // onPress={() => handleSubmit()}
+          onPress={() => navigation.navigate('JoinGame')}
           style={styles.button}
           activeOpacity={0.8}
         >
