@@ -7,12 +7,12 @@ import {
   Pressable,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import * as ImagePicker from "expo-image-picker";
-import { useSelector, useDispatch } from "react-redux";
-import { updateProfileStatus } from "../reducers/user";
+import { useDispatch } from "react-redux";
+import { updateToken } from "../reducers/user";
 
 const avatars = [
   "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751155/astronaut_mzo08o.png",
@@ -33,10 +33,9 @@ const avatars = [
   "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751159/ninja_hyowdl.png",
 ];
 
-export default function CreateProfileScreen({ navigation }) {
+export default function CreateProfileScreen({ navigation, route }) {
   const BACKEND_URL = "http://10.0.3.229:3000"; // Remplacez par l'URL de votre backend
 
-  const dispatch = useDispatch();
   const [pseudo, setPseudo] = useState("");
   const [avatar, setAvatar] = useState(null);
   const [image, setImage] = useState(null);
@@ -44,8 +43,8 @@ export default function CreateProfileScreen({ navigation }) {
   const [avatarSelected, setAvatarSelected] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const user = useSelector((state) => state.user.value);
-  const token = user.token;
+  const token = route.params.token;
+  const dispatch = useDispatch();
 
   const pickImage = async () => {
     setAvatar(null);
@@ -100,8 +99,7 @@ export default function CreateProfileScreen({ navigation }) {
       .then((data) => {
         setLoading(false);
         if (data.result) {
-          dispatch(updateProfileStatus(true))
-          navigation.navigate("TabNavigator");
+          dispatch(updateToken(token));
           setImage(null);
           setAvatar(null);
           setPseudo("");

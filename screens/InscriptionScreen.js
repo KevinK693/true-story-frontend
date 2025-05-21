@@ -7,11 +7,10 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
 } from "react-native";
-import React from "react";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
-import { updateToken } from "../reducers/user";
+
 
 export default function ConnexionScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -39,9 +38,8 @@ export default function ConnexionScreen({ navigation }) {
         .then((response) => response.json())
         .then((data) => {
           if (data.result) {
-            navigation.navigate("CreateProfile");
             console.log("Inscription réussie");
-            dispatch(updateToken(data.token));
+            navigation.navigate("CreateProfile", { token: data.token })
             setEmail("");
             setPassword("");
           } else {
