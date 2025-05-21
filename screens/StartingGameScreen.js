@@ -59,7 +59,6 @@ export default function StartingGameScreen() {
     setModalImageVisible(true);
   };
 
-
   const handleSubmit = () => {
     if (!title || !selectedPlayers || !selectedScenes || !selectedGenre) {
       alert("Veuillez remplir tous les champs");
@@ -71,9 +70,9 @@ export default function StartingGameScreen() {
       nbScenes: selectedScenes,
       genre: selectedGenre,
     };
-    
+
     console.log("DATA GAME =>", gameData);
-  
+
     fetch(`${BACKEND_URL}/games/create`, {
       method: "POST",
       headers: {
@@ -81,32 +80,40 @@ export default function StartingGameScreen() {
       },
       body: JSON.stringify(gameData),
     })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Réponse du backend :", data);
-    })
-    .catch((error) => {
-      console.error("Erreur lors de la requête :", error);
-    });
-  }
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Réponse du backend :", data);
+      })
+      .catch((error) => {
+        console.error("Erreur lors de la requête :", error);
+      });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       {/* Titre */}
       <View style={styles.genreContainer}>
-        <Text style={[styles.text, { textAlign: "center" }]}>
-        Titre
+        <Text style={[styles.textTitle, { textAlign: "center" }]}>Titre</Text>
+        <Text style={[styles.textScene, { textAlign: "center" }]}>
+          Scène actuelle:
         </Text>
+        <View style={styles.containerTexteIa}>
+          <Text style={styles.texteIa}>
+          
+          </Text>
+        </View>
       </View>
-
       {/* Bouton */}
       <TouchableOpacity
         style={styles.button}
         activeOpacity={0.8}
         onPress={handleSubmit}
       >
-        <Text style={styles.buttonText}>Suivant</Text>
+        <Text style={styles.buttonText}>Proposer une suite</Text>
       </TouchableOpacity>
+      <Text style={[styles.textNbPropositions, { textAlign: "center" }]}>
+        Nombre de propositions:
+      </Text>
     </SafeAreaView>
   );
 }
@@ -116,14 +123,54 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FBF1F1",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     paddingHorizontal: 20,
-    paddingTop: 40,
   },
+
+  textTitle: {
+    fontSize: 40,
+    fontFamily: "Noto Sans Gujarati",
+    color: "#335561",
+    fontWeight: "bold",
+  },
+  textScene: {
+    fontFamily: "Noto Sans Gujarati",
+    fontSize: 20,
+    color: "#335561",
+    marginTop: 10,
+  },
+
+  texteIa: {
+    fontSize: 20,
+   
+  },
+  containerTexteIa: {
+    borderRadius: 10,
+    backgroundColor: "white",
+    height: 300,
+    width: 350,
+   marginTop: 50,
+  },
+  button: {
+    backgroundColor: "#65558F",
+    padding: 10,
+    borderRadius: 8,
+    width: "80%",
+    marginTop: 50,
+    marginBottom: 10,
+    height: 50,
+  },
+
   buttonText: {
     color: "#EADDFF",
     fontSize: 20,
     fontWeight: "600",
     textAlign: "center",
+  },
+  textNbPropositions: {
+    fontFamily: "Noto Sans Gujarati",
+    fontSize: 20,
+    color: "#335561",
+    paddingTop: 20,
   },
 });

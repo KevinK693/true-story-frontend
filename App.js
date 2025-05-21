@@ -1,3 +1,4 @@
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -33,6 +34,7 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator();
 
+// Tab navigator (Home, Games, etc.)
 const TabNavigator = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
@@ -50,26 +52,37 @@ const TabNavigator = () => (
   </Tab.Navigator>
 );
 
+// Auth flow (Connexion, Inscription, CreateProfile)
+const AuthStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="Connexion" component={ConnexionScreen} />
+    <Stack.Screen name="Inscription" component={InscriptionScreen} />
+    <Stack.Screen name="CreateProfile" component={CreateProfileScreen} />
+  </Stack.Navigator>
+);
+
+// Main app navigation (after login)
+const RootApp = () => (
+  <RootStack.Navigator screenOptions={{ headerShown: false }}>
+    <RootStack.Screen name="MainTabs" component={TabNavigator} />
+    <RootStack.Screen name="JoinGame" component={JoinGameScreen} />
+    <RootStack.Screen name="Profile" component={ProfileScreen} />
+    {/* Ajouter ici d'autres écrans comme Continuer, Profil, etc. */}
+  </RootStack.Navigator>
+);
+
+// Main navigation switcher
 const MainNavigator = () => {
   const user = useSelector((state) => state.user.value);
 
   return (
     <NavigationContainer>
-      {user.token ? (
-        <RootStack.Navigator screenOptions={{ headerShown: false }}>
-          <RootStack.Screen name="MainTabs" component={TabNavigator} />
-          <RootStack.Screen name="JoinGame" component={JoinGameScreen} />
-          <RootStack.Screen name="Profile" component={ProfileScreen} />
-        </RootStack.Navigator>
+      {!user.token ? (
+        <AuthStack />
+      ) : !user.hasProfile ? (
+        <CreateProfileScreen />
       ) : (
-        <Stack.Navigator
-          screenOptions={{ headerShown: false }}
-          initialRouteName="Connexion"
-        >
-          <Stack.Screen name="Connexion" component={ConnexionScreen} />
-          <Stack.Screen name="Inscription" component={InscriptionScreen} />
-          <Stack.Screen name="CreateProfile" component={CreateProfileScreen} />
-        </Stack.Navigator>
+        <RootApp />
       )}
     </NavigationContainer>
   );
