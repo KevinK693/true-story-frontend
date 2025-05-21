@@ -1,11 +1,20 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  Touchable,
+} from "react-native";
 import React from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { removeToken, updateProfileStatus } from "../reducers/user";
 
 export default function HomeScreen({ navigation }) {
+  const dispatch = useDispatch();
   const [avatarUrl, setAvatarUrl] = useState(null);
   const user = useSelector((state) => state.user.value);
   const token = user.token;
@@ -23,16 +32,22 @@ export default function HomeScreen({ navigation }) {
       });
   }, []);
 
+  const handleLogout = () => {
+    dispatch(removeToken());
+  }
+
   return (
     <SafeAreaView style={styles.container}>
-      <View styles={styles.header}>
+      <View style={styles.header}>
         <Image style={styles.user} source={{ uri: avatarUrl }} />
-        <FontAwesome5 name="sign-out-alt" size={16} color="black" />
+        <TouchableOpacity onPress={() => handleLogout()}>
+          <FontAwesome5 name="sign-out-alt" size={30} color="#335561" />
+        </TouchableOpacity>
       </View>
       <View>
         <Image style={styles.image} source={require("../assets/logo.png")} />
       </View>
-      <View>
+      <View style={styles.buttonContainer}>
         <TouchableOpacity
           onPress={() => navigation.navigate("Games")}
           style={styles.button}
@@ -63,14 +78,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FBF1F1",
+    padding: 20,
   },
   user: {
     width: 55,
     height: 55,
     borderRadius: 50,
-    alignSelf: "left",
-    marginTop: 40,
-    marginLeft: 30,
   },
   image: {
     width: 300,
@@ -79,19 +92,22 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginVertical: 20,
   },
-  button: {
+  buttonContainer: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
+  },
+  button: {
+    alignItems: "center",
     backgroundColor: "#65558F",
-    paddingHorizontal: 20,
     borderRadius: 6,
     marginVertical: 20,
-    marginHorizontal: 45,
     padding: 30,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.75,
     shadowRadius: 3.84,
+    width: "90%",
   },
   textbutton: {
     color: "#EADDFF",
@@ -100,6 +116,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   header: {
-    flexDirection: 'row',
-  }
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
 });

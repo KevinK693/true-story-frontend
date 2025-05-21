@@ -71,11 +71,17 @@ const RootApp = () => (
 
 // Main navigation switcher
 const MainNavigator = () => {
-  const token = useSelector((state) => state.user.value.token);
+  const user = useSelector((state) => state.user.value);
 
   return (
     <NavigationContainer>
-      {token ? <RootApp /> : <AuthStack />}
+      {!user.token ? (
+        <AuthStack />
+      ) : !user.hasProfile ? (
+        <CreateProfileScreen />
+      ) : (
+        <RootApp />
+      )}
     </NavigationContainer>
   );
 };
