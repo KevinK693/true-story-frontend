@@ -1,4 +1,3 @@
-import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -34,7 +33,6 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator();
 
-// Tab navigator (Home, Games, etc.)
 const TabNavigator = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
@@ -52,58 +50,29 @@ const TabNavigator = () => (
   </Tab.Navigator>
 );
 
-// Auth flow (Connexion, Inscription, CreateProfile)
-const AuthStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="Connexion" component={ConnexionScreen} />
-    <Stack.Screen name="Inscription" component={InscriptionScreen} />
-    <Stack.Screen name="CreateProfile" component={CreateProfileScreen} />
-  </Stack.Navigator>
-);
-
-// Main app navigation (after login)
-const RootApp = () => (
-  <RootStack.Navigator screenOptions={{ headerShown: false }}>
-    <RootStack.Screen name="MainTabs" component={TabNavigator} />
-    <RootStack.Screen name="JoinGame" component={JoinGameScreen} />
-    <RootStack.Screen name="Profile" component={ProfileScreen} />
-    {/* Ajouter ici d'autres écrans comme Continuer, Profil, etc. */}
-  </RootStack.Navigator>
-);
-
-// Main navigation switcher
 const MainNavigator = () => {
   const user = useSelector((state) => state.user.value);
-  const [checkingProfile, setCheckingProfile] = useState(true);
-  const [hasProfile, setHasProfile] = useState(false);
 
-  useEffect(() => {
-    const checkProfile = async () => {
-      if (user.token) {
-        try {
-          const response = await fetch(`http://10.0.3.229:3000/users/${user.token}`);
-          const data = await response.json();
-          if (data.result && data.user.avatar) {
-            setHasProfile(true);
-          } else {
-            setHasProfile(false);
-          }
-        } catch (err) {
-          console.error("Erreur lors de la vérification du profil", err);
-          setHasProfile(false);
-        }
-      }
-      setCheckingProfile(false);
-    };
-
-    checkProfile();
-  }, [user.token]);
-
-  if (!user.token) return <AuthStack />;
-  if (checkingProfile) return null; 
-  if (!hasProfile) return <CreateProfileScreen />;
-
-  return <RootApp />;
+  return (
+    <NavigationContainer>
+      {user.token ? (
+        <RootStack.Navigator screenOptions={{ headerShown: false }}>
+          <RootStack.Screen name="MainTabs" component={TabNavigator} />
+          <RootStack.Screen name="JoinGame" component={JoinGameScreen} />
+          <RootStack.Screen name="Profile" component={ProfileScreen} />
+        </RootStack.Navigator>
+      ) : (
+        <Stack.Navigator
+          screenOptions={{ headerShown: false }}
+          initialRouteName="Connexion"
+        >
+          <Stack.Screen name="Connexion" component={ConnexionScreen} />
+          <Stack.Screen name="Inscription" component={InscriptionScreen} />
+          <Stack.Screen name="CreateProfile" component={CreateProfileScreen} />
+        </Stack.Navigator>
+      )}
+    </NavigationContainer>
+  );
 };
 
 export default function App() {
