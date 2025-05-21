@@ -74,18 +74,36 @@ const RootApp = () => (
 // Main navigation switcher
 const MainNavigator = () => {
   const user = useSelector((state) => state.user.value);
+  const [checkingProfile, setCheckingProfile] = useState(true);
+  const [hasProfile, setHasProfile] = useState(false);
 
-  return (
-    <NavigationContainer>
-      {!user.token ? (
-        <AuthStack />
-      ) : !user.hasProfile ? (
-        <CreateProfileScreen />
-      ) : (
-        <RootApp />
-      )}
-    </NavigationContainer>
-  );
+  useEffect(() => {
+    const checkProfile = async () => {
+      if (user.token) {
+        try {
+          const response = await fetch(`http://10.0.3.229:3000/users/${user.token}`);
+          const data = await response.json();
+          if (data.result && data.user.avatar) {
+            setHasProfile(true);
+          } else {
+            setHasProfile(false);
+          }
+        } catch (err) {
+          console.error("Erreur lors de la vérification du profil", err);
+          setHasProfile(false);
+        }
+      }
+      setCheckingProfile(false);
+    };
+
+    checkProfile();
+  }, [user.token]);
+
+  if (!user.token) return <AuthStack />;
+  if (checkingProfile) return null; 
+  if (!hasProfile) return <CreateProfileScreen />;
+
+  return <RootApp />;
 };
 
 export default function App() {
