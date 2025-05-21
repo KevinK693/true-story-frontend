@@ -12,7 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import * as ImagePicker from "expo-image-picker";
 import { useDispatch } from "react-redux";
-import { updateToken } from "../reducers/user";
+import { updateToken, updateAvatar, updateNickname } from "../reducers/user";
 
 const avatars = [
   "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747751155/astronaut_mzo08o.png",
@@ -100,6 +100,8 @@ export default function CreateProfileScreen({ navigation, route }) {
         setLoading(false);
         if (data.result) {
           dispatch(updateToken(token));
+          dispatch(updateAvatar(data.url));
+          dispatch(updateNickname(pseudo));
           setImage(null);
           setAvatar(null);
           setPseudo("");

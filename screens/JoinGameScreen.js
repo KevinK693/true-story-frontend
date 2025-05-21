@@ -7,19 +7,18 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function JoinGame({ navigation }) {
   const [code, setCode] = useState("");
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+    
       <Image style={styles.user} source={require("../assets/avatar.png")} />
-      <Image
-        style={styles.tagSquare}
-        source={require("../assets/tag_square.png")}
-      />
-      <Text style={styles.textbutton}>REJOINDRE UNE PARTIE</Text>
-      <Text style={styles.textbutton}>ENTREZ LE CODE</Text>
+      
+      <Text style={styles.textJoin}>Rejoindre une partie</Text>
+      <Text style={styles.textEnter}>Entrez un code</Text>
       <TextInput
         style={styles.input}
         placeholder="Code de la partie"
@@ -28,14 +27,13 @@ export default function JoinGame({ navigation }) {
         value={code}
       />
       <TouchableOpacity
-        onPress={() => navigation.navigate("Games")}
+        onPress={() => navigation.navigate()}
         style={styles.button}
         activeOpacity={0.8}
       >
-        <Text style={styles.textbutton}>VALIDER</Text>
+        <Text style={styles.buttonText}>Rejoindre</Text>
       </TouchableOpacity>
-    </View>
-  );
+    </SafeAreaView>  );
 }
 
 const styles = StyleSheet.create({
@@ -43,44 +41,56 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "#FBF1F1",
     padding: 20,
   },
   user: {
-    width: 100,
-    height: 100,
+    width: 65,
+    height: 65,
     borderRadius: 50,
     marginBottom: 20,
-  },
-  tagSquare: {
-    width: 50,
-    height: 50,
     position: "absolute",
-    top: 20,
-    left: 20,
+    top: 70,
+    left:40,
   },
-  textbutton: {
-    fontSize: 24,
+  textJoin: {
+    fontSize: 30,
     fontWeight: "bold",
-    color: "#000",
-    marginVertical: 10,
+    color: "#65558F",
+    marginBottom: 10,
+  },
+  textEnter: {
+    fontSize: 20,
+    color: "#65558F",
+    marginBottom: 20,
+    fontFamily: "Noto Sans Gujarati",
   },
   input: {
-    width: "80%",
-    height: 50,
-    borderColor: "#000",
     borderWidth: 1,
+    borderColor: "#263238",
     borderRadius: 10,
-    paddingHorizontal: 10,
-    marginVertical: 10,
-    fontSize: 18,
-    color: "#000",
+    paddingHorizontal: 15,
+    height: 50,
+    fontSize: 16,
+    fontFamily: "Noto Sans Gujarati",
+    marginTop: 20,
+    marginBottom: 40,
+    backgroundColor: "white",
+    width: "80%",
   },
   button: {
-    backgroundColor: "#ddd",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    marginTop: 10,
+    backgroundColor: "#65558F",
+    padding: 10,
+    borderRadius: 8,
+    width: "80%",
+    marginTop: 50,
+    marginBottom: 10,
+    height: 50,
+  },
+  buttonText: {
+    color: "#EADDFF",
+    fontSize: 20,
+    fontWeight: "600",
+    textAlign: "center",
   },
 });
