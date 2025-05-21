@@ -74,7 +74,7 @@ export default function GamesScreen() {
     
     console.log("DATA GAME =>", gameData);
   
-    fetch(`${BACKEND_URL}/games/create`, {
+    fetch(`${BACKEND_URL}/game/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
