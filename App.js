@@ -1,7 +1,9 @@
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+
 import HomeScreen from "./screens/HomeScreen";
 import ConnexionScreen from "./screens/ConnexionScreen";
 import GamesScreen from "./screens/GamesScreen";
@@ -13,13 +15,11 @@ import { persistStore, persistReducer } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { Provider } from "react-redux";
+import { Provider, useSelector } from "react-redux";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import user from "./reducers/user";
-import { useSelector } from "react-redux";
 
 const reducers = combineReducers({ user });
-
 const persistConfig = { key: "faceup", storage: AsyncStorage };
 
 const store = configureStore({
@@ -31,48 +31,51 @@ const persistor = persistStore(store);
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+const RootStack = createNativeStackNavigator();
 
-const TabNavigator = () => {
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ color, size }) => {
-          let iconName = "";
+// Tab navigator (Home, Games, etc.)
+const TabNavigator = () => (
+  <Tab.Navigator
+    screenOptions={({ route }) => ({
+      tabBarIcon: ({ color, size }) => {
+        const iconName = route.name === "Home" ? "home" : "book-open";
+        return <FontAwesome5 name={iconName} size={size} color={color} />;
+      },
+      tabBarActiveTintColor: "#ec6e5b",
+      tabBarInactiveTintColor: "#335561",
+      headerShown: false,
+    })}
+  >
+    <Tab.Screen name="Home" component={HomeScreen} />
+    <Tab.Screen name="Games" component={GamesScreen} />
+  </Tab.Navigator>
+);
 
-          if (route.name === "Home") {
-            iconName = "home";
-          } else if (route.name === "Games") {
-            iconName = "book-open";
-          }
-
-          return <FontAwesome5 name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: "#ec6e5b",
-        tabBarInactiveTintColor: "#335561",
-        headerShown: false,
-      })}
-    >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Games" component={GamesScreen} />
-    </Tab.Navigator>
-  );
-};
-
+// Auth flow (Connexion, Inscription, CreateProfile)
 const AuthStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Connexion" component={ConnexionScreen} />
     <Stack.Screen name="Inscription" component={InscriptionScreen} />
     <Stack.Screen name="CreateProfile" component={CreateProfileScreen} />
-    <Stack.Screen name="JoinGame" component={JoinGameScreen} />
   </Stack.Navigator>
 );
 
+// Main app navigation (after login)
+const RootApp = () => (
+  <RootStack.Navigator screenOptions={{ headerShown: false }}>
+    <RootStack.Screen name="MainTabs" component={TabNavigator} />
+    <RootStack.Screen name="JoinGame" component={JoinGameScreen} />
+    {/* Ajouter ici d'autres écrans comme Continuer, Profil, etc. */}
+  </RootStack.Navigator>
+);
+
+// Main navigation switcher
 const MainNavigator = () => {
   const token = useSelector((state) => state.user.value.token);
 
   return (
     <NavigationContainer>
-      {token ? <TabNavigator /> : <AuthStack />}
+      {token ? <RootApp /> : <AuthStack />}
     </NavigationContainer>
   );
 };
