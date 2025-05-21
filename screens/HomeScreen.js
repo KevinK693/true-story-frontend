@@ -3,6 +3,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 export default function HomeScreen({ navigation }) {
   const [avatarUrl, setAvatarUrl] = useState(null);
@@ -19,13 +20,14 @@ export default function HomeScreen({ navigation }) {
         } else {
           console.log("Erreur de récupération de l'image");
         }
-      })
+      });
   }, []);
 
   return (
     <SafeAreaView style={styles.container}>
-      <View>
-        <Image style={styles.user} source={{uri: avatarUrl}} />
+      <View styles={styles.header}>
+        <Image style={styles.user} source={{ uri: avatarUrl }} />
+        <FontAwesome5 name="logout" size={16} color="black" />
       </View>
       <View>
         <Image style={styles.image} source={require("../assets/logo.png")} />
@@ -97,4 +99,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: "bold",
   },
+  header: {
+    flexDirection: 'row',
+  }
 });

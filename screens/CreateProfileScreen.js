@@ -119,7 +119,7 @@ export default function CreateProfileScreen({ navigation }) {
         value={pseudo}
         onChangeText={(text) => setPseudo(text)}
       />
-      <Text style={styles.text}>Importez une image de votre galerie</Text>
+      <Text>Importez une image de votre galerie</Text>
       {image ? (
         <TouchableOpacity onPress={pickImage}>
           <Image source={{ uri: image }} style={styles.image} />
