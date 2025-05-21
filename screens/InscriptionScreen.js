@@ -7,11 +7,10 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
 } from "react-native";
-import React from "react";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
-import { updateToken } from "../reducers/user";
+
 
 export default function ConnexionScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -19,7 +18,7 @@ export default function ConnexionScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [invalidEmail, setInvalidEmail] = useState(false);
 
-  const BACKEND_URL = "http://10.0.3.229:3000"; // Remplacez par l'URL de votre backend
+  const BACKEND_URL = "http:///10.0.3.229:3000"; // Remplacez par l'URL de votre backend
 
   const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -39,9 +38,8 @@ export default function ConnexionScreen({ navigation }) {
         .then((response) => response.json())
         .then((data) => {
           if (data.result) {
-            navigation.navigate("CreateProfile");
             console.log("Inscription réussie");
-            dispatch(updateToken(data.token));
+            navigation.navigate("CreateProfile", { token: data.token })
             setEmail("");
             setPassword("");
           } else {

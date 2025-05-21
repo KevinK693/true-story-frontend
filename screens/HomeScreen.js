@@ -34,7 +34,7 @@ export default function HomeScreen({ navigation }) {
 
   const handleLogout = () => {
     dispatch(removeToken());
-  };
+};
 
   return (
     <SafeAreaView style={styles.container}>
