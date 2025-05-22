@@ -12,6 +12,7 @@ import JoinGameScreen from "./screens/JoinGameScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import WaitingForPlayersScreen from "./screens/WaitingForPlayersScreen";
 import StartingGameScreen from "./screens/StartingGameScreen";
+import UserInputScreen from "./screens/UserInputScreen";
 
 import { persistStore, persistReducer } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
@@ -33,13 +34,24 @@ const persistor = persistStore(store);
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-const RootStack = createNativeStackNavigator();
+const MainStack = createNativeStackNavigator();
+
+const MainStackScreen = () => (
+  <MainStack.Navigator screenOptions={{ headerShown: false }}>
+    <MainStack.Screen name="Home" component={HomeScreen} />
+    <MainStack.Screen name="JoinGame" component={JoinGameScreen} />
+    <MainStack.Screen name="Profile" component={ProfileScreen} />
+    <MainStack.Screen name="WaitingForPlayers" component={WaitingForPlayersScreen} />
+    <MainStack.Screen name="StartingGame" component={StartingGameScreen} />
+    <MainStack.Screen name="UserInput" component={UserInputScreen} />
+  </MainStack.Navigator>
+);
 
 const TabNavigator = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
       tabBarIcon: ({ color, size }) => {
-        const iconName = route.name === "Home" ? "home" : "book-open";
+        const iconName = route.name === "Main" ? "home" : "book-open";
         return <FontAwesome5 name={iconName} size={size} color={color} />;
       },
       tabBarActiveTintColor: "#E089FF",
@@ -54,8 +66,8 @@ const TabNavigator = () => (
       },
     })}
   >
-    <Tab.Screen name="Home" component={HomeScreen} />
-    <Tab.Screen name="CreateGame" component={CreateGameScreen} />
+    <Tab.Screen name="Main" component={MainStackScreen} options={{ title: "Home" }} />
+    <Tab.Screen name="CreateGame" component={CreateGameScreen} options={{ title: "Create Game" }} />
   </Tab.Navigator>
 );
 
@@ -65,19 +77,7 @@ const MainNavigator = () => {
   return (
     <NavigationContainer>
       {user.token ? (
-        <RootStack.Navigator screenOptions={{ headerShown: false }}>
-          <RootStack.Screen name="MainTabs" component={TabNavigator} />
-          <RootStack.Screen name="JoinGame" component={JoinGameScreen} />
-          <RootStack.Screen name="Profile" component={ProfileScreen} />
-          <RootStack.Screen
-            name="WaitingForPlayers"
-            component={WaitingForPlayersScreen}
-          />
-          <RootStack.Screen
-            name="StartingGame"
-            component={StartingGameScreen}
-          />
-        </RootStack.Navigator>
+        <TabNavigator />
       ) : (
         <Stack.Navigator
           screenOptions={{ headerShown: false }}

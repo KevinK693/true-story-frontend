@@ -13,7 +13,7 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import * as ImagePicker from "expo-image-picker";
 import { updateAvatar } from "../reducers/user";
 
-export default function ProfileScreen() {
+export default function ProfileScreen({navigation}) {
   const dispatch = useDispatch();
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [nickname, setNickname] = useState(null);
@@ -92,12 +92,16 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity
-        style={styles.bookIcon}
-        onPress={() => handleShowGames()}
-      >
-        <FontAwesome5 name="book-open" size={30} color="#335561" solid />
-      </TouchableOpacity>
+      <View style={styles.icons}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Tabs")}
+        >
+          <FontAwesome5 name="arrow-left" size={30} color="#335561" solid />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => handleShowGames()}>
+          <FontAwesome5 name="book-open" size={30} color="#335561" solid />
+        </TouchableOpacity>
+      </View>
       <TouchableOpacity onPress={pickImage}>
         <Image style={styles.image} source={{ uri: avatarUrl }} />
         <View style={styles.editIcon}>
@@ -186,11 +190,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textAlign: "center",
   },
-  bookIcon: {
+  icons: {
     flexDirection: "row",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     width: "100%",
     marginBottom: 30,
+    alignItems: "center",
   },
   editIcon: {
     position: "absolute",
