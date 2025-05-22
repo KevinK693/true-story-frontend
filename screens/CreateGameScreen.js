@@ -17,7 +17,7 @@ import { useDispatch } from "react-redux";
 import { updateGame } from "../reducers/game";
 
 export default function CreateGameScreen({ navigation }) {
-  const BACKEND_URL = process.env.BACKEND_URL; 
+  const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
   const dispatch = useDispatch();
   const [selectedPlayers, setSelectedPlayers] = useState(null);
