@@ -102,7 +102,8 @@ export default function CreateGameScreen({ navigation }) {
           setSelectedPlayers(null);
           setSelectedScenes(null);
           setSelectedGenre(null);
-          navigation.navigate("WaitingForPlayers");
+          console.log(data.code)
+          navigation.navigate("WaitingForPlayers", { code: data.code });
         } else {
           console.log("Erreur lors de la création du profil :", data.error);
         }
