@@ -81,8 +81,8 @@ export default function ProfileScreen() {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          setAvatarUrl(data.user.avatar);
-          dispatch(updateAvatar(data.user.avatar));
+          setAvatarUrl(data.url);
+          dispatch(updateAvatar(data.url));
           setModified(true);
         } else {
           console.log("Erreur lors de la modification du profil :", data.error);
