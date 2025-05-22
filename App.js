@@ -42,9 +42,16 @@ const TabNavigator = () => (
         const iconName = route.name === "Home" ? "home" : "book-open";
         return <FontAwesome5 name={iconName} size={size} color={color} />;
       },
-      tabBarActiveTintColor: "#ec6e5b",
-      tabBarInactiveTintColor: "#335561",
+      tabBarActiveTintColor: "#E089FF",
+      tabBarInactiveTintColor: "#FBF1F1",
       headerShown: false,
+      tabBarStyle: {
+        height: 100,
+        backgroundColor: "#65558F",
+        paddingTop: 5,
+        position: "absolute",
+        borderTopWidth: 0,
+      },
     })}
   >
     <Tab.Screen name="Home" component={HomeScreen} />
@@ -62,8 +69,14 @@ const MainNavigator = () => {
           <RootStack.Screen name="MainTabs" component={TabNavigator} />
           <RootStack.Screen name="JoinGame" component={JoinGameScreen} />
           <RootStack.Screen name="Profile" component={ProfileScreen} />
-          <RootStack.Screen name="WaitingForPlayers" component={WaitingForPlayersScreen} />
-          <RootStack.Screen name="StartingGame" component={StartingGameScreen} />
+          <RootStack.Screen
+            name="WaitingForPlayers"
+            component={WaitingForPlayersScreen}
+          />
+          <RootStack.Screen
+            name="StartingGame"
+            component={StartingGameScreen}
+          />
         </RootStack.Navigator>
       ) : (
         <Stack.Navigator

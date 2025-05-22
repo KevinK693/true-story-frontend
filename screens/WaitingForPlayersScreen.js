@@ -15,7 +15,7 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function WaitingForPlayers({navigation}) {
-  const BACKEND_URL = "http://10.0.3.229:3000"; // Remplacez par l'URL de votre backend
+  const BACKEND_URL = process.env.BACKEND_URL
   return (
     <SafeAreaView style={styles.container}>
     <Text>
