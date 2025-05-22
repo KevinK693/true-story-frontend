@@ -274,9 +274,6 @@ export default function CreateGameScreen({ navigation }) {
                       width: 70,
                       height: 70,
                       margin: 10,
-                      borderRadius: 10,
-                      borderWidth: image === imgUri ? 3 : 1,
-                      borderColor: image === imgUri ? "#65558F" : "#ccc",
                     }}
                   />
                 </TouchableOpacity>

@@ -40,9 +40,6 @@ export default function JoinGame({ navigation }) {
 
   const avatarUrl = user.avatar;
 
-  const handleLogout = () => {
-    dispatch(removeToken());
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -50,11 +47,9 @@ export default function JoinGame({ navigation }) {
         <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
           <Image style={styles.user} source={{ uri: avatarUrl }} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleLogout()}>
-          <FontAwesome5 name="sign-out-alt" size={30} color="#335561" />
-        </TouchableOpacity>
+        
       </View>
-      <View style={{ alignItems: "center", marginTop: 50 }}>
+      <View style={{ alignItems: "center", marginTop: 100 }}>
         <Text style={styles.textJoin}>Rejoindre une partie</Text>
         <Text style={styles.textEnter}>Entrez un code</Text>
         <TextInput
