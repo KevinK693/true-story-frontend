@@ -36,7 +36,7 @@ export default function ConnexionScreen({ navigation }) {
           console.log("Connexion réussie");
           dispatch(updateToken(data.token));
           dispatch(updateAvatar(data.avatar));
-          dispatch(updateNickname(data.nickname)); 
+          dispatch(updateNickname(data.nickname));
           setEmail("");
           setPassword("");
         } else {
@@ -54,7 +54,7 @@ export default function ConnexionScreen({ navigation }) {
           <TextInput
             style={styles.input}
             placeholder="Email"
-            placeholderTextColor="#A0A0A0"
+            placeholderTextColor="#335561"
             autoCapitalize="none"
             keyboardType="email-address"
             autoComplete="email"
@@ -62,15 +62,19 @@ export default function ConnexionScreen({ navigation }) {
             value={email}
             onChangeText={(text) => setEmail(text)}
           />
+          <Text style={styles.inputLabel}>Email</Text>
+        </View>
+        <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
             placeholder="Mot de passe"
-            placeholderTextColor="#A0A0A0"
+            placeholderTextColor="#335561"
             secureTextEntry
             autoCapitalize="none"
             value={password}
             onChangeText={(text) => setPassword(text)}
           />
+          <Text style={styles.inputLabel}>Mot de passe</Text>
         </View>
         <Text style={styles.link}>Mot de passe oublié ?</Text>
         <TouchableOpacity
@@ -127,6 +131,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     width: "80%",
     marginVertical: 20,
+    position: "relative"
   },
   input: {
     backgroundColor: "#FFFFFF",
@@ -137,6 +142,16 @@ const styles = StyleSheet.create({
     color: "#335561",
     height: 50,
     fontFamily: "NotoSans_400Regular",
+    borderWidth: 1,
+    borderColor: "#65558F",
+  },
+  inputLabel: {
+    position: 'absolute',
+    top: -5,
+    left: 10,
+    borderRadius: 5,
+    color: "#335561",
+    fontSize: 16,
   },
   link: {
     fontSize: 16,
@@ -146,7 +161,7 @@ const styles = StyleSheet.create({
   },
   accountsContainer: {
     flexDirection: "row",
-    height: 130,
+    height: 100,
   },
   keyboardview: {
     flex: 1,

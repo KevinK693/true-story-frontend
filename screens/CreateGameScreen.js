@@ -28,7 +28,7 @@ export default function CreateGameScreen({ navigation }) {
   const [modalScenesVisible, setModalScenesVisible] = useState(false);
   const [modalImageVisible, setModalImageVisible] = useState(false);
 
-  const user = useSelector((state) => state.user.value)
+  const user = useSelector((state) => state.user.value);
   const token = user.token;
 
   const images = [
@@ -95,7 +95,7 @@ export default function CreateGameScreen({ navigation }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          console.log('Partie créée avec succès', data.result);
+          console.log("Partie créée avec succès", data.result);
           dispatch(updateGame(data));
           setTitle(null);
           setImage(null);
@@ -133,11 +133,16 @@ export default function CreateGameScreen({ navigation }) {
       )}
 
       {/* Titre */}
-      <TextInput
-        placeholder="Ecrivez un titre..."
-        onChangeText={(value) => setTitle(value)}
-        style={styles.input}
-      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Titre de l'histoire"
+          placeholderTextColor="#335561"
+          onChangeText={(text) => setTitle(text)}
+          value={title}
+        />
+        <Text style={styles.inputLabel}>Titre</Text>
+      </View>
 
       {/* Nombre de joueurs */}
       <View style={styles.optionContainer}>
@@ -295,17 +300,29 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: "#263238",
+    borderColor: "#65558F",
     borderRadius: 10,
     paddingHorizontal: 15,
     height: 50,
     fontSize: 16,
-    fontFamily: "NotoSans_700Bold",
-    fontFamily: "Noto Sans Gujarati",
+    fontFamily: "NotoSans_400Regular",
     marginTop: 20,
     marginBottom: 40,
     backgroundColor: "white",
+    color: "#335561",
+  },
+  inputContainer: {
     width: "80%",
+    position: "relative",
+    marginTop: 5,
+  },
+  inputLabel: {
+    position: "absolute",
+    top: -5,
+    left: 10,
+    borderRadius: 5,
+    color: "#335561",
+    fontSize: 16,
   },
   optionContainer: {
     flexDirection: "row",
@@ -348,8 +365,8 @@ const styles = StyleSheet.create({
     marginLeft: 40,
   },
   genreContainer: {
-    width: "50%",
-    marginBottom: 20,
+    width: "70%",
+    marginVertical: 20,
     alignItems: "center",
   },
   dropdownGenre: {

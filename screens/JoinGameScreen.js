@@ -52,13 +52,16 @@ export default function JoinGame({ navigation }) {
       <View style={{ alignItems: "center", marginTop: 100 }}>
         <Text style={styles.textJoin}>Rejoindre une partie</Text>
         <Text style={styles.textEnter}>Entrez un code</Text>
+        <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
           placeholder="Code de la partie"
-          placeholderTextColor="#000"
+          placeholderTextColor="#335561"
           onChangeText={(text) => setCode(text)}
           value={code}
         />
+        <Text style={styles.inputLabel}>Code</Text>
+        </View>
         <TouchableOpacity
           onPress={() => handleJoinGame()}
           style={styles.button}
@@ -102,7 +105,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: "#263238",
+    borderColor: "#65558F",
     borderRadius: 10,
     paddingHorizontal: 15,
     height: 50,
@@ -111,7 +114,20 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 40,
     backgroundColor: "white",
-    width: "80%",
+    color: "#335561",
+  },
+  inputContainer: {
+    width: '80%',
+    position: "relative",
+    marginTop: 20,
+  },
+  inputLabel: {
+    position: 'absolute',
+    top: -5,
+    left: 10,
+    borderRadius: 5,
+    color: "#335561",
+    fontSize: 16,
   },
   button: {
     backgroundColor: "#65558F",

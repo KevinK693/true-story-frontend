@@ -59,7 +59,7 @@ export default function ConnexionScreen({ navigation }) {
           <TextInput
             style={styles.input}
             placeholder="Email"
-            placeholderTextColor="#A0A0A0"
+            placeholderTextColor="#335561"
             autoCapitalize="none"
             keyboardType="email-address"
             autoComplete="email"
@@ -67,16 +67,20 @@ export default function ConnexionScreen({ navigation }) {
             value={email}
             onChangeText={(text) => setEmail(text)}
           />
+          <Text style={styles.inputLabel}>Email</Text>
           {invalidEmail ? <Text style={{color: "red"}}>Email invalide</Text> : null }
+          </View>
+          <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
             placeholder="Mot de passe"
-            placeholderTextColor="#A0A0A0"
+            placeholderTextColor="#335561"
             secureTextEntry
             value={password}
             autoCapitalize="none"
             onChangeText={(text) => setPassword(text)}
           />
+          <Text style={styles.inputLabel}>Mot de passe</Text>
         </View>
         <TouchableOpacity
           onPress={() => handleSignup()}
@@ -139,6 +143,16 @@ const styles = StyleSheet.create({
     color: "#335561",
     height: 50,
     fontFamily: "NotoSans_400Regular",
+    borderWidth: 1,
+    borderColor: "#65558F",
+  },
+  inputLabel: {
+    position: 'absolute',
+    top: 5,
+    left: 10,
+    borderRadius: 5,
+    color: "#335561",
+    fontSize: 16,
   },
   link: {
     fontSize: 16,

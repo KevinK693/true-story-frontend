@@ -13,7 +13,7 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import * as ImagePicker from "expo-image-picker";
 import { updateAvatar } from "../reducers/user";
 
-export default function ProfileScreen({navigation}) {
+export default function ProfileScreen({ navigation }) {
   const dispatch = useDispatch();
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [nickname, setNickname] = useState(null);
@@ -93,9 +93,7 @@ export default function ProfileScreen({navigation}) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.icons}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Home")}
-        >
+        <TouchableOpacity onPress={() => navigation.navigate("Home")}>
           <FontAwesome5 name="arrow-left" size={30} color="#335561" solid />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleShowGames()}>
@@ -108,14 +106,17 @@ export default function ProfileScreen({navigation}) {
           <FontAwesome5 name="edit" size={26} color="#EADDFF" />
         </View>
       </TouchableOpacity>
-      <TextInput
-        style={styles.input}
-        placeholder={nickname}
-        placeholderTextColor="#A0A0A0"
-        autoCapitalize="none"
-        value={nickname}
-        onChangeText={(text) => setNickname(text)}
-      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder={nickname}
+          placeholderTextColor="#335561"
+          autoCapitalize="none"
+          value={nickname}
+          onChangeText={(text) => setNickname(text)}
+        />
+        <Text style={styles.inputLabel}>Pseudo</Text>
+      </View>
       <View style={styles.stats}>
         <View style={styles.statsText}>
           <Text style={styles.text}>Nombre de parties jouées</Text>
@@ -155,7 +156,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#335561",
     height: 50,
-    width: "70%",
+    borderWidth: 1,
+    borderColor: "#65558F",
+  },
+  inputContainer: {
+    width: '70%',
+    position: "relative",
+    marginTop: 20,
+  },
+  inputLabel: {
+    position: 'absolute',
+    top: 5,
+    left: 10,
+    borderRadius: 5,
+    color: "#335561",
+    fontSize: 16,
   },
   image: {
     width: 150,
@@ -166,14 +181,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    width: "90%",
-    marginTop: 20,
+    width: "100%",
   },
   text: {
     fontSize: 20,
     color: "#335561",
     fontWeight: "600",
-    marginVertical: 20,
+    marginVertical: 15,
     fontFamily: "NotoSans_500Medium",
   },
   button: {
@@ -182,7 +196,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     width: "100%",
     height: 50,
-    marginTop: 60,
+    marginTop: 40,
     justifyContent: "center",
   },
   buttonText: {
