@@ -10,16 +10,16 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import { removeToken, updateAvatar } from "../reducers/user";
+import { updateAvatar } from "../reducers/user";
 
 export default function JoinGame({ navigation }) {
-  const [code, setCode] = useState("");
-
+  const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
   const dispatch = useDispatch();
+ 
+  const [code, setCode] = useState("");
+  const [success, setSuccess] = useState(false)
   const user = useSelector((state) => state.user.value);
   const token = user.token;
-  const BACKEND_URL = process.env.BACKEND_URL;
 
   useEffect(() => {
     if (token) {
@@ -40,6 +40,27 @@ export default function JoinGame({ navigation }) {
 
   const avatarUrl = user.avatar;
 
+  const handleJoinGame = () => {
+    fetch(`${BACKEND_URL}/games/join`, {
+      method: 'POST',
+      headers: {
+        'Content-Type' : 'application/json'
+      },
+      body: JSON.stringify({
+        code: code,
+        token: token,
+      })
+    }).then(response => response.json())
+    .then(data => {
+      if (data.result) {
+        navigation.navigate('WaitingForPlayers')
+        setCode('')
+        setSuccess(true)
+      } else {
+        console.log('Erreur de récupération de la partie', data.error)
+      }
+    })
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -60,12 +81,13 @@ export default function JoinGame({ navigation }) {
           value={code}
         />
         <TouchableOpacity
-          onPress={() => navigation.navigate()}
+          onPress={() => handleJoinGame()}
           style={styles.button}
           activeOpacity={0.8}
         >
           <Text style={styles.buttonText}>Rejoindre</Text>
         </TouchableOpacity>
+        {success ? null : <Text>Code incorrect</Text>}
       </View>
     </SafeAreaView>
   );
