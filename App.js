@@ -1,3 +1,11 @@
+import React from "react";
+import {
+  useFonts,
+  NotoSans_400Regular,
+  NotoSans_700Bold,
+  NotoSans_500Medium,
+} from "@expo-google-fonts/noto-sans";
+import * as SplashScreen from "expo-splash-screen";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -36,12 +44,17 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const MainStack = createNativeStackNavigator();
 
+SplashScreen.preventAutoHideAsync();
+
 const MainStackScreen = () => (
   <MainStack.Navigator screenOptions={{ headerShown: false }}>
     <MainStack.Screen name="Home" component={HomeScreen} />
     <MainStack.Screen name="JoinGame" component={JoinGameScreen} />
     <MainStack.Screen name="Profile" component={ProfileScreen} />
-    <MainStack.Screen name="WaitingForPlayers" component={WaitingForPlayersScreen} />
+    <MainStack.Screen
+      name="WaitingForPlayers"
+      component={WaitingForPlayersScreen}
+    />
     <MainStack.Screen name="StartingGame" component={StartingGameScreen} />
     <MainStack.Screen name="UserInput" component={UserInputScreen} />
   </MainStack.Navigator>
@@ -63,11 +76,20 @@ const TabNavigator = () => (
         paddingTop: 5,
         position: "absolute",
         borderTopWidth: 0,
+        fontFamily: "NotoSans_400Regular",
       },
     })}
   >
-    <Tab.Screen name="Main" component={MainStackScreen} options={{ title: "Home" }} />
-    <Tab.Screen name="CreateGame" component={CreateGameScreen} options={{ title: "Create Game" }} />
+    <Tab.Screen
+      name="Main"
+      component={MainStackScreen}
+      options={{ title: "Home" }}
+    />
+    <Tab.Screen
+      name="CreateGame"
+      component={CreateGameScreen}
+      options={{ title: "Create Game" }}
+    />
   </Tab.Navigator>
 );
 
@@ -93,6 +115,21 @@ const MainNavigator = () => {
 };
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    NotoSans_400Regular,
+    NotoSans_700Bold,
+    NotoSans_500Medium,
+  });
+
+  React.useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>

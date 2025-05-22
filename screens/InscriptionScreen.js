@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 34,
-    fontWeight: "bold",
+    fontFamily: "NotoSans_700Bold",
     marginTop: 40,
     color: "#335561",
   },
@@ -118,12 +118,13 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#EADDFF",
     fontSize: 20,
-    fontWeight: "600",
+    fontFamily: "NotoSans_700Bold",
     textAlign: "center",
   },
   text: {
     fontSize: 16,
     color: "#335561",
+    fontFamily: "NotoSans_400Regular",
   },
   inputContainer: {
     width: "80%",
@@ -137,11 +138,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#335561",
     height: 50,
+    fontFamily: "NotoSans_400Regular",
   },
   link: {
     fontSize: 16,
     color: "#335561",
     textDecorationLine: "underline",
+    fontFamily: "NotoSans_400Regular",
   },
   accountsContainer: {
     flexDirection: "row",

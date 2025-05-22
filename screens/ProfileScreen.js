@@ -94,7 +94,7 @@ export default function ProfileScreen({navigation}) {
     <SafeAreaView style={styles.container}>
       <View style={styles.icons}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("Tabs")}
+          onPress={() => navigation.navigate("Home")}
         >
           <FontAwesome5 name="arrow-left" size={30} color="#335561" solid />
         </TouchableOpacity>
@@ -174,6 +174,7 @@ const styles = StyleSheet.create({
     color: "#335561",
     fontWeight: "600",
     marginVertical: 20,
+    fontFamily: "NotoSans_500Medium",
   },
   button: {
     backgroundColor: "#65558F",
@@ -187,7 +188,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#EADDFF",
     fontSize: 20,
-    fontWeight: "600",
+    fontFamily: "NotoSans_700Bold",
     textAlign: "center",
   },
   icons: {

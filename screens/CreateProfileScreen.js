@@ -122,7 +122,7 @@ export default function CreateProfileScreen({ navigation, route }) {
         value={pseudo}
         onChangeText={(text) => setPseudo(text)}
       />
-      <Text>Importez une image de votre galerie</Text>
+      <Text style={{fontFamily: "NotoSans_400Regular"}}>Importez une image de votre galerie</Text>
       {image ? (
         <TouchableOpacity onPress={pickImage}>
           <Image source={{ uri: image }} style={styles.image} />
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 34,
-    fontWeight: "bold",
+    fontFamily: "NotoSans_700Bold",
     color: "#335561",
   },
   input: {
@@ -202,6 +202,7 @@ const styles = StyleSheet.create({
     color: "#335561",
     height: 50,
     width: "70%",
+    fontFamily: "NotoSans_400Regular",
   },
   avatarContainer: {
     flexDirection: "row",
@@ -219,13 +220,13 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#EADDFF",
     fontSize: 20,
-    fontWeight: "600",
+    fontFamily: "NotoSans_700Bold",
     textAlign: "center",
   },
   text: {
     color: "#335561",
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "NotoSans_700Bold",
   },
   image: {
     marginVertical: 20,
