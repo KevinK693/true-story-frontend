@@ -22,6 +22,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function UserInputScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
+  const [userText, setUserText] = useState("");
+
   const user = useSelector((state) => state.user.value);
 
   const handleHistorySubmit = () => {
@@ -33,60 +35,68 @@ export default function UserInputScreen({ navigation }) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <KeyboardAvoidingView
-    behavior={Platform.OS === "ios" ? "padding" : "height"}
-    style={{ flex: 1 }}
-  >
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <SafeAreaView style={styles.container}>
-        {/* Titre */}
-        <View style={styles.topBar}>
-          <Image
-            source={{
-              uri: "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834382/ovni_qla2gb.png",
-            }}
-            style={styles.logoImage}
-            resizeMode="contain"
-          />
-          <TouchableOpacity
-            style={styles.iconHistory}
-            onPress={handleHistorySubmit}
-          >
-            <FontAwesome5 name="history" size={35} color="#335561" />
-          </TouchableOpacity>
-        </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <SafeAreaView style={styles.container}>
+            {/* topBar = La barre du haut qui contient le logo et l'icone d'historique */}
+            <View style={styles.topBar}>
+              <Image
+                source={{
+                  uri: "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834382/ovni_qla2gb.png",
+                }}
+                style={styles.logoImage}
+                resizeMode="contain"
+              />
+              <TouchableOpacity
+                style={styles.iconHistory}
+                onPress={handleHistorySubmit}
+              >
+                <FontAwesome5 name="history" size={35} color="#335561" />
+              </TouchableOpacity>
+            </View>
+            {/* fin de la topBar */}
+            <Text style={[styles.textTitle, { textAlign: "center" }]}>
+              The Walking Fetch
+            </Text>
+            <Text style={[styles.textScene, { textAlign: "center" }]}>
+              Scène actuelle: 1/24
+            </Text>
+            {/* Le prompt IA avec son container */}
+            <View style={styles.containerTexteIa}>
+              <TextInput
+                style={styles.texteIa}
+                multiline={true} //Pour que le texte soit sur plusieurs lignes
+                editable={false} //Pour qu'aucune modification ne soit possible
+                placeholder="Story goes here..."
+                value="Ce matin, Kevin a décidé de faire du sport. Il a commencé par s’étirer... en tombant du lit. Premier succès. Ensuite, il a couru... après son chien qui avait volé sa chaussette. Puis, motivé, il a tenté une séance de yoga avec une vidéo YouTube. Tout allait bien jusqu’à ce que sa grand-mère entre et lui demande pourquoi il faisait une offrande au canapé. Après 10 minutes en position chien tête en bas, il s’est rendu compte qu’il avait coincé son short dans le ventilateur. Résultat : le chat traumatisé, la plante verte décapitée, et Kevin jurant solennellement de ne plus jamais écouter son corps, parce que visiblement, le sien veut juste des chips et une sieste."
+              />
+            </View>
+            {/* Endroit où l'utilisateur écrit son texte */}
+            <View style={styles.containerUserInput}>
+              <TextInput
+                multiline={true} //Pour que le texte soit sur plusieurs lignes
+                style={styles.texteUserInput}
+                placeholder="Écrivez votre histoire..."
+                value={userText}
+                onChangeText={setUserText}
+                maxLength={280}
+              />
+              <Text style={styles.maxLength}>{userText.length}/280</Text>
+            </View>
 
-        <Text style={[styles.textTitle, { textAlign: "center" }]}>
-          User Input
-        </Text>
-        <Text style={[styles.textScene, { textAlign: "center" }]}>
-          Scène actuelle: 1/24
-        </Text>
-        <View style={styles.containerTexteIa}>
-          <TextInput
-            style={styles.texteIa}
-            multiline={true}
-            placeholder="Story goes here..."
-            value=""
-          />
-        </View>
-        <View style={styles.containerUserInput}>
-          <TextInput
-           multiline={true}
-            style={styles.texteUserInput}
-            placeholder="Ecrivez votre histoire..."
-          />
-        </View>
-        {/* Bouton */}
-        <TouchableOpacity
-          style={styles.button}
-          activeOpacity={0.8}
-          onPress={handleNextScreen}
-        >
-          <Text style={styles.buttonText}>Envoyer</Text>
-        </TouchableOpacity>
-      </SafeAreaView>
-      </ScrollView>
+            {/* Bouton */}
+            <TouchableOpacity
+              style={styles.button}
+              activeOpacity={0.8}
+              onPress={handleNextScreen}
+            >
+              <Text style={styles.buttonText}>Envoyer</Text>
+            </TouchableOpacity>
+          </SafeAreaView>
+        </ScrollView>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
@@ -105,6 +115,8 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
   },
+
+  // La barre du haut qui contient le logo et l'icone d'historique
   topBar: {
     width: "100%",
     flexDirection: "row",
@@ -143,11 +155,10 @@ const styles = StyleSheet.create({
     color: "#335561",
     marginTop: 10,
   },
-
+  // Prompt de l'IA
   texteIa: {
-    fontSize: 20,
+    fontSize: 18,
     margin: 30,
-    flexWrap: "wrap",
     fontFamily: "Montserrat",
   },
   containerTexteIa: {
@@ -163,7 +174,12 @@ const styles = StyleSheet.create({
     // Ombre pour Android
     elevation: 6,
   },
-
+  // Endroit où l'utilisateur écrit son texte
+  texteUserInput: {
+    fontSize: 15,
+    margin: 12,
+    fontFamily: "Montserrat",
+  },
   containerUserInput: {
     borderRadius: 3,
     backgroundColor: "white",
@@ -177,11 +193,16 @@ const styles = StyleSheet.create({
     // Ombre pour Android
     elevation: 6,
   },
-  texteUserInput: {
-    margin: 12,
-    flexWrap: "wrap",
+  // Pour que le compteur de caractères soit en bas à droite
+  maxLength: {
+    position: "absolute",
+    bottom: 4,
+    right: 8,
+    fontSize: 12,
+    color: "#888",
     fontFamily: "Montserrat",
   },
+
   button: {
     backgroundColor: "#65558F",
     padding: 10,
@@ -197,11 +218,5 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "600",
     textAlign: "center",
-  },
-  textNbPropositions: {
-    fontFamily: "Noto Sans Gujarati",
-    fontSize: 20,
-    color: "#335561",
-    paddingTop: 20,
   },
 });
