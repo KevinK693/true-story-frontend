@@ -80,12 +80,12 @@ export default function CreateGameScreen({ navigation }) {
       alert("Veuillez remplir tous les champs");
       return;
     }
-
+    console.log(selectedPlayers);
     const formData = new FormData();
     formData.append("image", image);
     formData.append("title", title);
     formData.append("genre", selectedGenre);
-    formData.append("nbplayers", selectedPlayers);
+    formData.append("nbPlayers", selectedPlayers);
     formData.append("nbScenes", selectedScenes);
 
     fetch(`${BACKEND_URL}/games/create`, {
@@ -102,7 +102,8 @@ export default function CreateGameScreen({ navigation }) {
           setSelectedPlayers(null);
           setSelectedScenes(null);
           setSelectedGenre(null);
-          navigation.navigate("WaitingForPlayers");
+          console.log(data.code)
+          navigation.navigate("WaitingForPlayers", { code: data.code });
         } else {
           console.log("Erreur lors de la création du profil :", data.error);
         }
