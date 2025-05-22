@@ -5,116 +5,78 @@ import {
   TextInput,
   TouchableOpacity,
   Modal,
+  Keyboard,
   Image,
   TouchableWithoutFeedback,
 } from "react-native";
 import React from "react";
 import { Dropdown } from "react-native-element-dropdown";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function StartingGameScreen() {
+export default function StartingGameScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
-  const [selectedPlayers, setSelectedPlayers] = useState(null);
-  const [selectedScenes, setSelectedScenes] = useState(null);
-  const [selectedGenre, setSelectedGenre] = useState(null);
-  const [title, setTitle] = useState(null);
-  const [image, setImage] = useState(null);
+  const user = useSelector((state) => state.user.value);
 
-  const [modalPlayersVisible, setModalPlayersVisible] = useState(false);
-  const [modalScenesVisible, setModalScenesVisible] = useState(false);
-  const [modalImageVisible, setModalImageVisible] = useState(false);
-
-  const scenesOptions = [4, 8, 12, 16, 20, 24].map((num) => ({
-    label: `${num}`,
-    value: num,
-  }));
-
-  const playersOptions = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((num) => ({
-    label: `${num}`,
-    value: num,
-  }));
-
-  const genresOPtions = [
-    "Action",
-    "Aventure",
-    "Comédie",
-    "Comédie dramatique",
-    "Drame",
-    "Fantastique",
-    "Guerre",
-    "Horreur",
-    "Policier",
-    "Science-Fiction",
-    "Thriller",
-    "Western",
-  ].map((text) => ({
-    label: `${text}`,
-    value: text,
-  }));
-
-  const pickImage = async () => {
-    setModalImageVisible(true);
+  const handleHistorySubmit = () => {
+    navigation.navigate("Profile");
   };
-
-  const handleSubmit = () => {
-    if (!title || !selectedPlayers || !selectedScenes || !selectedGenre) {
-      alert("Veuillez remplir tous les champs");
-      return;
-    }
-    const gameData = {
-      title: title,
-      nbPlayers: selectedPlayers,
-      nbScenes: selectedScenes,
-      genre: selectedGenre,
-    };
-
-    console.log("DATA GAME =>", gameData);
-
-    fetch(`${BACKEND_URL}/games/create`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(gameData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Réponse du backend :", data);
-      })
-      .catch((error) => {
-        console.error("Erreur lors de la requête :", error);
-      });
+  const handleNextScreen = () => {
+    navigation.navigate("UserInput");
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Titre */}
-      <View style={styles.genreContainer}>
-        <Text style={[styles.textTitle, { textAlign: "center" }]}>Titre</Text>
-        <Text style={[styles.textScene, { textAlign: "center" }]}>
-          Scène actuelle:
-        </Text>
-        <View style={styles.containerTexteIa}>
-          <Text style={styles.texteIa}>
-          
-          </Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaView style={styles.container}>
+        {/* topBar = La barre du haut qui contient le logo et l'icone d'historique */}
+        <View style={styles.topBar}>
+          <Image
+            source={{
+              uri: "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834382/ovni_qla2gb.png",
+            }}
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
+          <TouchableOpacity
+            style={styles.iconHistory}
+            onPress={handleHistorySubmit}
+          >
+            <FontAwesome5 name="history" size={35} color="#335561" />
+          </TouchableOpacity>
         </View>
-      </View>
-      {/* Bouton */}
-      <TouchableOpacity
-        style={styles.button}
-        activeOpacity={0.8}
-        onPress={handleSubmit}
-      >
-        <Text style={styles.buttonText}>Proposer une suite</Text>
-      </TouchableOpacity>
-      <Text style={[styles.textNbPropositions, { textAlign: "center" }]}>
-        Nombre de propositions:
-      </Text>
-    </SafeAreaView>
+        {/* fin de la topBar */}
+        <Text style={[styles.textTitle, { textAlign: "center" }]}>
+          The Walking Fetch
+        </Text>
+        <Text style={[styles.textScene, { textAlign: "center" }]}>
+          Scène actuelle: 1/24
+        </Text>
+        {/* Le prompt IA avec son container */}
+        <View style={styles.containerTexteIa}>
+          <TextInput
+            style={styles.texteIa}
+            multiline={true} // Permet de faire un texte sur plusieurs lignes
+            editable={false} // Pour qu'aucune modification ne soit possible
+            placeholder="Story goes here..."
+            value="Ce matin, Kevin a décidé de faire du sport. Il a commencé par s’étirer... en tombant du lit. Premier succès. Ensuite, il a couru... après son chien qui avait volé sa chaussette. Puis, motivé, il a tenté une séance de yoga avec une vidéo YouTube. Tout allait bien jusqu’à ce que sa grand-mère entre et lui demande pourquoi il faisait une offrande au canapé. Après 10 minutes en position chien tête en bas, il s’est rendu compte qu’il avait coincé son short dans le ventilateur. Résultat : le chat traumatisé, la plante verte décapitée, et Kevin jurant solennellement de ne plus jamais écouter son corps, parce que visiblement, le sien veut juste des chips et une sieste."
+          />
+        </View>
+        {/* Bouton */}
+        <TouchableOpacity
+          style={styles.button}
+          activeOpacity={0.8}
+          onPress={handleNextScreen}
+        >
+          <Text style={styles.buttonText}>Proposer une suite</Text>
+        </TouchableOpacity>
+        <Text style={[styles.textNbPropositions, { textAlign: "center" }]}>
+          Nombre de propositions: 2/4
+        </Text>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -124,32 +86,69 @@ const styles = StyleSheet.create({
     backgroundColor: "#FBF1F1",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingHorizontal: 20,
+    width: "100%",
   },
 
+  // La barre du haut qui contient le logo et l'icone d'historique
+  topBar: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+
+  logoImage: {
+    width: 60,
+    height: 60,
+  },
+
+  iconHistoryContainer: {
+    width: "100%",
+    alignItems: "flex-end",
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+
+  iconHistory: {
+    padding: 5,
+  },
+  // Le nom de l'histoire
   textTitle: {
-    fontSize: 40,
+    fontSize: 30,
     fontFamily: "Noto Sans Gujarati",
     color: "#335561",
     fontWeight: "bold",
+    paddingTop: 10,
   },
+
+  // Compteur de scènes
   textScene: {
     fontFamily: "Noto Sans Gujarati",
     fontSize: 20,
     color: "#335561",
     marginTop: 10,
   },
-
+  // Prompt de l'IA
   texteIa: {
-    fontSize: 20,
-   
+    fontSize: 18,
+    margin: 30,
+    flexWrap: "wrap",
+    fontFamily: "Montserrat",
   },
   containerTexteIa: {
     borderRadius: 10,
     backgroundColor: "white",
     height: 300,
-    width: 350,
-   marginTop: 50,
+    width: "90%",
+    marginTop: 50,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    // Ombre pour Android
+    elevation: 6,
   },
   button: {
     backgroundColor: "#65558F",

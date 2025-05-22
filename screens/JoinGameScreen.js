@@ -3,58 +3,53 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useSelector, useDispatch } from "react-redux";
-import { useEffect } from "react";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import { removeToken, updateAvatar } from "../reducers/user";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useSelector } from "react-redux";
+
 
 export default function JoinGame({ navigation }) {
+  const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+ 
   const [code, setCode] = useState("");
-
-  const dispatch = useDispatch();
+  const [incorrectCode, setIncorrectCode] = useState(false)
   const user = useSelector((state) => state.user.value);
   const token = user.token;
-  const BACKEND_URL = process.env.BACKEND_URL;
 
-  useEffect(() => {
-    if (token) {
-      fetch(`${BACKEND_URL}/users/${token}`)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.result && data.user.avatar) {
-            // Si l'avatar du serveur est différent de celui dans Redux, mettre à jour Redux
-            if (data.user.avatar !== user.avatar) {
-              dispatch(updateAvatar(data.user.avatar));
-            }
-          } else {
-            console.log("Erreur de récupération de l'image");
-          }
-        });
-    }
-  }, [token]);
-
-  const avatarUrl = user.avatar;
-
-  const handleLogout = () => {
-    dispatch(removeToken());
-  };
+  const handleJoinGame = () => {
+    fetch(`${BACKEND_URL}/games/join`, {
+      method: 'POST',
+      headers: {
+        'Content-Type' : 'application/json'
+      },
+      body: JSON.stringify({
+        code: code,
+        token: token,
+      })
+    }).then(response => response.json())
+    .then(data => {
+      if (data.result) {
+        navigation.navigate('WaitingForPlayers')
+        setCode('')
+      } else {
+        console.log('Erreur de récupération de la partie', data.error)
+        setIncorrectCode(true)
+      }
+    })
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-          <Image style={styles.user} source={{ uri: avatarUrl }} />
+        <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+          <FontAwesome5 name="arrow-left" size={30} color="#335561" solid />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleLogout()}>
-          <FontAwesome5 name="sign-out-alt" size={30} color="#335561" />
-        </TouchableOpacity>
+        
       </View>
-      <View style={{ alignItems: "center", marginTop: 50 }}>
+      <View style={{ alignItems: "center", marginTop: 100 }}>
         <Text style={styles.textJoin}>Rejoindre une partie</Text>
         <Text style={styles.textEnter}>Entrez un code</Text>
         <TextInput
@@ -65,12 +60,13 @@ export default function JoinGame({ navigation }) {
           value={code}
         />
         <TouchableOpacity
-          onPress={() => navigation.navigate()}
+          onPress={() => handleJoinGame()}
           style={styles.button}
           activeOpacity={0.8}
         >
           <Text style={styles.buttonText}>Rejoindre</Text>
         </TouchableOpacity>
+        {incorrectCode ? <Text>Code incorrect</Text> : null}
       </View>
     </SafeAreaView>
   );
@@ -94,7 +90,7 @@ const styles = StyleSheet.create({
   },
   textJoin: {
     fontSize: 30,
-    fontWeight: "bold",
+    fontFamily: "NotoSans_700Bold",
     color: "#65558F",
     marginBottom: 10,
   },
@@ -102,7 +98,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "#65558F",
     marginBottom: 20,
-    fontFamily: "Noto Sans Gujarati",
+    fontFamily: "NotoSans_400Regular",
   },
   input: {
     borderWidth: 1,
@@ -111,7 +107,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     height: 50,
     fontSize: 16,
-    fontFamily: "Noto Sans Gujarati",
+    fontFamily: "NotoSans_400Regular",
     marginTop: 20,
     marginBottom: 40,
     backgroundColor: "white",
@@ -129,7 +125,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#EADDFF",
     fontSize: 20,
-    fontWeight: "600",
+    fontFamily: "NotoSans_700Bold",
     textAlign: "center",
   },
 });

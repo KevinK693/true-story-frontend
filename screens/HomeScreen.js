@@ -86,14 +86,13 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   image: {
-    width: 300,
-    height: 150,
+    width: '50%',
     resizeMode: "contain",
     alignSelf: "center",
     marginVertical: 20,
   },
   buttonContainer: {
-    flex: 1,
+    marginTop: 30,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -111,9 +110,8 @@ const styles = StyleSheet.create({
   },
   textbutton: {
     color: "#EADDFF",
-    fontFamily: "inter",
-    fontSize: 25,
-    fontWeight: "bold",
+    fontFamily: "NotoSans_700Bold",
+    fontSize: 20,
   },
   header: {
     flexDirection: "row",

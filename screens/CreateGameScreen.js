@@ -8,28 +8,28 @@ import {
   Image,
   TouchableWithoutFeedback,
 } from "react-native";
-import React from "react";
 import { Dropdown } from "react-native-element-dropdown";
 import { useState } from "react";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateGame } from "../reducers/game";
 
 export default function CreateGameScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
-
   const dispatch = useDispatch();
+
   const [selectedPlayers, setSelectedPlayers] = useState(null);
   const [selectedScenes, setSelectedScenes] = useState(null);
   const [selectedGenre, setSelectedGenre] = useState(null);
-
   const [title, setTitle] = useState(null);
   const [image, setImage] = useState(null);
-
   const [modalPlayersVisible, setModalPlayersVisible] = useState(false);
   const [modalScenesVisible, setModalScenesVisible] = useState(false);
   const [modalImageVisible, setModalImageVisible] = useState(false);
+
+  const user = useSelector((state) => state.user.value)
+  const token = user.token;
 
   const images = [
     "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834158/science-fiction_gniu4v.png",
@@ -80,7 +80,7 @@ export default function CreateGameScreen({ navigation }) {
       alert("Veuillez remplir tous les champs");
       return;
     }
-    console.log(selectedPlayers);
+
     const formData = new FormData();
     formData.append("image", image);
     formData.append("title", title);
@@ -88,7 +88,7 @@ export default function CreateGameScreen({ navigation }) {
     formData.append("nbPlayers", selectedPlayers);
     formData.append("nbScenes", selectedScenes);
 
-    fetch(`${BACKEND_URL}/games/create`, {
+    fetch(`${BACKEND_URL}/games/create/${token}`, {
       method: "POST",
       body: formData,
     })
@@ -102,7 +102,6 @@ export default function CreateGameScreen({ navigation }) {
           setSelectedPlayers(null);
           setSelectedScenes(null);
           setSelectedGenre(null);
-          console.log(data.code)
           navigation.navigate("WaitingForPlayers", { code: data.code });
         } else {
           console.log("Erreur lors de la création du profil :", data.error);
@@ -292,9 +291,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FBF1F1",
     alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 20,
-    paddingTop: 40,
+    padding: 20,
   },
   input: {
     borderWidth: 1,
@@ -303,6 +300,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     height: 50,
     fontSize: 16,
+    fontFamily: "NotoSans_700Bold",
     fontFamily: "Noto Sans Gujarati",
     marginTop: 20,
     marginBottom: 40,
@@ -327,16 +325,16 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
-    fontFamily: "Noto Sans Gujarati",
     color: "#335561",
-    fontWeight: "bold",
+    fontFamily: "NotoSans_700Bold",
   },
   title: {
     fontSize: 22,
-    fontFamily: "Noto Sans Gujarati",
+    fontFamily: "NotoSans_700Bold",
     color: "#335561",
     fontWeight: "bold",
     textAlign: "center",
+    marginTop: 30,
   },
   dropdown: {
     borderWidth: 1,
@@ -378,7 +376,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     width: "80%",
-    marginTop: 50,
+    marginTop: 20,
     marginBottom: 10,
     height: 50,
   },
@@ -387,6 +385,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "600",
     textAlign: "center",
+    fontFamily: "NotoSans_700Bold",
   },
   modal: {
     flex: 1,
@@ -403,7 +402,7 @@ const styles = StyleSheet.create({
   },
   modalText: {
     fontSize: 16,
-    fontFamily: "Noto Sans Gujarati",
+    fontFamily: "NotoSans_400Regular",
     textAlign: "center",
   },
   image: {
