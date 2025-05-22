@@ -34,7 +34,7 @@ const avatars = [
 ];
 
 export default function CreateProfileScreen({ navigation, route }) {
-  const BACKEND_URL = process.env.BACKEND_URL
+  const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
   const [pseudo, setPseudo] = useState("");
   const [avatar, setAvatar] = useState(null);

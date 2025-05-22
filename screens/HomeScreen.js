@@ -9,7 +9,7 @@ export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.value);
   const token = user.token;
-  const BACKEND_URL = process.env.BACKEND_URL
+  const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
     if (token) {

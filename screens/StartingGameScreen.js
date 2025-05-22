@@ -15,7 +15,7 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function StartingGameScreen() {
-  const BACKEND_URL = process.env.BACKEND_URL
+  const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
   const [selectedPlayers, setSelectedPlayers] = useState(null);
   const [selectedScenes, setSelectedScenes] = useState(null);

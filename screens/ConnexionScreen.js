@@ -17,7 +17,7 @@ export default function ConnexionScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const BACKEND_URL = process.env.BACKEND_URL;
+  const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
   const handleLogin = () => {
     fetch(`${BACKEND_URL}/users/signin`, {
