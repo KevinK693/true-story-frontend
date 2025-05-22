@@ -300,6 +300,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     height: 50,
     fontSize: 16,
+    fontFamily: "NotoSans_700Bold",
     fontFamily: "Noto Sans Gujarati",
     marginTop: 20,
     marginBottom: 40,
@@ -324,13 +325,12 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
-    fontFamily: "Noto Sans Gujarati",
     color: "#335561",
-    fontWeight: "bold",
+    fontFamily: "NotoSans_700Bold",
   },
   title: {
     fontSize: 22,
-    fontFamily: "Noto Sans Gujarati",
+    fontFamily: "NotoSans_700Bold",
     color: "#335561",
     fontWeight: "bold",
     textAlign: "center",
@@ -385,6 +385,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "600",
     textAlign: "center",
+    fontFamily: "NotoSans_700Bold",
   },
   modal: {
     flex: 1,
@@ -401,7 +402,7 @@ const styles = StyleSheet.create({
   },
   modalText: {
     fontSize: 16,
-    fontFamily: "Noto Sans Gujarati",
+    fontFamily: "NotoSans_400Regular",
     textAlign: "center",
   },
   image: {
