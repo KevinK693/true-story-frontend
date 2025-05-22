@@ -25,7 +25,7 @@ export default function StartingGameScreen({ navigation }) {
     navigation.navigate("Profile");
   };
   const handleNextScreen  = () => {
-    navigation.navigate("Profile");
+    navigation.navigate("UserInput");
   };
 
   return (

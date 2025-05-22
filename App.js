@@ -12,6 +12,7 @@ import JoinGameScreen from "./screens/JoinGameScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import WaitingForPlayersScreen from "./screens/WaitingForPlayersScreen";
 import StartingGameScreen from "./screens/StartingGameScreen";
+import UserInputScreen from "./screens/UserInputScreen";
 
 import { persistStore, persistReducer } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
@@ -76,6 +77,10 @@ const MainNavigator = () => {
           <RootStack.Screen
             name="StartingGame"
             component={StartingGameScreen}
+          />
+          <RootStack.Screen
+            name="UserInput"
+            component={UserInputScreen}
           />
         </RootStack.Navigator>
       ) : (
