@@ -17,7 +17,7 @@ export default function JoinGame({ navigation }) {
   const dispatch = useDispatch();
  
   const [code, setCode] = useState("");
-  const [success, setSuccess] = useState(false)
+  const [incorrectCode, setIncorrectCode] = useState(false)
   const user = useSelector((state) => state.user.value);
   const token = user.token;
 
@@ -55,9 +55,9 @@ export default function JoinGame({ navigation }) {
       if (data.result) {
         navigation.navigate('WaitingForPlayers')
         setCode('')
-        setSuccess(true)
       } else {
         console.log('Erreur de récupération de la partie', data.error)
+        setIncorrectCode(true)
       }
     })
   }
@@ -87,7 +87,7 @@ export default function JoinGame({ navigation }) {
         >
           <Text style={styles.buttonText}>Rejoindre</Text>
         </TouchableOpacity>
-        {success ? null : <Text>Code incorrect</Text>}
+        {incorrectCode ? <Text>Code incorrect</Text> : null}
       </View>
     </SafeAreaView>
   );
