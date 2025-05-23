@@ -20,6 +20,8 @@ export default function WaitingForPlayers({ navigation }) {
 
   const [gameImage, setGameImage] = useState(null);
   const [gameCode, setGameCode] = useState("");
+  const [players, setPlayers] = useState([])
+  const [playersNumber, setPlayersNumber] = useState(0)
 
   useEffect(() => {
     if (token) {
@@ -44,34 +46,46 @@ export default function WaitingForPlayers({ navigation }) {
         if (data.result) {
           setGameImage(data.game.image);
           setGameCode(data.game.code);
+          setPlayersNumber(data.game.nbPlayers)
         } else {
           console.log("Erreur de récupération des données utilisateur");
         }
       });
   }, []);
+
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/games/players/${code}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.result) {
+        setPlayers(data.players)
+      }
+    })
+  }, [])
+
   const handleSubmit = () => {
     console.log("Image du jeu :", gameImage);
     // Lancer la partie ici
   };
 
-  const players = [
-    {
-      pseudo: "Zuckerberg",
-      avatar: "https://randomuser.me/api/portraits/men/10.jpg",
-    },
-    {
-      pseudo: "Elon",
-      avatar: "https://randomuser.me/api/portraits/men/11.jpg",
-    },
-    {
-      pseudo: "Ada",
-      avatar: "https://randomuser.me/api/portraits/women/12.jpg",
-    },
-    {
-      pseudo: "Grace",
-      avatar: "https://randomuser.me/api/portraits/women/13.jpg",
-    },
-  ];
+  // const players = [
+  //   {
+  //     pseudo: "Zuckerberg",
+  //     avatar: "https://randomuser.me/api/portraits/men/10.jpg",
+  //   },
+  //   {
+  //     pseudo: "Elon",
+  //     avatar: "https://randomuser.me/api/portraits/men/11.jpg",
+  //   },
+  //   {
+  //     pseudo: "Ada",
+  //     avatar: "https://randomuser.me/api/portraits/women/12.jpg",
+  //   },
+  //   {
+  //     pseudo: "Grace",
+  //     avatar: "https://randomuser.me/api/portraits/women/13.jpg",
+  //   },
+  // ];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -85,10 +99,10 @@ export default function WaitingForPlayers({ navigation }) {
       </View>
       <View style={styles.middle}>
         <TouchableOpacity onPress={() => navigation.navigate("StartingGame")}>
-          <Text style={styles.code}>{gameCode}</Text>
+          <Text style={styles.code}>CODE DE PARTIE : {gameCode}</Text>
         </TouchableOpacity>
         <Text style={styles.joueurs}>
-          Nombre de Joueurs : {players.length}/4
+          Nombre de Joueurs : {playersNumber}
         </Text>
       </View>
       <View style={styles.players}>
@@ -104,12 +118,15 @@ export default function WaitingForPlayers({ navigation }) {
                 style={styles.useronline}
                 source={{ uri: player.avatar }}
               />
-              <Text style={styles.item}>{player.pseudo}</Text>
+              <Text style={styles.item}>{player.nickname}</Text>
               <View style={styles.rond} />
             </View>
           ))}
         </ScrollView>
       </View>
+      <Text style={styles.joueursAttente}>
+          En attente des joueurs : {players.length}/{playersNumber}
+        </Text>
       <View style={styles.bottom}>
         <TouchableOpacity
           style={styles.button}
@@ -128,7 +145,7 @@ const styles = StyleSheet.create({
     width: 140,
     height: 140,
     borderRadius: 50,
-    marginBottom: 20,
+    marginTop: 20,
   },
   container: {
     flex: 1,
@@ -154,9 +171,8 @@ const styles = StyleSheet.create({
   },
   code: {
     fontSize: 20,
-    fontFamily: "Noto Sans Gujarati",
+    fontFamily: "NotoSans_700Bold",
     color: "#335561",
-    fontWeight: "bold",
     marginVertical: 10,
   },
   joueurs: {
@@ -167,7 +183,7 @@ const styles = StyleSheet.create({
     maxHeight: 500,
     width: "100%",
     borderRadius: 10,
-    marginTop: 30,
+    marginTop: 20,
   },
   content: {
     padding: 10,
@@ -182,9 +198,8 @@ const styles = StyleSheet.create({
   },
   item: {
     fontSize: 25,
-    fontFamily: "Noto Sans Gujarati",
+    fontFamily: "NotoSans_700Bold",
     color: "#335561",
-    fontWeight: "bold",
     marginBottom: 10,
     marginVertical: 5,
     marginLeft: 10,
@@ -202,7 +217,7 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: "red",
+    backgroundColor: "green",
   },
   players: {
     height: 360,
@@ -213,7 +228,12 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     width: 260,
-    marginTop: 90,
+    marginTop: 20,
     height: 50,
+  },
+  joueursAttente: {
+    fontSize: 17,
+    color: "#335561",
+    fontFamily: "NotoSans_700Bold",
   },
 });
