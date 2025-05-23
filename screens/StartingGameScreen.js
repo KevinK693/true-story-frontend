@@ -8,6 +8,7 @@ import {
   Keyboard,
   Image,
   TouchableWithoutFeedback,
+  ScrollView,
 } from "react-native";
 import React from "react";
 import { Dropdown } from "react-native-element-dropdown";
@@ -56,6 +57,7 @@ export default function StartingGameScreen({ navigation }) {
         </Text>
         {/* Le prompt IA avec son container */}
         <View style={styles.containerTexteIa}>
+          <ScrollView>
           <TextInput
             style={styles.texteIa}
             multiline={true} // Permet de faire un texte sur plusieurs lignes
@@ -63,6 +65,7 @@ export default function StartingGameScreen({ navigation }) {
             placeholder="Story goes here..."
             value="Ce matin, Kevin a décidé de faire du sport. Il a commencé par s’étirer... en tombant du lit. Premier succès. Ensuite, il a couru... après son chien qui avait volé sa chaussette. Puis, motivé, il a tenté une séance de yoga avec une vidéo YouTube. Tout allait bien jusqu’à ce que sa grand-mère entre et lui demande pourquoi il faisait une offrande au canapé. Après 10 minutes en position chien tête en bas, il s’est rendu compte qu’il avait coincé son short dans le ventilateur. Résultat : le chat traumatisé, la plante verte décapitée, et Kevin jurant solennellement de ne plus jamais écouter son corps, parce que visiblement, le sien veut juste des chips et une sieste."
           />
+          </ScrollView>
         </View>
         {/* Bouton */}
         <TouchableOpacity

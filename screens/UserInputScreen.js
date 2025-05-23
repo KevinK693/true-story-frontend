@@ -66,25 +66,29 @@ export default function UserInputScreen({ navigation }) {
             </Text>
             {/* Le prompt IA avec son container */}
             <View style={styles.containerTexteIa}>
-              <TextInput
-                style={styles.texteIa}
-                multiline={true} //Pour que le texte soit sur plusieurs lignes
-                editable={false} //Pour qu'aucune modification ne soit possible
-                placeholder="Story goes here..."
-                value="Ce matin, Kevin a décidé de faire du sport. Il a commencé par s’étirer... en tombant du lit. Premier succès. Ensuite, il a couru... après son chien qui avait volé sa chaussette. Puis, motivé, il a tenté une séance de yoga avec une vidéo YouTube. Tout allait bien jusqu’à ce que sa grand-mère entre et lui demande pourquoi il faisait une offrande au canapé. Après 10 minutes en position chien tête en bas, il s’est rendu compte qu’il avait coincé son short dans le ventilateur. Résultat : le chat traumatisé, la plante verte décapitée, et Kevin jurant solennellement de ne plus jamais écouter son corps, parce que visiblement, le sien veut juste des chips et une sieste."
-              />
+              <ScrollView>
+                <TextInput
+                  style={styles.texteIa}
+                  multiline={true} //Pour que le texte soit sur plusieurs lignes
+                  editable={false} //Pour qu'aucune modification ne soit possible
+                  placeholder="Story goes here..."
+                  value="Ce matin, Kevin a décidé de faire du sport. Il a commencé par s’étirer... en tombant du lit. Premier succès. Ensuite, il a couru... après son chien qui avait volé sa chaussette. Puis, motivé, il a tenté une séance de yoga avec une vidéo YouTube. Tout allait bien jusqu’à ce que sa grand-mère entre et lui demande pourquoi il faisait une offrande au canapé. Après 10 minutes en position chien tête en bas, il s’est rendu compte qu’il avait coincé son short dans le ventilateur. Résultat : le chat traumatisé, la plante verte décapitée, et Kevin jurant solennellement de ne plus jamais écouter son corps, parce que visiblement, le sien veut juste des chips et une sieste."
+                />
+              </ScrollView>
             </View>
             {/* Endroit où l'utilisateur écrit son texte */}
             <View style={styles.containerUserInput}>
-              <TextInput
-                multiline={true} //Pour que le texte soit sur plusieurs lignes
-                style={styles.texteUserInput}
-                placeholder="Écrivez votre histoire..."
-                value={userText}
-                onChangeText={setUserText}
-                maxLength={280}
-              />
-              <Text style={styles.maxLength}>{userText.length}/280</Text>
+              <ScrollView>
+                <TextInput
+                  multiline={true} //Pour que le texte soit sur plusieurs lignes
+                  style={styles.texteUserInput}
+                  placeholder="Écrivez votre histoire..."
+                  value={userText}
+                  onChangeText={setUserText}
+                  maxLength={280}
+                />
+                <Text style={styles.maxLength}>{userText.length}/280</Text>
+              </ScrollView>
             </View>
 
             {/* Bouton */}
