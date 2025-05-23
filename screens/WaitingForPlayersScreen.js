@@ -14,19 +14,21 @@ import { Dropdown } from "react-native-element-dropdown";
 import { useState } from "react";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { updateGame, removeGame } from "../reducers/game";
 
 export default function WaitingForPlayers({ navigation }) {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.value);
   const token = user.token;
+  const game = useSelector((state) => state.game.value);
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+
   useEffect(() => {
     if (token) {
       fetch(`${BACKEND_URL}/users/${token}`)
         .then((response) => response.json())
         .then((data) => {
           if (data.result && data.user.avatar) {
-            // Si l'avatar du serveur est différent de celui dans Redux, mettre à jour Redux
             if (data.user.avatar !== user.avatar) {
               dispatch(updateAvatar(data.user.avatar));
             }
@@ -37,22 +39,21 @@ export default function WaitingForPlayers({ navigation }) {
     }
   }, [token]);
 
-  const avatarUrl = user.avatar;
-const players = [
-  { pseudo: "Zuckerberg", avatar: avatarUrl },
-  { pseudo: "Elon", avatar: avatarUrl },
-  { pseudo: "Ada", avatar: avatarUrl },
-  { pseudo: "Alan", avatar: avatarUrl },
-  { pseudo: "Grace", avatar: avatarUrl },
-  { pseudo: "Linus", avatar: avatarUrl },
-  { pseudo: "Steve", avatar: avatarUrl },
-  { pseudo: "Bill", avatar: avatarUrl },
-];
+  const players = [
+    { pseudo: "Zuckerberg", avatar: "https://randomuser.me/api/portraits/men/1.jpg" },
+    { pseudo: "Elon", avatar: "https://randomuser.me/api/portraits/men/2.jpg" },
+    { pseudo: "Ada", avatar: "https://randomuser.me/api/portraits/women/1.jpg" },
+    { pseudo: "Alan", avatar: "https://randomuser.me/api/portraits/men/3.jpg" },
+    { pseudo: "Grace", avatar: "https://randomuser.me/api/portraits/women/2.jpg" },
+    { pseudo: "Linus", avatar: "https://randomuser.me/api/portraits/men/4.jpg" },
+    { pseudo: "Steve", avatar: "https://randomuser.me/api/portraits/men/5.jpg" },
+    { pseudo: "Bill", avatar: "https://randomuser.me/api/portraits/men/6.jpg" },
+  ];
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Image style={styles.user} source={{ uri: avatarUrl }} />
+        <Image style={styles.user} source={{ uri: game.image }} />
       </View>
       <View style={styles.middle}>
         <TouchableOpacity onPress={() => navigation.navigate("StartingGame")}>
@@ -61,20 +62,20 @@ const players = [
         <Text style={styles.joueurs}>Nombre de Joueurs : 3/4</Text>
       </View>
       <View style={styles.players}>
-     <ScrollView
-  style={styles.scrollContainer}
-  contentContainerStyle={styles.content}
-  showsVerticalScrollIndicator={true}
-  persistentScrollbar={true}
->
-  {players.map((player, i) => (
-    <View key={i} style={styles.player}>
-      <Image style={styles.useronline} source={{ uri: player.avatar }} />
-      <Text style={styles.item}>{player.pseudo}</Text>
-      <View style={styles.rond} />
-    </View>
-  ))}
-</ScrollView>
+        <ScrollView
+          style={styles.scrollContainer}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={true}
+          persistentScrollbar={true}
+        >
+          {players.map((player, i) => (
+            <View key={i} style={styles.player}>
+              <Image style={styles.useronline} source={{ uri: player.avatar }} />
+              <Text style={styles.item}>{player.pseudo}</Text>
+              <View style={styles.rond} />
+            </View>
+          ))}
+        </ScrollView>
       </View>
       <View style={styles.bottom}>
         <TouchableOpacity
@@ -91,8 +92,8 @@ const players = [
 
 const styles = StyleSheet.create({
   user: {
-    width: 150,
-    height: 150,
+    width: 140,
+    height: 140,
     borderRadius: 50,
   },
   container: {
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingTop: 35,
+    paddingTop: 20,
   },
   middle: {
     justifyContent: "center",
@@ -129,22 +130,22 @@ const styles = StyleSheet.create({
     color: "#335561",
   },
   scrollContainer: {
-    maxHeight: 400,
+    maxHeight: 500,
     width: "100%",
     borderRadius: 10,
-    marginTop: 25,
-    padding: 10,
-
+    marginTop: 30,
   },
   content: {
     padding: 10,
   },
- player: {
-  flexDirection: "row",
-  alignItems: "center",
-  marginLeft: 20,
-  marginBottom: 20, 
-},
+  player: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: 0,
+    marginBottom: 20,
+    position: "relative",
+    paddingRight: 30,
+  },
   item: {
     fontSize: 25,
     fontFamily: "Noto Sans Gujarati",
@@ -160,28 +161,25 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   rond: {
+    position: "absolute",
+    right: 0,
+    top: "50%",
+    transform: [{ translateY: -6 }],
     width: 12,
     height: 12,
     borderRadius: 6,
     backgroundColor: "red",
-    marginLeft: 50,
   },
   players: {
-    height: 330,
+    height: 360,
+    width: 300,
   },
   button: {
     backgroundColor: "#65558F",
     padding: 10,
     borderRadius: 8,
     width: 260,
-    marginTop: 50,
-    marginBottom: 10,
+    marginTop: 90,
     height: 50,
-  },
-  buttonText: {
-    color: "#EADDFF",
-    fontSize: 20,
-    fontWeight: "600",
-    textAlign: "center",
   },
 });
