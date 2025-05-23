@@ -7,59 +7,89 @@ import {
   ScrollView,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { useEffect } from "react";
-import { removeToken, updateAvatar } from "../reducers/user";
-import React from "react";
-import { Dropdown } from "react-native-element-dropdown";
-import { useState } from "react";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { useEffect, useState } from "react";
+import { updateAvatar } from "../reducers/user";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { updateGame, removeGame } from "../reducers/game";
 
 export default function WaitingForPlayers({ navigation }) {
-  const dispatch = useDispatch();
+  const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+  const game = useSelector((state) => state.game.value);
+  const code = game.code;
   const user = useSelector((state) => state.user.value);
   const token = user.token;
-  const game = useSelector((state) => state.game.value);
-  const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+
+  const [gameImage, setGameImage] = useState(null);
+  const [gameCode, setGameCode] = useState("");
 
   useEffect(() => {
     if (token) {
       fetch(`${BACKEND_URL}/users/${token}`)
         .then((response) => response.json())
         .then((data) => {
-          if (data.result && data.user.avatar) {
+          if (data.result && data.user?.avatar) {
             if (data.user.avatar !== user.avatar) {
               dispatch(updateAvatar(data.user.avatar));
             }
           } else {
-            console.log("Erreur de récupération de l'image");
+            console.log("Erreur de récupération de l'image utilisateur");
           }
         });
     }
   }, [token]);
 
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/games/game/${code}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          setGameImage(data.game.image);
+          setGameCode(data.game.code);
+        } else {
+          console.log("Erreur de récupération des données utilisateur");
+        }
+      });
+  }, []);
+  const handleSubmit = () => {
+    console.log("Image du jeu :", gameImage);
+    // Lancer la partie ici
+  };
+
   const players = [
-    { pseudo: "Zuckerberg", avatar: "https://randomuser.me/api/portraits/men/1.jpg" },
-    { pseudo: "Elon", avatar: "https://randomuser.me/api/portraits/men/2.jpg" },
-    { pseudo: "Ada", avatar: "https://randomuser.me/api/portraits/women/1.jpg" },
-    { pseudo: "Alan", avatar: "https://randomuser.me/api/portraits/men/3.jpg" },
-    { pseudo: "Grace", avatar: "https://randomuser.me/api/portraits/women/2.jpg" },
-    { pseudo: "Linus", avatar: "https://randomuser.me/api/portraits/men/4.jpg" },
-    { pseudo: "Steve", avatar: "https://randomuser.me/api/portraits/men/5.jpg" },
-    { pseudo: "Bill", avatar: "https://randomuser.me/api/portraits/men/6.jpg" },
+    {
+      pseudo: "Zuckerberg",
+      avatar: "https://randomuser.me/api/portraits/men/10.jpg",
+    },
+    {
+      pseudo: "Elon",
+      avatar: "https://randomuser.me/api/portraits/men/11.jpg",
+    },
+    {
+      pseudo: "Ada",
+      avatar: "https://randomuser.me/api/portraits/women/12.jpg",
+    },
+    {
+      pseudo: "Grace",
+      avatar: "https://randomuser.me/api/portraits/women/13.jpg",
+    },
   ];
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Image style={styles.user} source={{ uri: game.image }} />
+        <Image
+          source={{
+            uri: gameImage,
+          }}
+          style={styles.user}
+        />
       </View>
       <View style={styles.middle}>
         <TouchableOpacity onPress={() => navigation.navigate("StartingGame")}>
-          <Text style={styles.code}>CODE DE PARTIE : BA7LX</Text>
+          <Text style={styles.code}>{gameCode}</Text>
         </TouchableOpacity>
-        <Text style={styles.joueurs}>Nombre de Joueurs : 3/4</Text>
+        <Text style={styles.joueurs}>
+          Nombre de Joueurs : {players.length}/4
+        </Text>
       </View>
       <View style={styles.players}>
         <ScrollView
@@ -70,7 +100,10 @@ export default function WaitingForPlayers({ navigation }) {
         >
           {players.map((player, i) => (
             <View key={i} style={styles.player}>
-              <Image style={styles.useronline} source={{ uri: player.avatar }} />
+              <Image
+                style={styles.useronline}
+                source={{ uri: player.avatar }}
+              />
               <Text style={styles.item}>{player.pseudo}</Text>
               <View style={styles.rond} />
             </View>
@@ -81,7 +114,7 @@ export default function WaitingForPlayers({ navigation }) {
         <TouchableOpacity
           style={styles.button}
           activeOpacity={0.8}
-          onPress={() => handleSubmit()}
+          onPress={handleSubmit}
         >
           <Text style={styles.buttonText}>Lancer la partie</Text>
         </TouchableOpacity>
@@ -95,6 +128,7 @@ const styles = StyleSheet.create({
     width: 140,
     height: 140,
     borderRadius: 50,
+    marginBottom: 20,
   },
   container: {
     flex: 1,
