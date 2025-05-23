@@ -21,6 +21,10 @@ import ProfileScreen from "./screens/ProfileScreen";
 import WaitingForPlayersScreen from "./screens/WaitingForPlayersScreen";
 import StartingGameScreen from "./screens/StartingGameScreen";
 import UserInputScreen from "./screens/UserInputScreen";
+import VotingScreen from './screens/VotingScreen'
+import GameHistoryScreen from "./screens/GameHistoryScreen";
+import VoteWinnerScreen from "./screens/VoteWinnerScreen";
+import EndGameScreen from "./screens/EndGameScreen";
 
 import { persistStore, persistReducer } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
@@ -29,8 +33,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Provider, useSelector } from "react-redux";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import user from "./reducers/user";
+import game from './reducers/game'
 
-const reducers = combineReducers({ user });
+const reducers = combineReducers({ user, game });
 const persistConfig = { key: "faceup", storage: AsyncStorage };
 
 const store = configureStore({
@@ -57,6 +62,10 @@ const MainStackScreen = () => (
     />
     <MainStack.Screen name="StartingGame" component={StartingGameScreen} />
     <MainStack.Screen name="UserInput" component={UserInputScreen} />
+    <MainStack.Screen name="Voting" component={VotingScreen} />
+    <MainStack.Screen name="GameHistory" component={GameHistoryScreen} />
+    <MainStack.Screen name="VoteWinner" component={VoteWinnerScreen} />
+    <MainStack.Screen name="EndGame" component={EndGameScreen} />
   </MainStack.Navigator>
 );
 

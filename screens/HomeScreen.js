@@ -63,7 +63,7 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.textbutton}>REJOINDRE</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          // onPress={() => navigation.navigate('ResumeGame')}
+          onPress={() => navigation.navigate('Voting')}
           style={styles.button}
           activeOpacity={0.8}
         >
@@ -103,9 +103,10 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     padding: 30,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.75,
-    shadowRadius: 3.84,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 6,
     width: "90%",
   },
   textbutton: {
