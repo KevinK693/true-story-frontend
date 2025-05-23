@@ -10,7 +10,7 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
 } from "react-native";
-import React from "react";
+import React,  {useEffect} from "react";
 import { Dropdown } from "react-native-element-dropdown";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,7 +20,100 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function StartingGameScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
-  const user = useSelector((state) => state.user.value);
+  const game = useSelector((state) => state.game.value);
+  const code = game.code;
+  const [sceneText, setSceneText] = useState("");
+  const [sceneNb, setSceneNb] = useState("");
+  const [propositionsNb, setPropositionsNb] = useState([]);
+  const [playersNb, setPlayersNb] = useState([]);
+  const [totalScenesNb, setTotalScenesNb] = useState([]);
+  const [title, setTitle] = useState("");
+
+  useEffect(() => {
+    console.log(`${BACKEND_URL}/scenes/code/${code}/scene/1`);
+    
+    fetch(`${BACKEND_URL}/scenes/code/${code}/scene/1`)
+      .then(response => {
+        // Vérifier le status HTTP
+        if (!response.ok) {
+          console.error(`Erreur HTTP: ${response.status} ${response.statusText}`);
+          return response.text().then(text => {
+            console.log("Réponse reçue :", text);
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          });
+        }
+
+        // Vérifier le Content-Type
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('La réponse n\'est pas du JSON:', contentType);
+          return response.text().then(text => {
+            console.log("Contenu reçu :", text);
+            throw new Error('Réponse non-JSON reçue');
+          });
+        }
+
+        // Convertir en JSON
+        return response.json();
+      })
+      .then(data => {
+        // Vérifier la structure des données
+        if (data.result && data.data && data.data.text) {
+          console.log("Texte de la scène :", data.result);
+          setSceneText(data.data.text);
+          setSceneNb(data.data.sceneNumber);
+          setPropositionsNb(data.data.propositions.length);
+        } else {
+          console.error("Erreur côté backend :", data.error || "Structure de données inattendue");
+          console.log("Structure reçue :", data);
+
+        }
+      })
+      .catch(error => {
+        console.error("Erreur de requête :", error);
+        console.log("Type d'erreur :", error.constructor.name);
+      });
+
+
+// Deuxième fetch pour récupérer les infos de la partie (titre, nb de joueurs, nb de scènes)
+      fetch(`${BACKEND_URL}/games/game/zUrL1`)
+      .then(response => {
+        if (!response.ok) {
+          console.error(`Erreur HTTP: ${response.status} ${response.statusText}`);
+          return response.text().then(text => {
+            console.log("Réponse reçue :", text);
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          });
+        }
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('La réponse n\'est pas du JSON:', contentType);
+          return response.text().then(text => {
+            console.log("Contenu reçu :", text);
+            throw new Error('Réponse non-JSON reçue');
+          });
+        }
+
+        return response.json();
+      })   
+      .then(data => {
+        if (data.result && data.game && data.game.nbPlayers) {
+          console.log("Données de la partie :", data.result);
+          setPlayersNb(data.game.nbPlayers);
+          setTitle(data.game.title);
+          setTotalScenesNb(data.game.nbScenes);
+        } else {
+          console.error("Erreur côté backend :", data.error || "Structure de données inattendue");
+          console.log("Structure reçue :", data);
+
+        }
+      })
+      .catch(error => {
+        console.error("Erreur de requête :", error);
+        console.log("Type d'erreur :", error.constructor.name);
+      });
+}, []);
 
   const handleHistorySubmit = () => {
     navigation.navigate("Profile");
@@ -50,10 +143,10 @@ export default function StartingGameScreen({ navigation }) {
         </View>
         {/* fin de la topBar */}
         <Text style={[styles.textTitle, { textAlign: "center" }]}>
-          The Walking Fetch
+          {title}
         </Text>
         <Text style={[styles.textScene, { textAlign: "center" }]}>
-          Scène actuelle: 1/24
+          Scène actuelle: {sceneNb}/{totalScenesNb}
         </Text>
         {/* Le prompt IA avec son container */}
         <View style={styles.containerTexteIa}>
@@ -63,7 +156,7 @@ export default function StartingGameScreen({ navigation }) {
             multiline={true} // Permet de faire un texte sur plusieurs lignes
             editable={false} // Pour qu'aucune modification ne soit possible
             placeholder="Story goes here..."
-            value="Ce matin, Kevin a décidé de faire du sport. Il a commencé par s’étirer... en tombant du lit. Premier succès. Ensuite, il a couru... après son chien qui avait volé sa chaussette. Puis, motivé, il a tenté une séance de yoga avec une vidéo YouTube. Tout allait bien jusqu’à ce que sa grand-mère entre et lui demande pourquoi il faisait une offrande au canapé. Après 10 minutes en position chien tête en bas, il s’est rendu compte qu’il avait coincé son short dans le ventilateur. Résultat : le chat traumatisé, la plante verte décapitée, et Kevin jurant solennellement de ne plus jamais écouter son corps, parce que visiblement, le sien veut juste des chips et une sieste."
+            value={sceneText} // Affiche le texte de la scène
           />
           </ScrollView>
         </View>
@@ -76,7 +169,7 @@ export default function StartingGameScreen({ navigation }) {
           <Text style={styles.buttonText}>Proposer une suite</Text>
         </TouchableOpacity>
         <Text style={[styles.textNbPropositions, { textAlign: "center" }]}>
-          Nombre de propositions: 2/4
+          Nombre de propositions: {propositionsNb}/{playersNb}
         </Text>
       </SafeAreaView>
     </TouchableWithoutFeedback>
