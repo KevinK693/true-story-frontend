@@ -10,7 +10,7 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
 } from "react-native";
-import React,  {useEffect} from "react";
+import React, { useEffect } from "react";
 import { Dropdown } from "react-native-element-dropdown";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,96 +26,82 @@ export default function StartingGameScreen({ navigation }) {
   const [sceneNb, setSceneNb] = useState("");
   const [propositionsNb, setPropositionsNb] = useState([]);
   const [playersNb, setPlayersNb] = useState([]);
-  const [totalScenesNb, setTotalScenesNb] = useState(1);
+  const [totalScenesNb, setTotalScenesNb] = useState([]);
   const [title, setTitle] = useState("");
   const [image, setImage] = useState(null);
+  const [genre, setGenre] = useState("");
 
   useEffect(() => {
     console.log(`${BACKEND_URL}/scenes/code/${code}/scene/1`);
-    
+
+    // Premier fetch : récupérer la scène
     fetch(`${BACKEND_URL}/scenes/code/${code}/scene/1`)
-      .then(response => {
-        // Vérifier le status HTTP
-        if (!response.ok) {
-          console.error(`Erreur HTTP: ${response.status} ${response.statusText}`);
-          return response.text().then(text => {
-            console.log("Réponse reçue :", text);
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-          });
-        }
-
-        // Vérifier le Content-Type
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          console.error('La réponse n\'est pas du JSON:', contentType);
-          return response.text().then(text => {
-            console.log("Contenu reçu :", text);
-            throw new Error('Réponse non-JSON reçue');
-          });
-        }
-
-        // Convertir en JSON
-        return response.json();
-      })
-      .then(data => {
-        // Vérifier la structure des données
-        if (data.result && data.data && data.data.text) {
-          console.log("Texte de la scène :", data.result);
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA DU FETCH (scène):", data);
+        if (data.result) {
           setSceneText(data.data.text);
           setSceneNb(data.data.sceneNumber);
           setPropositionsNb(data.data.propositions.length);
         } else {
-          console.error("Erreur côté backend :", data.error || "Structure de données inattendue");
+          console.error(
+            "Erreur côté backend (scène):",
+            data.error || "Structure de données inattendue"
+          );
           console.log("Structure reçue :", data);
-
         }
       })
-      .catch(error => {
-        console.error("Erreur de requête :", error);
-        console.log("Type d'erreur :", error.constructor.name);
+      .catch((error) => {
+        console.error("Erreur lors du fetch de la scène :", error);
       });
 
-
-// Deuxième fetch pour récupérer les infos de la partie (titre, nb de joueurs, nb de scènes)
-      fetch(`${BACKEND_URL}/games/game/${code}`)
-      .then(response => {
+    // Deuxième fetch : récupérer les infos de la partie
+    fetch(`${BACKEND_URL}/games/game/${code}`)
+      .then((response) => {
         if (!response.ok) {
-          console.error(`Erreur HTTP: ${response.status} ${response.statusText}`);
-          return response.text().then(text => {
+          console.error(
+            `Erreur HTTP: ${response.status} ${response.statusText}`
+          );
+          return response.text().then((text) => {
             console.log("Réponse reçue :", text);
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
           });
         }
 
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          console.error('La réponse n\'est pas du JSON:', contentType);
-          return response.text().then(text => {
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          console.error("La réponse n'est pas du JSON:", contentType);
+          return response.text().then((text) => {
             console.log("Contenu reçu :", text);
-            throw new Error('Réponse non-JSON reçue');
+            throw new Error("Réponse non-JSON reçue");
           });
         }
 
         return response.json();
-      })   
-      .then(data => {
+      })
+      .then((data) => {
         if (data.result) {
-          console.log("Données de la partie :", data.result);
+          console.log("Données de la partie :", data);
           setPlayersNb(data.game.nbPlayers);
           setTitle(data.game.title);
           setTotalScenesNb(data.game.nbScenes);
           setImage(data.game.image);
+          setGenre(data.game.genre)
         } else {
-          console.error("Erreur côté backend :", data.error || "Structure de données inattendue");
+          console.error(
+            "Erreur côté backend (game):",
+            data.error || "Structure de données inattendue"
+          );
           console.log("Structure reçue :", data);
-
         }
       })
-      .catch(error => {
-        console.error("Erreur de requête :", error);
+      .catch((error) => {
+        console.error("Erreur lors du fetch du jeu :", error);
         console.log("Type d'erreur :", error.constructor.name);
       });
-}, []);
+
+      
+  }, []);
 
   const handleHistorySubmit = () => {
     navigation.navigate("GameHistory");
@@ -131,7 +117,7 @@ export default function StartingGameScreen({ navigation }) {
         <View style={styles.topBar}>
           <Image
             source={{
-              uri: {image},
+              uri: image,
             }}
             style={styles.logoImage}
             resizeMode="contain"
@@ -144,22 +130,20 @@ export default function StartingGameScreen({ navigation }) {
           </TouchableOpacity>
         </View>
         {/* fin de la topBar */}
-        <Text style={[styles.textTitle, { textAlign: "center" }]}>
-          {title}
-        </Text>
+        <Text style={[styles.textTitle, { textAlign: "center" }]}>{title}</Text>
         <Text style={[styles.textScene, { textAlign: "center" }]}>
           Scène actuelle: {sceneNb}/{totalScenesNb}
         </Text>
         {/* Le prompt IA avec son container */}
         <View style={styles.containerTexteIa}>
           <ScrollView>
-          <TextInput
-            style={styles.texteIa}
-            multiline={true} // Permet de faire un texte sur plusieurs lignes
-            editable={false} // Pour qu'aucune modification ne soit possible
-            placeholder="Story goes here..."
-            value={sceneText} // Affiche le texte de la scène
-          />
+            <TextInput
+              style={styles.texteIa}
+              multiline={true} // Permet de faire un texte sur plusieurs lignes
+              editable={false} // Pour qu'aucune modification ne soit possible
+              placeholder="Story goes here..."
+              value={sceneText} // Affiche le texte de la scène
+            />
           </ScrollView>
         </View>
         {/* Bouton */}

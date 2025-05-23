@@ -107,6 +107,17 @@ export default function CreateGameScreen({ navigation }) {
           console.log("Erreur lors de la création du profil :", data.error);
         }
       });
+
+      fetch(`${BACKEND_URL}/scenes/firstScene`, {
+        method: 'POST',
+        headers: { "Content-Type": 'application/json'},
+        body: JSON.stringify({code})
+      }).then(response => response.json())
+      .then(data => {
+        if(data.result) {
+          console.log("Scène envoyée")
+        }
+      })
   };
 
   return (
