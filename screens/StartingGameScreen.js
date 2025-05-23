@@ -26,8 +26,9 @@ export default function StartingGameScreen({ navigation }) {
   const [sceneNb, setSceneNb] = useState("");
   const [propositionsNb, setPropositionsNb] = useState([]);
   const [playersNb, setPlayersNb] = useState([]);
-  const [totalScenesNb, setTotalScenesNb] = useState([]);
+  const [totalScenesNb, setTotalScenesNb] = useState(1);
   const [title, setTitle] = useState("");
+  const [image, setImage] = useState(null);
 
   useEffect(() => {
     console.log(`${BACKEND_URL}/scenes/code/${code}/scene/1`);
@@ -76,7 +77,7 @@ export default function StartingGameScreen({ navigation }) {
 
 
 // Deuxième fetch pour récupérer les infos de la partie (titre, nb de joueurs, nb de scènes)
-      fetch(`${BACKEND_URL}/games/game/zUrL1`)
+      fetch(`${BACKEND_URL}/games/game/${code}`)
       .then(response => {
         if (!response.ok) {
           console.error(`Erreur HTTP: ${response.status} ${response.statusText}`);
@@ -98,11 +99,12 @@ export default function StartingGameScreen({ navigation }) {
         return response.json();
       })   
       .then(data => {
-        if (data.result && data.game && data.game.nbPlayers) {
+        if (data.result) {
           console.log("Données de la partie :", data.result);
           setPlayersNb(data.game.nbPlayers);
           setTitle(data.game.title);
           setTotalScenesNb(data.game.nbScenes);
+          setImage(data.game.image);
         } else {
           console.error("Erreur côté backend :", data.error || "Structure de données inattendue");
           console.log("Structure reçue :", data);
@@ -116,7 +118,7 @@ export default function StartingGameScreen({ navigation }) {
 }, []);
 
   const handleHistorySubmit = () => {
-    navigation.navigate("Profile");
+    navigation.navigate("GameHistory");
   };
   const handleNextScreen = () => {
     navigation.navigate("UserInput");
@@ -129,7 +131,7 @@ export default function StartingGameScreen({ navigation }) {
         <View style={styles.topBar}>
           <Image
             source={{
-              uri: "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834382/ovni_qla2gb.png",
+              uri: {image},
             }}
             style={styles.logoImage}
             resizeMode="contain"
