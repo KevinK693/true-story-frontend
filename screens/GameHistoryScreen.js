@@ -10,9 +10,11 @@ import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { useNavigation } from "@react-navigation/native";
 
-export default function VotingScreen({ navigation }) {
+export default function VotingScreen() {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+  const navigation = useNavigation()
   const game = useSelector((state) => state.game.value);
   const code = game.code;
   const [gameImage, setGameImage] = useState(null);
@@ -43,7 +45,7 @@ export default function VotingScreen({ navigation }) {
         />
         <TouchableOpacity
           style={styles.iconHistory}
-          onPress={() => navigation.navigate("Voting")}
+          onPress={() => navigation.goBack()}
         >
           <FontAwesome5 name="arrow-left" size={35} color="#335561" />
         </TouchableOpacity>

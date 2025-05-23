@@ -37,6 +37,12 @@ export default function EndGameScreen({ navigation }) {
           }}
           style={styles.gameImage}
         />
+        <TouchableOpacity
+          style={styles.iconHistory}
+          onPress={() => navigation.navigate("Home")}
+        >
+          <FontAwesome5 name="home" size={35} color="#335561" />
+        </TouchableOpacity>
       </View>
       <Text style={styles.gameTitle}>{gameTitle}</Text>
       <Text style={styles.subtitle}>Fin de la partie | Scène finale</Text>
