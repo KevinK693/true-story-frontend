@@ -17,23 +17,81 @@ export default function VotingScreen({ navigation }) {
   const code = game.code;
   const [gameImage, setGameImage] = useState(null);
   const [gameTitle, setGameTitle] = useState('')
+  const [selectedButton, setSelectedButton] = useState(null);
+  const [propositions, setPropositions] = useState([]);
+  const [allPlayersReady, setAllPlayersReady] = useState(false)
 
-  //Récupération de l'image de la partie
+  //Récupération de l'image de la partie et des propositions
   useEffect(() => {
     fetch(`${BACKEND_URL}/games/game/${code}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
           setGameImage(data.game.image);
-          setGameTitle(data.game.title)
+          setGameTitle(data.game.title);
         } else {
-          console.log("Erreur de récupération des données utilisateur");
+          console.log("Erreur de récupération des données du jeu");
         }
       });
+
+    // Récupération des propositions de la scène active depuis la base de données
+    fetch(`${BACKEND_URL}/scenes/${code}/propositions`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          setPropositions(data.propositions);
+          checkAllPlayersReady(data.propositions)
+        } else {
+          console.log("Erreur de récupération des propositions");
+        }
+      })
   }, []);
+
+  const checkAllPlayersReady = (propositions) => {
+    fetch(`${BACKEND_URL}/games/${code}/players`)
+    .then((response) => response.json(),)
+    .then((data) => {
+      if (data.result) {
+        const players = data.players;
+        const propositionsCount = propositions.length;
+        setAllPlayersReady(propositionsCount >= players)
+      } else {
+        console.log("Erreur de récupérération des joueurs")
+      }
+    })
+  }
 
   const handleHistorySubmit = () => {
     navigation.navigate("GameHistory");
+  };
+
+  const handleButtonPress = (buttonIndex) => {
+    setSelectedButton(buttonIndex);
+  };
+
+  const handleVote = () => {
+    if (selectedButton !== null && allPlayersReady) {
+      const selectedProposition = propositions[selectedButton];
+      
+      // Envoyer le vote à la base de données
+      fetch(`${BACKEND_URL}/games/${code}/vote`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          propositionId: selectedProposition.id,
+        }),
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          navigation.navigate('VoteWinner');
+        } else {
+          console.log("Erreur lors de l'enregistrement du vote");
+        }
+      })
+    } 
   };
 
   return (
@@ -53,42 +111,34 @@ export default function VotingScreen({ navigation }) {
         </TouchableOpacity>
       </View>
       <Text style={styles.gameTitle}>{gameTitle}</Text>
-      <Text style={styles.subtitle}>Votez pour l'une des propositions</Text>
+      <Text style={styles.subtitle}>{allPlayersReady ? "Votez pour l'une des propositions" : "En attente que tous les joueurs fassent leur proposition..."}</Text>
+      {!allPlayersReady && (
+        <Text style={styles.waitingText}>
+          {propositions.length} proposition(s) reçue(s)
+        </Text>
+      )}
       <ScrollView style={{ width: "100%" }}>
         <View style={styles.propositionsContainer}>
-          <View style={styles.voteContainer}>
-            <View style={styles.containerProposition}>
-              <Text style={styles.proposition}></Text>
-              <TouchableOpacity style={styles.checkIcon} onPress={() => navigation.navigate('VoteWinner')}>
-                <FontAwesome5 name="check" size={24} color="#FBF1F1" />
-              </TouchableOpacity>
+          {propositions.map((proposition, index) => (
+            <View key={proposition.id} style={styles.voteContainer}>
+              <View style={styles.containerProposition}>
+                <Text style={styles.proposition}>{proposition.text}</Text>
+                <TouchableOpacity 
+                  style={[
+                    styles.checkIcon, 
+                    selectedButton === index && styles.checkIconSelected
+                  ]} 
+                  onPress={() => handleButtonPress(index)}
+                >
+                  <FontAwesome5 name="check" size={24} color="#FBF1F1" />
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-          <View style={styles.voteContainer}>
-            <View style={styles.containerProposition}>
-              <Text style={styles.proposition}></Text>
-              <TouchableOpacity style={styles.checkIcon}>
-                <FontAwesome5 name="check" size={24} color="#FBF1F1" />
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={styles.voteContainer}>
-            <View style={styles.containerProposition}>
-              <Text style={styles.proposition}></Text>
-              <TouchableOpacity style={styles.checkIcon}>
-                <FontAwesome5 name="check" size={24} color="#FBF1F1" />
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={styles.voteContainer}>
-            <View style={styles.containerProposition}>
-              <Text style={styles.proposition}></Text>
-              <TouchableOpacity style={styles.checkIcon}>
-                <FontAwesome5 name="check" size={24} color="#FBF1F1" />
-              </TouchableOpacity>
-            </View>
-          </View>
+          ))}
         </View>
+        <TouchableOpacity style={styles.voteButton} onPress={handleVote}>
+          <Text style={styles.voteButtonText}>Voter</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -165,6 +215,9 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 50,
   },
+  checkIconSelected: {
+    backgroundColor: "#4CAF50",
+  },
   propositionsContainer: {
     width: "100%",
     marginTop: 20,
@@ -175,5 +228,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: "NotoSans_400Regular",
     color: "#335561",
+  },
+  voteButton: {
+    backgroundColor: "#65558F",
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    borderRadius: 15,
+    alignSelf: "center",
+    marginTop: 20,
+    marginBottom: 50,
+  },
+  voteButtonText: {
+    color: "#FBF1F1",
+    fontSize: 18,
+    fontFamily: "NotoSans_700Bold",
+    textAlign: "center",
   },
 });
