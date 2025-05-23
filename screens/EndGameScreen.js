@@ -1,17 +1,10 @@
-import {
-  View,
-  StyleSheet,
-  Text,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { View, StyleSheet, Text, Image, TouchableOpacity } from "react-native";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
-export default function VoteWinnerScreen({ navigation }) {
+export default function EndGameScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
   const game = useSelector((state) => state.game.value);
   const code = game.code;
@@ -44,33 +37,30 @@ export default function VoteWinnerScreen({ navigation }) {
           }}
           style={styles.gameImage}
         />
-        <TouchableOpacity
-          style={styles.iconHistory}
-          onPress={() => navigation.navigate("GameHistory")}
-        >
-          <FontAwesome5 name="clock" size={35} color="#335561" />
-        </TouchableOpacity>
       </View>
       <Text style={styles.gameTitle}>{gameTitle}</Text>
-      <Text style={styles.subtitle}>Vainqueur du vote</Text>
-
-      <View style={styles.propositionsContainer}>
-        <Image style={styles.winnerAvatar} source={{ uri: user.avatar }} />
-        <Text style={styles.winnerName}>Winner</Text>
-        <Text style={styles.propositionNumber}>Proposition #2</Text>
-        <Text style={styles.voteNumber}>Votes : 3</Text>
-        <View style={styles.containerProposition}>
-          <Text style={styles.proposition}>Proposition choisie</Text>
+      <Text style={styles.subtitle}>Fin de la partie | Scène finale</Text>
+      <View style={styles.containerProposition}>
+        <Text style={styles.proposition}>Fin de l'histoire</Text>
+      </View>
+      <View>
+        <Text style={styles.winnerText}>Félicitations, [winner name] !</Text>
+        <Text style={styles.winnerText}>Tu as gagné avec 8 votes.</Text>
+      </View>
+      <View style={styles.buttonsContainer}>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button}>
+            <FontAwesome5 size={30} name="pen-nib" color="#FBF1F1" />
+          </TouchableOpacity>
+          <Text style={styles.text}>Exporter à l'écrit</Text>
+        </View>
+         <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button}>
+            <FontAwesome5 size={30} name="podcast" color="#FBF1F1" />
+          </TouchableOpacity>
+          <Text style={styles.text}>Exporter en podcast</Text>
         </View>
       </View>
-
-      <TouchableOpacity
-        onPress={() => navigation.navigate("EndGame")}
-        style={styles.button}
-        activeOpacity={0.8}
-      >
-        <Text style={styles.buttonText}>Continuer</Text>
-      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -120,20 +110,14 @@ const styles = StyleSheet.create({
   containerProposition: {
     borderRadius: 10,
     backgroundColor: "white",
-    height: 150,
+    height: "40%",
     width: "90%",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 6,
-    marginVertical: 10,
-  },
-  propositionsContainer: {
-    marginVertical: 40,
-    width: "100%",
-    alignItems: "center",
-    position: "relative",
+    marginVertical: 20,
   },
   subtitle: {
     fontSize: 18,
@@ -144,42 +128,15 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     borderRadius: 50,
-    position: "absolute",
-    zIndex: 2,
-    left: -5,
-    top: -25,
-  },
-  winnerName: {
-    position: "absolute",
-    zIndex: 2,
-    left: 50,
-    top: -10,
-    fontFamily: "NotoSans_700Bold",
-    color: "#335561",
-  },
-  propositionNumber: {
-    position: "absolute",
-    zIndex: 2,
-    right: 20,
-    top: -10,
-    fontFamily: "NotoSans_700Bold",
-    color: "#335561",
-  },
-  voteNumber: {
-    position: "absolute",
-    zIndex: 2,
-    right: 20,
-    bottom: -15,
-    fontFamily: "NotoSans_700Bold",
-    color: "#335561",
   },
   button: {
     backgroundColor: "#65558F",
     padding: 10,
-    borderRadius: 8,
-    width: "100%",
-    height: 50,
+    borderRadius: 20,
+    height: 60,
+    width: 60,
     justifyContent: "center",
+    alignItems: "center",
   },
   buttonText: {
     color: "#EADDFF",
@@ -187,4 +144,24 @@ const styles = StyleSheet.create({
     fontFamily: "NotoSans_700Bold",
     textAlign: "center",
   },
+  winnerText: {
+    fontFamily: "NotoSans_700Bold",
+    textAlign: "center",
+    color: "#335561",
+    fontSize: 16,
+  },
+  buttonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  buttonContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 30,
+  },
+  text: {
+    color: "#335561",
+    marginTop: 5,
+    fontFamily: "NotoSans_400Regular",
+  }
 });
