@@ -61,31 +61,24 @@ export default function WaitingForPlayers({ navigation }) {
         setPlayers(data.players)
       }
     })
+
+    fetch(`${BACKEND_URL}/scenes/firstScene`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: code }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          console.log("Scène envoyée");
+          
+        }
+      });
   }, [])
 
   const handleSubmit = () => {
-    console.log("Image du jeu :", gameImage);
-    // Lancer la partie ici
+    navigation.navigate('StartingGame')
   };
-
-  // const players = [
-  //   {
-  //     pseudo: "Zuckerberg",
-  //     avatar: "https://randomuser.me/api/portraits/men/10.jpg",
-  //   },
-  //   {
-  //     pseudo: "Elon",
-  //     avatar: "https://randomuser.me/api/portraits/men/11.jpg",
-  //   },
-  //   {
-  //     pseudo: "Ada",
-  //     avatar: "https://randomuser.me/api/portraits/women/12.jpg",
-  //   },
-  //   {
-  //     pseudo: "Grace",
-  //     avatar: "https://randomuser.me/api/portraits/women/13.jpg",
-  //   },
-  // ];
 
   return (
     <SafeAreaView style={styles.container}>

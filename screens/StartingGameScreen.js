@@ -4,16 +4,14 @@ import {
   View,
   TextInput,
   TouchableOpacity,
-  Modal,
   Keyboard,
   Image,
   TouchableWithoutFeedback,
   ScrollView,
 } from "react-native";
 import React, { useEffect } from "react";
-import { Dropdown } from "react-native-element-dropdown";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -29,33 +27,8 @@ export default function StartingGameScreen({ navigation }) {
   const [totalScenesNb, setTotalScenesNb] = useState([]);
   const [title, setTitle] = useState("");
   const [image, setImage] = useState(null);
-  const [genre, setGenre] = useState("");
 
   useEffect(() => {
-    console.log(`${BACKEND_URL}/scenes/code/${code}/scene/1`);
-
-    // Premier fetch : récupérer la scène
-    fetch(`${BACKEND_URL}/scenes/code/${code}/scene/1`)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("DATA DU FETCH (scène):", data);
-        if (data.result) {
-          setSceneText(data.data.text);
-          setSceneNb(data.data.sceneNumber);
-          setPropositionsNb(data.data.propositions.length);
-        } else {
-          console.error(
-            "Erreur côté backend (scène):",
-            data.error || "Structure de données inattendue"
-          );
-          console.log("Structure reçue :", data);
-        }
-      })
-      .catch((error) => {
-        console.error("Erreur lors du fetch de la scène :", error);
-      });
-
-    // Deuxième fetch : récupérer les infos de la partie
     fetch(`${BACKEND_URL}/games/game/${code}`)
       .then((response) => {
         if (!response.ok) {
@@ -86,7 +59,6 @@ export default function StartingGameScreen({ navigation }) {
           setTitle(data.game.title);
           setTotalScenesNb(data.game.nbScenes);
           setImage(data.game.image);
-          setGenre(data.game.genre)
         } else {
           console.error(
             "Erreur côté backend (game):",
@@ -100,7 +72,26 @@ export default function StartingGameScreen({ navigation }) {
         console.log("Type d'erreur :", error.constructor.name);
       });
 
-      
+    // Récupérer la scène
+    fetch(`${BACKEND_URL}/scenes/code/${code}/scene/1`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA DU FETCH (scène):", data);
+        if (data.result) {
+          setSceneText(data.data.text);
+          setSceneNb(data.data.sceneNumber);
+          setPropositionsNb(data.data.propositions.length);
+        } else {
+          console.error(
+            "Erreur côté backend (scène):",
+            data.error || "Structure de données inattendue"
+          );
+          console.log("Structure reçue :", data);
+        }
+      })
+      .catch((error) => {
+        console.error("Erreur lors du fetch de la scène :", error);
+      });
   }, []);
 
   const handleHistorySubmit = () => {

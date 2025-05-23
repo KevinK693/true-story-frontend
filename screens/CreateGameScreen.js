@@ -27,6 +27,7 @@ export default function CreateGameScreen({ navigation }) {
   const [modalPlayersVisible, setModalPlayersVisible] = useState(false);
   const [modalScenesVisible, setModalScenesVisible] = useState(false);
   const [modalImageVisible, setModalImageVisible] = useState(false);
+  const [code, setCode] = useState(null)
 
   const user = useSelector((state) => state.user.value);
   const token = user.token;
@@ -102,22 +103,12 @@ export default function CreateGameScreen({ navigation }) {
           setSelectedPlayers(null);
           setSelectedScenes(null);
           setSelectedGenre(null);
-          navigation.navigate("WaitingForPlayers", { code: data.code });
+          setCode(data.code)
+          navigation.navigate("WaitingForPlayers");
         } else {
           console.log("Erreur lors de la création du profil :", data.error);
         }
       });
-
-      fetch(`${BACKEND_URL}/scenes/firstScene`, {
-        method: 'POST',
-        headers: { "Content-Type": 'application/json'},
-        body: JSON.stringify({code})
-      }).then(response => response.json())
-      .then(data => {
-        if(data.result) {
-          console.log("Scène envoyée")
-        }
-      })
   };
 
   return (
