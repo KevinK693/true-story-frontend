@@ -19,12 +19,16 @@ export default function ProfileScreen({ navigation }) {
   const [nickname, setNickname] = useState(null);
   const [image, setImage] = useState(null);
   const [modified, setModified] = useState(false);
+  const [gamesPlayed, setGamesPlayed] = useState(0)
+  const [gamesWon, setGamesWon] = useState(0)
+  let victoryRate = 0
 
   const user = useSelector((state) => state.user.value);
   const token = user.token;
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
+    //Récupération des infos utilisateur (avatar et nickname)
     fetch(`${BACKEND_URL}/users/${token}`)
       .then((response) => response.json())
       .then((data) => {
@@ -35,6 +39,21 @@ export default function ProfileScreen({ navigation }) {
           console.log("Erreur de récupération des données utilisateur");
         }
       });
+
+      //Récupération du nombre de parties jouées et gagnées
+      fetch(`${BACKEND_URL}/games/user/${token}`)
+      .then((response) => response.json())
+      .then(data => {
+        if (data.result) {
+          setGamesPlayed(data.games.length)
+          for (const game of data.games) {
+            if (game.winner === token) {
+              setGamesWon(gamesWon + 1)
+            }
+          }
+        }
+      })
+      victoryRate = ((gamesWon*100)/gamesPlayed).toFixed(1)
   }, []);
 
   const handleShowGames = () => {
@@ -121,12 +140,12 @@ export default function ProfileScreen({ navigation }) {
         <View style={styles.statsText}>
           <Text style={styles.text}>Nombre de parties jouées</Text>
           <Text style={styles.text}>Nombre de parties gagnées</Text>
-          <Text style={styles.text}>Nombre de votes reçus</Text>
+          <Text style={styles.text}>Pourcentage de victoires</Text>
         </View>
         <View style={styles.statsNumber}>
-          <Text style={styles.text}>0</Text>
-          <Text style={styles.text}>0</Text>
-          <Text style={styles.text}>0</Text>
+          <Text style={styles.text}>{gamesPlayed}</Text>
+          <Text style={styles.text}>{gamesWon}</Text>
+          <Text style={styles.text}>{`${victoryRate}%`}</Text>
         </View>
       </View>
       <TouchableOpacity
