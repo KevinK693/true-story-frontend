@@ -7,80 +7,131 @@ import {
   ScrollView,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { useEffect } from "react";
-import { removeToken, updateAvatar } from "../reducers/user";
-import React from "react";
-import { Dropdown } from "react-native-element-dropdown";
-import { useState } from "react";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { useEffect, useState } from "react";
+import { updateAvatar } from "../reducers/user";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function WaitingForPlayers({ navigation }) {
-  const dispatch = useDispatch();
+  const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+  const game = useSelector((state) => state.game.value);
+  const code = game.code;
   const user = useSelector((state) => state.user.value);
   const token = user.token;
-  const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+
+  const [gameImage, setGameImage] = useState(null);
+  const [gameCode, setGameCode] = useState("");
+  const [players, setPlayers] = useState([])
+  const [playersNumber, setPlayersNumber] = useState(0)
+
   useEffect(() => {
     if (token) {
       fetch(`${BACKEND_URL}/users/${token}`)
         .then((response) => response.json())
         .then((data) => {
-          if (data.result && data.user.avatar) {
-            // Si l'avatar du serveur est différent de celui dans Redux, mettre à jour Redux
+          if (data.result && data.user?.avatar) {
             if (data.user.avatar !== user.avatar) {
               dispatch(updateAvatar(data.user.avatar));
             }
           } else {
-            console.log("Erreur de récupération de l'image");
+            console.log("Erreur de récupération de l'image utilisateur");
           }
         });
     }
   }, [token]);
 
-  const avatarUrl = user.avatar;
-const players = [
-  { pseudo: "Zuckerberg", avatar: avatarUrl },
-  { pseudo: "Elon", avatar: avatarUrl },
-  { pseudo: "Ada", avatar: avatarUrl },
-  { pseudo: "Alan", avatar: avatarUrl },
-  { pseudo: "Grace", avatar: avatarUrl },
-  { pseudo: "Linus", avatar: avatarUrl },
-  { pseudo: "Steve", avatar: avatarUrl },
-  { pseudo: "Bill", avatar: avatarUrl },
-];
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/games/game/${code}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          setGameImage(data.game.image);
+          setGameCode(data.game.code);
+          setPlayersNumber(data.game.nbPlayers)
+        } else {
+          console.log("Erreur de récupération des données utilisateur");
+        }
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/games/players/${code}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.result) {
+        setPlayers(data.players)
+      }
+    })
+  }, [])
+
+  const handleSubmit = () => {
+    console.log("Image du jeu :", gameImage);
+    // Lancer la partie ici
+  };
+
+  // const players = [
+  //   {
+  //     pseudo: "Zuckerberg",
+  //     avatar: "https://randomuser.me/api/portraits/men/10.jpg",
+  //   },
+  //   {
+  //     pseudo: "Elon",
+  //     avatar: "https://randomuser.me/api/portraits/men/11.jpg",
+  //   },
+  //   {
+  //     pseudo: "Ada",
+  //     avatar: "https://randomuser.me/api/portraits/women/12.jpg",
+  //   },
+  //   {
+  //     pseudo: "Grace",
+  //     avatar: "https://randomuser.me/api/portraits/women/13.jpg",
+  //   },
+  // ];
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Image style={styles.user} source={{ uri: avatarUrl }} />
+        <Image
+          source={{
+            uri: gameImage,
+          }}
+          style={styles.user}
+        />
       </View>
       <View style={styles.middle}>
         <TouchableOpacity onPress={() => navigation.navigate("StartingGame")}>
-          <Text style={styles.code}>CODE DE PARTIE : BA7LX</Text>
+          <Text style={styles.code}>CODE DE PARTIE : {gameCode}</Text>
         </TouchableOpacity>
-        <Text style={styles.joueurs}>Nombre de Joueurs : 3/4</Text>
+        <Text style={styles.joueurs}>
+          Nombre de Joueurs : {playersNumber}
+        </Text>
       </View>
       <View style={styles.players}>
-     <ScrollView
-  style={styles.scrollContainer}
-  contentContainerStyle={styles.content}
-  showsVerticalScrollIndicator={true}
-  persistentScrollbar={true}
->
-  {players.map((player, i) => (
-    <View key={i} style={styles.player}>
-      <Image style={styles.useronline} source={{ uri: player.avatar }} />
-      <Text style={styles.item}>{player.pseudo}</Text>
-      <View style={styles.rond} />
-    </View>
-  ))}
-</ScrollView>
+        <ScrollView
+          style={styles.scrollContainer}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={true}
+          persistentScrollbar={true}
+        >
+          {players.map((player, i) => (
+            <View key={i} style={styles.player}>
+              <Image
+                style={styles.useronline}
+                source={{ uri: player.avatar }}
+              />
+              <Text style={styles.item}>{player.nickname}</Text>
+              <View style={styles.rond} />
+            </View>
+          ))}
+        </ScrollView>
       </View>
+      <Text style={styles.joueursAttente}>
+          En attente des joueurs : {players.length}/{playersNumber}
+        </Text>
       <View style={styles.bottom}>
         <TouchableOpacity
           style={styles.button}
           activeOpacity={0.8}
-          onPress={() => handleSubmit()}
+          onPress={handleSubmit}
         >
           <Text style={styles.buttonText}>Lancer la partie</Text>
         </TouchableOpacity>
@@ -91,9 +142,10 @@ const players = [
 
 const styles = StyleSheet.create({
   user: {
-    width: 150,
-    height: 150,
+    width: 140,
+    height: 140,
     borderRadius: 50,
+    marginTop: 20,
   },
   container: {
     flex: 1,
@@ -110,7 +162,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingTop: 35,
+    paddingTop: 20,
   },
   middle: {
     justifyContent: "center",
@@ -119,9 +171,8 @@ const styles = StyleSheet.create({
   },
   code: {
     fontSize: 20,
-    fontFamily: "Noto Sans Gujarati",
+    fontFamily: "NotoSans_700Bold",
     color: "#335561",
-    fontWeight: "bold",
     marginVertical: 10,
   },
   joueurs: {
@@ -129,27 +180,26 @@ const styles = StyleSheet.create({
     color: "#335561",
   },
   scrollContainer: {
-    maxHeight: 400,
+    maxHeight: 500,
     width: "100%",
     borderRadius: 10,
-    marginTop: 25,
-    padding: 10,
-
+    marginTop: 20,
   },
   content: {
     padding: 10,
   },
- player: {
-  flexDirection: "row",
-  alignItems: "center",
-  marginLeft: 20,
-  marginBottom: 20, 
-},
+  player: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: 0,
+    marginBottom: 20,
+    position: "relative",
+    paddingRight: 30,
+  },
   item: {
     fontSize: 25,
-    fontFamily: "Noto Sans Gujarati",
+    fontFamily: "NotoSans_700Bold",
     color: "#335561",
-    fontWeight: "bold",
     marginBottom: 10,
     marginVertical: 5,
     marginLeft: 10,
@@ -160,28 +210,30 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   rond: {
+    position: "absolute",
+    right: 0,
+    top: "50%",
+    transform: [{ translateY: -6 }],
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: "red",
-    marginLeft: 50,
+    backgroundColor: "green",
   },
   players: {
-    height: 330,
+    height: 360,
+    width: 300,
   },
   button: {
     backgroundColor: "#65558F",
     padding: 10,
     borderRadius: 8,
     width: 260,
-    marginTop: 50,
-    marginBottom: 10,
+    marginTop: 20,
     height: 50,
   },
-  buttonText: {
-    color: "#EADDFF",
-    fontSize: 20,
-    fontWeight: "600",
-    textAlign: "center",
+  joueursAttente: {
+    fontSize: 17,
+    color: "#335561",
+    fontFamily: "NotoSans_700Bold",
   },
 });
