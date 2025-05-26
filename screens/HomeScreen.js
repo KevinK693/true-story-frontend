@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  Button,
+} from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -63,12 +70,19 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.textbutton}>REJOINDRE</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate('Voting')}
+          onPress={() => navigation.navigate("StartingGame")}
           style={styles.button}
           activeOpacity={0.8}
         >
           <Text style={styles.textbutton}>CONTINUER</Text>
         </TouchableOpacity>
+        <View style={{ flexDirection: "row" }}>
+          <Button title="Votes" onPress={() => navigation.navigate("Voting")} />
+          <Button
+            title="VOte winner"
+            onPress={() => navigation.navigate("VoteWinner")}
+          />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -86,7 +100,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   image: {
-    width: '50%',
+    width: "50%",
     resizeMode: "contain",
     alignSelf: "center",
     marginVertical: 20,

@@ -5,6 +5,7 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  Modal,
 } from "react-native";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
@@ -14,35 +15,90 @@ import { useNavigation } from "@react-navigation/native";
 
 export default function VotingScreen() {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
-  const navigation = useNavigation()
+  const navigation = useNavigation();
   const game = useSelector((state) => state.game.value);
   const code = game.code;
   const [gameImage, setGameImage] = useState(null);
-   const [gameTitle, setGameTitle] = useState('')
+  const [gameTitle, setGameTitle] = useState("");
+  const [playedScenes, setPlayedScenes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedScene, setSelectedScene] = useState(null);
 
-  //Récupération de l'image de la partie
   useEffect(() => {
     fetch(`${BACKEND_URL}/games/game/${code}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
           setGameImage(data.game.image);
-          setGameTitle(data.game.title)
+          setGameTitle(data.game.title);
         } else {
-          console.log("Erreur de récupération des données utilisateur");
+          console.log("Error user data recovery");
         }
-      });
+      })
   }, []);
+
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/scenes/${code}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          const playedScenesOnly = data.scenes.filter(
+            (scene) => scene.status === true
+          );
+          const sortedScenes = playedScenesOnly.sort(
+            (a, b) => a.sceneNumber - b.sceneNumber
+          );
+          setPlayedScenes(sortedScenes);
+        } else {
+          console.log("Error in recovering scenes played");
+        }
+        setLoading(false);
+      })
+  }, [code]);
+
+  const openModal = (scene) => {
+    setSelectedScene(scene);
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedScene(null);
+  };
+
+  const getWinnerProposition = (scene) => {
+    if (!scene.propositions ) return null;
+    return scene.propositions.reduce((prev, current) =>
+      current.votes > prev.votes ? current : prev
+    );
+  };
+
+  const renderSceneCard = (scene) => {
+    const winner = getWinnerProposition(scene);
+
+    return (
+      <TouchableOpacity
+        key={scene._id}
+        style={styles.sceneCard}
+        onPress={() => openModal(scene)}
+      >
+        <Text style={styles.sceneCardTitle}>Scène n°{scene.sceneNumber}</Text>
+        {winner && (
+          <Text style={styles.winnerText}>
+            Proposition retenue: {winner.text}
+          </Text>
+        )}
+      </TouchableOpacity>
+    );
+  };
+
+  const currentScene = playedScenes[playedScenes.length - 1];
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topBar}>
-        <Image
-          source={{
-            uri: gameImage,
-          }}
-          style={styles.gameImage}
-        />
+        <Image source={{ uri: gameImage }} style={styles.gameImage} />
         <TouchableOpacity
           style={styles.iconHistory}
           onPress={() => navigation.goBack()}
@@ -50,24 +106,107 @@ export default function VotingScreen() {
           <FontAwesome5 name="arrow-left" size={35} color="#335561" />
         </TouchableOpacity>
       </View>
+
       <Text style={styles.gameTitle}>{gameTitle}</Text>
       <Text style={styles.subtitle}>Résumé de la partie</Text>
-      <ScrollView style={{width: "100%"}}>
-        <View  style={styles.propositionsContainer}>
-        <View style={styles.containerProposition}>
-          <Text style={styles.proposition}></Text>
+
+      <ScrollView style={{ width: "100%" }}>
+        <View style={styles.playedScenesContainer}>
+          {loading ? (
+            <Text style={styles.loadingText}>Chargement des scènes...</Text>
+          ) : playedScenes.length > 0 ? (
+            playedScenes.map((scene) => renderSceneCard(scene))
+          ) : (
+            <Text style={styles.noScenesText}>
+              Aucune scène jouée pour le moment
+            </Text>
+          )}
         </View>
-        <View style={styles.containerProposition}>
-          <Text style={styles.proposition}></Text>
-        </View>
-        <View style={styles.containerProposition}>
-          <Text style={styles.proposition}></Text>
-        </View>
-        <View style={styles.containerProposition}>
-          <Text style={styles.proposition}></Text>
-        </View>
-        </View>
+
+        {currentScene && (
+          <View style={styles.currentSceneContainer}>
+            <Text style={styles.currentSceneTitle}>Scène actuelle</Text>
+            <View style={styles.currentSceneCard}>
+              <Text style={styles.currentSceneNumber}>
+                Scène n°{currentScene.sceneNumber}
+              </Text>
+              <ScrollView
+                style={styles.currentSceneTextContainer}
+                nestedScrollEnabled={true}
+              >
+                <Text style={styles.currentSceneText}>
+                  {currentScene.text}
+                </Text>
+              </ScrollView>
+              {currentScene.propositions &&
+                currentScene.propositions.length > 0 && (
+                  <View style={styles.propositionsPreview}>
+                    <Text style={styles.propositionsTitle}>
+                      {currentScene.propositions.length} proposition(s) en
+                      cours
+                    </Text>
+                  </View>
+                )}
+            </View>
+          </View>
+        )}
       </ScrollView>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={closeModal}
+        >
+          <View style={styles.modalContent}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={closeModal}
+            >
+              <FontAwesome5 name="times" size={24} color="#335561" />
+            </TouchableOpacity>
+
+            {selectedScene && (
+              <ScrollView style={styles.modalScrollView}>
+                <Text style={styles.modalTitle}>
+                  Scène n°{selectedScene.sceneNumber}
+                </Text>
+
+                <View style={styles.modalSection}>
+                  <Text style={styles.modalSectionTitle}>
+                    Texte de la scène :
+                  </Text>
+                  <Text style={styles.modalText}>{selectedScene.text}</Text>
+                </View>
+
+                {selectedScene.propositions &&
+                  selectedScene.propositions.length > 0 && (
+                    <View style={styles.modalSection}>
+                      <Text style={styles.modalSectionTitle}>
+                        Propositions des joueurs :
+                      </Text>
+                      {selectedScene.propositions.map((proposition, index) => (
+                        <View key={index} style={styles.propositionItem}>
+                          <Text style={styles.propositionText}>
+                            {proposition.text}
+                          </Text>
+                          <Text style={styles.propositionVotes}>
+                            Votes: {proposition.votes || 0}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+              </ScrollView>
+            )}
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -90,6 +229,7 @@ const styles = StyleSheet.create({
   gameImage: {
     width: 60,
     height: 60,
+    borderRadius: 10,
   },
   iconHistory: {
     padding: 5,
@@ -101,38 +241,169 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     textAlign: "center",
   },
-  gameScene: {
-    fontFamily: "Noto Sans Gujarati",
-    fontSize: 20,
-    color: "#335561",
-    marginTop: 10,
-    textAlign: "center",
-  },
-  proposition: {
+  subtitle: {
     fontSize: 18,
-    fontFamily: "Montserrat",
+    fontFamily: "NotoSans_400Regular",
+    color: "#335561",
+    marginBottom: 20,
   },
-  containerProposition: {
-    borderRadius: 10,
+  playedScenesContainer: {
+    width: "100%",
+    alignItems: "center",
+  },
+  sceneCard: {
     backgroundColor: "white",
-    height: 150,
-    width: "97%",
+    borderRadius: 10,
+    padding: 15,
+    marginVertical: 5,
+    width: "95%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  sceneCardTitle: {
+    fontSize: 18,
+    fontFamily: "NotoSans_700Bold",
+    color: "#335561",
+    marginBottom: 5,
+  },
+  winnerText: {
+    fontSize: 14,
+    fontFamily: "NotoSans_400Regular",
+    color: "#335561",
+    fontStyle: "italic",
+  },
+  currentSceneContainer: {
+    marginTop: 30,
+    width: "100%",
+    alignItems: "center",
+  },
+  currentSceneTitle: {
+    fontSize: 22,
+    fontFamily: "NotoSans_700Bold",
+    color: "#335561",
+    marginBottom: 15,
+  },
+  currentSceneCard: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    width: "95%",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 6,
-    marginVertical: 10,
+    marginBottom: 20,
   },
-  propositionsContainer: {
-    marginTop: 20,
-    marginBottom: 40,
-    width: '100%',
-    alignItems: 'center'
+  currentSceneNumber: {
+    fontSize: 20,
+    fontFamily: "NotoSans_700Bold",
+    color: "#335561",
+    marginBottom: 10,
   },
-  subtitle: {
-    fontSize: 18,
+  currentSceneTextContainer: {
+    maxHeight: 200,
+    marginBottom: 15,
+  },
+  currentSceneText: {
+    fontSize: 16,
     fontFamily: "NotoSans_400Regular",
+    color: "#335561",
+    lineHeight: 22,
+  },
+  propositionsPreview: {
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
+    paddingTop: 10,
+  },
+  propositionsTitle: {
+    fontSize: 14,
+    fontFamily: "NotoSans_700Bold",
+    color: "#335561",
+  },
+  loadingText: {
+    fontSize: 16,
+    fontFamily: "NotoSans_400Regular",
+    color: "#335561",
+    textAlign: "center",
+    marginTop: 20,
+  },
+  noScenesText: {
+    fontSize: 16,
+    fontFamily: "NotoSans_400Regular",
+    color: "#335561",
+    textAlign: "center",
+    marginTop: 20,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 20,
+    margin: 20,
+    maxHeight: "80%",
+    width: "90%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalScrollView: {
+    flex: 1,
+  },
+  closeButton: {
+    alignSelf: "flex-end",
+    padding: 10,
+    marginBottom: 10,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontFamily: "NotoSans_700Bold",
+    color: "#335561",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  modalSection: {
+    marginBottom: 20,
+  },
+  modalSectionTitle: {
+    fontSize: 18,
+    fontFamily: "NotoSans_700Bold",
+    color: "#335561",
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    fontFamily: "NotoSans_400Regular",
+    color: "#335561",
+    lineHeight: 22,
+  },
+  propositionItem: {
+    backgroundColor: "white",
+    borderRadius: 8,
+    padding: 12,
+    marginVertical: 5,
+    borderLeftWidth: 3,
+    borderLeftColor: "#335561",
+  },
+  propositionText: {
+    fontSize: 14,
+    fontFamily: "NotoSans_400Regular",
+    color: "#335561",
+    marginBottom: 5,
+  },
+  propositionVotes: {
+    fontSize: 12,
+    fontFamily: "NotoSans_700Bold",
     color: "#335561",
   },
 });
