@@ -25,6 +25,7 @@ import VotingScreen from './screens/VotingScreen'
 import GameHistoryScreen from "./screens/GameHistoryScreen";
 import VoteWinnerScreen from "./screens/VoteWinnerScreen";
 import EndGameScreen from "./screens/EndGameScreen";
+import UserPastGamesScreen from "./screens/UserPastGamesScreen";
 
 import { persistStore, persistReducer } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
@@ -34,8 +35,9 @@ import { Provider, useSelector } from "react-redux";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import user from "./reducers/user";
 import game from './reducers/game'
+import scene from './reducers/scene';
 
-const reducers = combineReducers({ user, game });
+const reducers = combineReducers({ user, game, scene });
 const persistConfig = { key: "faceup", storage: AsyncStorage };
 
 const store = configureStore({
@@ -66,6 +68,7 @@ const MainStackScreen = () => (
     <MainStack.Screen name="GameHistory" component={GameHistoryScreen} />
     <MainStack.Screen name="VoteWinner" component={VoteWinnerScreen} />
     <MainStack.Screen name="EndGame" component={EndGameScreen} />
+    <MainStack.Screen name="UserPastGames" component={UserPastGamesScreen} />
   </MainStack.Navigator>
 );
 
