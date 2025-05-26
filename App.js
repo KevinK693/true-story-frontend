@@ -34,8 +34,9 @@ import { Provider, useSelector } from "react-redux";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import user from "./reducers/user";
 import game from './reducers/game'
+import scene from './reducers/scene';
 
-const reducers = combineReducers({ user, game });
+const reducers = combineReducers({ user, game, scene });
 const persistConfig = { key: "faceup", storage: AsyncStorage };
 
 const store = configureStore({

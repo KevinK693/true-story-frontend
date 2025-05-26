@@ -12,27 +12,131 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { Dropdown } from "react-native-element-dropdown";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { updateScene } from "../reducers/scene";
 
 export default function UserInputScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+  const dispatch = useDispatch();
 
   const [userText, setUserText] = useState("");
 
+  const game = useSelector((state) => state.game.value);
+  const code = game.code;
+
   const user = useSelector((state) => state.user.value);
+  const token = user.token;
+
+  const scene = useSelector((state) => state.scene.value);
+  const sceneNumber = scene.sceneNumber;
+
+  const [sceneText, setSceneText] = useState("");
+  const [sceneNb, setSceneNb] = useState("");
+  const [propositionsNb, setPropositionsNb] = useState([]);
+  const [playersNb, setPlayersNb] = useState([]);
+  const [totalScenesNb, setTotalScenesNb] = useState([]);
+  const [title, setTitle] = useState("");
+  const [image, setImage] = useState(null);
+
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/games/game/${code}`)
+      .then((response) => {
+        if (!response.ok) {
+          console.error(
+            `Erreur HTTP: ${response.status} ${response.statusText}`
+          );
+          return response.text().then((text) => {
+            console.log("Réponse reçue :", text);
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          });
+        }
+
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          console.error("La réponse n'est pas du JSON:", contentType);
+          return response.text().then((text) => {
+            console.log("Contenu reçu :", text);
+            throw new Error("Réponse non-JSON reçue");
+          });
+        }
+
+        return response.json();
+      })
+      .then((data) => {
+        if (data.result) {
+          console.log("Données de la partie :", data);
+          setPlayersNb(data.game.nbPlayers);
+          setTitle(data.game.title);
+          setTotalScenesNb(data.game.nbScenes);
+          setImage(data.game.image);
+        } else {
+          console.error(
+            "Erreur côté backend (game):",
+            data.error || "Structure de données inattendue"
+          );
+          console.log("Structure reçue :", data);
+        }
+      })
+      .catch((error) => {
+        console.error("Erreur lors du fetch du jeu :", error);
+        console.log("Type d'erreur :", error.constructor.name);
+      });
+
+    // Récupérer la scène
+    fetch(`${BACKEND_URL}/scenes/code/${code}/scene/${sceneNumber}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA DU FETCH (scène):", data);
+        if (data.result) {
+          setSceneText(data.data.text);
+          setSceneNb(data.data.sceneNumber);
+          setPropositionsNb(data.data.propositions.length);
+        } else {
+          console.error(
+            "Erreur côté backend (scène):",
+            data.error || "Structure de données inattendue"
+          );
+          console.log("Structure reçue :", data);
+        }
+      })
+      .catch((error) => {
+        console.error("Erreur lors du fetch de la scène :", error);
+      });
+  }, []);
 
   const handleHistorySubmit = () => {
     navigation.navigate("Profile");
   };
   const handleNextScreen = () => {
-    navigation.navigate("Profile");
+    fetch(`${BACKEND_URL}/scenes/proposition/${code}/${sceneNumber}/${token}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text: userText,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          console.log("Text sent successfully :", data);
+          dispatch(updateScene(data))
+          setUserText(""); // Réinitialiser le champ de texte
+          navigation.navigate("Voting"); // Naviguer vers l'écran suivant
+        } else {
+          console.error("Erreur lors de l'envoi du texte :", data.error);
+        }
+      })
+      .catch((error) => {
+        console.error("Erreur réseau :", error);
+      });
   };
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
@@ -45,7 +149,7 @@ export default function UserInputScreen({ navigation }) {
             <View style={styles.topBar}>
               <Image
                 source={{
-                  uri: "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834382/ovni_qla2gb.png",
+                  uri: image,
                 }}
                 style={styles.logoImage}
                 resizeMode="contain"
@@ -59,10 +163,10 @@ export default function UserInputScreen({ navigation }) {
             </View>
             {/* fin de la topBar */}
             <Text style={[styles.textTitle, { textAlign: "center" }]}>
-              The Walking Fetch
+              {title}
             </Text>
             <Text style={[styles.textScene, { textAlign: "center" }]}>
-              Scène actuelle: 1/24
+              Scène actuelle: {sceneNb}/{totalScenesNb}
             </Text>
             {/* Le prompt IA avec son container */}
             <View style={styles.containerTexteIa}>
@@ -72,7 +176,7 @@ export default function UserInputScreen({ navigation }) {
                   multiline={true} //Pour que le texte soit sur plusieurs lignes
                   editable={false} //Pour qu'aucune modification ne soit possible
                   placeholder="Story goes here..."
-                  value="Ce matin, Kevin a décidé de faire du sport. Il a commencé par s’étirer... en tombant du lit. Premier succès. Ensuite, il a couru... après son chien qui avait volé sa chaussette. Puis, motivé, il a tenté une séance de yoga avec une vidéo YouTube. Tout allait bien jusqu’à ce que sa grand-mère entre et lui demande pourquoi il faisait une offrande au canapé. Après 10 minutes en position chien tête en bas, il s’est rendu compte qu’il avait coincé son short dans le ventilateur. Résultat : le chat traumatisé, la plante verte décapitée, et Kevin jurant solennellement de ne plus jamais écouter son corps, parce que visiblement, le sien veut juste des chips et une sieste."
+                  value={sceneText}
                 />
               </ScrollView>
             </View>
