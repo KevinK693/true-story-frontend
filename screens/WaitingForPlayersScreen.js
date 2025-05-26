@@ -135,15 +135,15 @@ export default function WaitingForPlayers({ navigation }) {
 
 const styles = StyleSheet.create({
   user: {
-    width: 140,
-    height: 140,
+    width: 100,
+    height: 100,
     borderRadius: 50,
-    marginTop: 20,
   },
   container: {
     flex: 1,
     backgroundColor: "#FBF1F1",
     alignItems: "center",
+    padding: 20
   },
   buttonText: {
     color: "#EADDFF",
@@ -155,7 +155,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingTop: 20,
   },
   middle: {
     justifyContent: "center",
@@ -187,10 +186,9 @@ const styles = StyleSheet.create({
     marginLeft: 0,
     marginBottom: 20,
     position: "relative",
-    paddingRight: 30,
   },
   item: {
-    fontSize: 25,
+    fontSize: 22,
     fontFamily: "NotoSans_700Bold",
     color: "#335561",
     marginBottom: 10,
@@ -198,8 +196,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   useronline: {
-    width: 65,
-    height: 65,
+    width: 60,
+    height: 60,
     borderRadius: 50,
   },
   rond: {
@@ -213,8 +211,8 @@ const styles = StyleSheet.create({
     backgroundColor: "green",
   },
   players: {
-    height: 360,
-    width: 300,
+    height: '45%',
+    width: '90%',
   },
   button: {
     backgroundColor: "#65558F",
