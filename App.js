@@ -20,7 +20,6 @@ import JoinGameScreen from "./screens/JoinGameScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import WaitingForPlayersScreen from "./screens/WaitingForPlayersScreen";
 import StartingGameScreen from "./screens/StartingGameScreen";
-import UserInputScreen from "./screens/UserInputScreen";
 import VotingScreen from './screens/VotingScreen'
 import GameHistoryScreen from "./screens/GameHistoryScreen";
 import VoteWinnerScreen from "./screens/VoteWinnerScreen";
@@ -63,7 +62,6 @@ const MainStackScreen = () => (
       component={WaitingForPlayersScreen}
     />
     <MainStack.Screen name="StartingGame" component={StartingGameScreen} />
-    <MainStack.Screen name="UserInput" component={UserInputScreen} />
     <MainStack.Screen name="Voting" component={VotingScreen} />
     <MainStack.Screen name="GameHistory" component={GameHistoryScreen} />
     <MainStack.Screen name="VoteWinner" component={VoteWinnerScreen} />
