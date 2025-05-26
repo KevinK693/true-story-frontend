@@ -88,7 +88,6 @@ export default function StartingGameScreen({ navigation }) {
         console.log("DATA DU FETCH (scène):", data);
         if (data.result) {
           setSceneText(data.data.text);
-          setSceneNb(data.data.sceneNumber);
           setPropositionsNb(data.data.propositions.length);
         } else {
           console.error(
