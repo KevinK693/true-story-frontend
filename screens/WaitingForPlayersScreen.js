@@ -9,19 +9,23 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { updateAvatar } from "../reducers/user";
+import { updateGame } from '../reducers/game';
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function WaitingForPlayers({ navigation }) {
+export default function WaitingForPlayers({ navigation, route }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
-  const game = useSelector((state) => state.game.value);
-  const code = game.code;
+  const dispatch = useDispatch()
   const user = useSelector((state) => state.user.value);
   const token = user.token;
+  const { code } = route.params
 
   const [gameImage, setGameImage] = useState(null);
-  const [gameCode, setGameCode] = useState("");
+  const [title, setTitle] = useState("");
+  const [scenesNumber, setScenesNumber] = useState(0);
+  const [genre, setGenre] = useState("")
   const [players, setPlayers] = useState([]);
   const [playersNumber, setPlayersNumber] = useState(0);
+  const [status, setStatus] = useState(false);
 
   useEffect(() => {
     if (token) {
@@ -45,8 +49,11 @@ export default function WaitingForPlayers({ navigation }) {
       .then((data) => {
         if (data.result) {
           setGameImage(data.game.image);
-          setGameCode(data.game.code);
           setPlayersNumber(data.game.nbPlayers);
+          setTitle(data.game.title)
+          setScenesNumber(data.game.nbScenes)
+          setGenre(data.game.genre)
+          setStatus(data.game.status)
         } else {
           console.log("Erreur de récupération des données utilisateur");
         }
@@ -54,14 +61,18 @@ export default function WaitingForPlayers({ navigation }) {
   }, []);
 
   useEffect(() => {
-    fetch(`${BACKEND_URL}/games/players/${code}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.result) {
-          setPlayers(data.players);
-        }
-      });
-  }, [players]);
+    const interval = setInterval(() => {
+      fetch(`${BACKEND_URL}/games/players/${code}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.result) {
+            setPlayers(data.players);
+          }
+        });
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [code]);
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/scenes/firstScene`, {
@@ -78,6 +89,7 @@ export default function WaitingForPlayers({ navigation }) {
   }, []);
 
   const handleSubmit = () => {
+    dispatch(updateGame({ image: gameImage, title: title, code: code, genre: genre, nbPlayers: playersNumber, nbScenes: scenesNumber, status: status }))
     navigation.navigate("StartingGame");
   };
 
@@ -93,7 +105,7 @@ export default function WaitingForPlayers({ navigation }) {
       </View>
       <View style={styles.middle}>
         <TouchableOpacity onPress={() => navigation.navigate("StartingGame")}>
-          <Text style={styles.code}>CODE DE PARTIE : {gameCode}</Text>
+          <Text style={styles.code}>CODE DE PARTIE : {code}</Text>
         </TouchableOpacity>
         <Text style={styles.joueurs}>Nombre de Joueurs : {playersNumber}</Text>
       </View>

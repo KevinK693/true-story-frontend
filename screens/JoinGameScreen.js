@@ -32,7 +32,7 @@ export default function JoinGame({ navigation }) {
     }).then(response => response.json())
     .then(data => {
       if (data.result) {
-        navigation.navigate('WaitingForPlayers')
+        navigation.navigate('WaitingForPlayers', { code: code })
         setCode('')
       } else {
         console.log('Erreur de récupération de la partie', data.error)

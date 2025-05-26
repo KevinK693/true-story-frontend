@@ -13,11 +13,9 @@ import { useState } from "react";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
-import { updateGame } from "../reducers/game";
 
 export default function CreateGameScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
-  const dispatch = useDispatch();
 
   const [selectedPlayers, setSelectedPlayers] = useState(null);
   const [selectedScenes, setSelectedScenes] = useState(null);
@@ -27,7 +25,6 @@ export default function CreateGameScreen({ navigation }) {
   const [modalPlayersVisible, setModalPlayersVisible] = useState(false);
   const [modalScenesVisible, setModalScenesVisible] = useState(false);
   const [modalImageVisible, setModalImageVisible] = useState(false);
-  const [code, setCode] = useState(null)
 
   const user = useSelector((state) => state.user.value);
   const token = user.token;
@@ -97,14 +94,12 @@ export default function CreateGameScreen({ navigation }) {
       .then((data) => {
         if (data.result) {
           console.log("Partie créée avec succès", data.result);
-          dispatch(updateGame(data));
           setTitle(null);
           setImage(null);
           setSelectedPlayers(null);
           setSelectedScenes(null);
           setSelectedGenre(null);
-          setCode(data.code)
-          navigation.navigate("WaitingForPlayers");
+          navigation.navigate("WaitingForPlayers", { code: data.code });
         } else {
           console.log("Erreur lors de la création du profil :", data.error);
         }

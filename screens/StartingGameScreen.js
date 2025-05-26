@@ -11,10 +11,9 @@ import {
 } from "react-native";
 import { useEffect } from "react";
 import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { updateScene } from "../reducers/scene";
 
 export default function StartingGameScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -82,25 +81,28 @@ export default function StartingGameScreen({ navigation }) {
       });
 
     // Récupérer la scène
-    fetch(`${BACKEND_URL}/scenes/code/${code}/scene/1`)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("DATA DU FETCH (scène):", data);
-        if (data.result) {
-          setSceneText(data.data.text);
-          setPropositionsNb(data.data.propositions.length);
-        } else {
-          console.error(
-            "Erreur côté backend (scène):",
-            data.error || "Structure de données inattendue"
-          );
-          console.log("Structure reçue :", data);
-        }
-      })
-      .catch((error) => {
-        console.error("Erreur lors du fetch de la scène :", error);
-      });
-  }, []);
+    const interval = setInterval(() => {
+      fetch(`${BACKEND_URL}/scenes/code/${code}/scene/1`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("DATA DU FETCH (scène):", data);
+          if (data.result) {
+            setSceneText(data.data.text);
+            setPropositionsNb(data.data.propositions.length);
+          } else {
+            console.error(
+              "Erreur côté backend (scène):",
+              data.error || "Structure de données inattendue"
+            );
+            console.log("Structure reçue :", data);
+          }
+        })
+        .catch((error) => {
+          console.error("Erreur lors du fetch de la scène :", error);
+        });
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [code]);
 
   const handleHistorySubmit = () => {
     navigation.navigate("GameHistory");
