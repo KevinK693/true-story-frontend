@@ -2,14 +2,11 @@ import {
   StyleSheet,
   Text,
   View,
-  TextInput,
   TouchableOpacity,
-  Keyboard,
   Image,
-  TouchableWithoutFeedback,
   ScrollView,
 } from "react-native";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
@@ -102,7 +99,6 @@ export default function StartingGameScreen({ navigation }) {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={styles.container}>
         {/* topBar = La barre du haut qui contient le logo et l'icone d'historique */}
         <View style={styles.topBar}>
@@ -127,14 +123,8 @@ export default function StartingGameScreen({ navigation }) {
         </Text>
         {/* Le prompt IA avec son container */}
         <View style={styles.containerTexteIa}>
-          <ScrollView>
-            <TextInput
-              style={styles.texteIa}
-              multiline={true} // Permet de faire un texte sur plusieurs lignes
-              editable={false} // Pour qu'aucune modification ne soit possible
-              placeholder="Story goes here..."
-              value={sceneText} // Affiche le texte de la scène
-            />
+          <ScrollView style={{flex: 1}}>
+            <Text style={styles.texteIa}>{sceneText}</Text>
           </ScrollView>
         </View>
         {/* Bouton */}
@@ -149,7 +139,6 @@ export default function StartingGameScreen({ navigation }) {
           Nombre de propositions: {propositionsNb}/{playersNb}
         </Text>
       </SafeAreaView>
-    </TouchableWithoutFeedback>
   );
 }
 
@@ -158,11 +147,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FBF1F1",
     alignItems: "center",
-    justifyContent: "flex-start",
-    width: "100%",
   },
-
-  // La barre du haut qui contient le logo et l'icone d'historique
   topBar: {
     width: "100%",
     flexDirection: "row",
@@ -171,23 +156,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20,
   },
-
   logoImage: {
     width: 60,
     height: 60,
   },
-
   iconHistoryContainer: {
     width: "100%",
     alignItems: "flex-end",
     paddingHorizontal: 20,
     paddingTop: 20,
   },
-
   iconHistory: {
     padding: 5,
   },
-  // Le nom de l'histoire
   textTitle: {
     fontSize: 30,
     fontFamily: "Noto Sans Gujarati",
@@ -195,15 +176,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     paddingTop: 10,
   },
-
-  // Compteur de scènes
   textScene: {
     fontFamily: "Noto Sans Gujarati",
     fontSize: 20,
     color: "#335561",
     marginTop: 10,
   },
-  // Prompt de l'IA
   texteIa: {
     fontSize: 18,
     margin: 30,
@@ -213,7 +191,6 @@ const styles = StyleSheet.create({
   containerTexteIa: {
     borderRadius: 10,
     backgroundColor: "white",
-    height: 300,
     width: "90%",
     marginTop: 50,
     shadowColor: "#000",
@@ -222,6 +199,8 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     // Ombre pour Android
     elevation: 6,
+    flex: 1,
+    maxHeight: 300,
   },
   button: {
     backgroundColor: "#65558F",

@@ -36,7 +36,7 @@ export default function ProfileScreen({ navigation }) {
           setAvatarUrl(data.user.avatar);
           setNickname(data.user.nickname);
         } else {
-          console.log("Erreur de récupération des données utilisateur");
+          console.log("Cannot fetch user data");
         }
       });
 
@@ -58,12 +58,13 @@ export default function ProfileScreen({ navigation }) {
 
   const handleShowGames = () => {
     console.log("Afficher les jeux");
+    navigation.navigate('UserPastGames')
   };
 
   const pickImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      alert("Permission requise pour accéder à la galerie.");
+      alert("Permission to access the camera roll is required");
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -104,7 +105,7 @@ export default function ProfileScreen({ navigation }) {
           dispatch(updateAvatar(data.url));
           setModified(true);
         } else {
-          console.log("Erreur lors de la modification du profil :", data.error);
+          console.log("Failed to update profile :", data.error);
         }
       });
   };
