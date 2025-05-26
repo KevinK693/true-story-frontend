@@ -5,6 +5,9 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform
 } from "react-native";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -24,6 +27,8 @@ export default function StartingGameScreen({ navigation }) {
   const [totalScenesNb, setTotalScenesNb] = useState([]);
   const [title, setTitle] = useState("");
   const [image, setImage] = useState(null);
+  const [clicked, setClicked] = useState(false);
+  const [userText, setUserText] = useState("");
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/games/game/${code}`)
@@ -99,6 +104,10 @@ export default function StartingGameScreen({ navigation }) {
   };
 
   return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
       <SafeAreaView style={styles.container}>
         {/* topBar = La barre du haut qui contient le logo et l'icone d'historique */}
         <View style={styles.topBar}>
@@ -123,22 +132,51 @@ export default function StartingGameScreen({ navigation }) {
         </Text>
         {/* Le prompt IA avec son container */}
         <View style={styles.containerTexteIa}>
-          <ScrollView style={{flex: 1}}>
+          <ScrollView style={{ flex: 1 }}>
             <Text style={styles.texteIa}>{sceneText}</Text>
           </ScrollView>
         </View>
-        {/* Bouton */}
-        <TouchableOpacity
-          style={styles.button}
-          activeOpacity={0.8}
-          onPress={handleNextScreen}
-        >
-          <Text style={styles.buttonText}>Proposer une suite</Text>
-        </TouchableOpacity>
-        <Text style={[styles.textNbPropositions, { textAlign: "center" }]}>
-          Nombre de propositions: {propositionsNb}/{playersNb}
-        </Text>
+        {clicked ? (
+          <View style={{ width: "100%", alignItems: "center" }}>
+            <View style={styles.containerUserInput}>
+              <ScrollView>
+                <TextInput
+                  multiline={true} //Pour que le texte soit sur plusieurs lignes
+                  style={styles.texteUserInput}
+                  placeholder="Écrivez votre histoire..."
+                  value={userText}
+                  onChangeText={setUserText}
+                  maxLength={280}
+                />
+                <Text style={styles.maxLength}>{userText.length}/280</Text>
+              </ScrollView>
+            </View>
+
+            {/* Bouton */}
+            <TouchableOpacity
+              style={styles.button}
+              activeOpacity={0.8}
+              onPress={handleNextScreen}
+            >
+              <Text style={styles.buttonText}>Envoyer</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={{ width: "100%", alignItems: "center" }}>
+            <TouchableOpacity
+              style={styles.button}
+              activeOpacity={0.8}
+              onPress={() => setClicked(true)}
+            >
+              <Text style={styles.buttonText}>Proposer une suite</Text>
+            </TouchableOpacity>
+            <Text style={[styles.textNbPropositions, { textAlign: "center" }]}>
+              Nombre de propositions: {propositionsNb}/{playersNb}
+            </Text>
+          </View>
+        )}
       </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -223,5 +261,31 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "#335561",
     paddingTop: 20,
+  },
+  texteUserInput: {
+    fontSize: 15,
+    margin: 12,
+    fontFamily: "Montserrat",
+  },
+  containerUserInput: {
+    borderRadius: 3,
+    backgroundColor: "white",
+    height: 100,
+    marginTop: 20,
+    width: "90%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    // Ombre pour Android
+    elevation: 6,
+  },
+  maxLength: {
+    position: "absolute",
+    bottom: -25,
+    right: 8,
+    fontSize: 12,
+    color: "#888",
+    fontFamily: "Montserrat",
   },
 });
