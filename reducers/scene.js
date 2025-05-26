@@ -13,8 +13,11 @@ export const sceneSlice = createSlice({
     updateScene: (state, action) => {
       state.value.sceneNumber = action.payload;
     },
+    resetScene: (state) => {
+      state.value.sceneNumber = 1
+    }
   },
 });
 
-export const { updateScene } = sceneSlice.actions;
+export const { updateScene, resetScene } = sceneSlice.actions;
 export default sceneSlice.reducer;

@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useEffect } from "react";
 import { useState } from "react";
-import { useSelector, useDispatch} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { updateScene } from "../reducers/scene";
@@ -21,7 +21,7 @@ export default function StartingGameScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const [sceneText, setSceneText] = useState("");
-  const [sceneNb, setSceneNb] = useState("");
+  const [sceneNb, setSceneNb] = useState(1);
   const [propositionsNb, setPropositionsNb] = useState([]);
   const [playersNb, setPlayersNb] = useState([]);
   const [totalScenesNb, setTotalScenesNb] = useState([]);
@@ -109,6 +109,16 @@ export default function StartingGameScreen({ navigation }) {
     navigation.navigate("GameHistory");
   };
   const handleNextScreen = () => {
+    console.log(
+      "Sending PUT to:",
+      `${BACKEND_URL}/scenes/proposition/${code}/${sceneNumber}/${token}`
+    );
+    console.log(
+      "sceneNumber value type:",
+      typeof sceneNumber,
+      "value:",
+      sceneNumber
+    );
     fetch(`${BACKEND_URL}/scenes/proposition/${code}/${sceneNumber}/${token}`, {
       method: "PUT",
       headers: {
@@ -122,7 +132,7 @@ export default function StartingGameScreen({ navigation }) {
       .then((data) => {
         if (data.result) {
           console.log("Text sent successfully :", data);
-          dispatch(updateScene(data));
+          dispatch(updateScene(sceneNb));
           setUserText(""); // Réinitialiser le champ de texte
           navigation.navigate("Voting"); // Naviguer vers l'écran suivant
         } else {

@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { removeToken, updateAvatar } from "../reducers/user";
+import { resetScene } from "../reducers/scene";
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -41,6 +42,11 @@ export default function HomeScreen({ navigation }) {
     dispatch(removeToken());
   };
 
+  const handleCreateGame = () => {
+    navigation.navigate("CreateGame")
+    dispatch(resetScene())
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -56,7 +62,7 @@ export default function HomeScreen({ navigation }) {
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("CreateGame")}
+          onPress={() => handleCreateGame()}
           style={styles.button}
           activeOpacity={0.8}
         >
