@@ -15,6 +15,8 @@ export default function VotingScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
   const game = useSelector((state) => state.game.value);
   const code = game.code;
+  const scene = useSelector((state) => state.scene.value)
+  const sceneNumber = scene.sceneNumber
   const [gameImage, setGameImage] = useState(null);
   const [gameTitle, setGameTitle] = useState('')
   const [selectedButton, setSelectedButton] = useState(null);
@@ -35,7 +37,7 @@ export default function VotingScreen({ navigation }) {
       });
 
     // Récupération des propositions de la scène active depuis la base de données
-    fetch(`${BACKEND_URL}/scenes/${code}/propositions`)
+    fetch(`${BACKEND_URL}/scenes/code/${code}/scene/${sceneNumber}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
