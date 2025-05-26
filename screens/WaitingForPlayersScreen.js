@@ -20,8 +20,8 @@ export default function WaitingForPlayers({ navigation }) {
 
   const [gameImage, setGameImage] = useState(null);
   const [gameCode, setGameCode] = useState("");
-  const [players, setPlayers] = useState([])
-  const [playersNumber, setPlayersNumber] = useState(0)
+  const [players, setPlayers] = useState([]);
+  const [playersNumber, setPlayersNumber] = useState(0);
 
   useEffect(() => {
     if (token) {
@@ -46,7 +46,7 @@ export default function WaitingForPlayers({ navigation }) {
         if (data.result) {
           setGameImage(data.game.image);
           setGameCode(data.game.code);
-          setPlayersNumber(data.game.nbPlayers)
+          setPlayersNumber(data.game.nbPlayers);
         } else {
           console.log("Erreur de récupération des données utilisateur");
         }
@@ -55,13 +55,15 @@ export default function WaitingForPlayers({ navigation }) {
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/games/players/${code}`)
-    .then(response => response.json())
-    .then(data => {
-      if (data.result) {
-        setPlayers(data.players)
-      }
-    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          setPlayers(data.players);
+        }
+      });
+  }, [players]);
 
+  useEffect(() => {
     fetch(`${BACKEND_URL}/scenes/firstScene`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -71,13 +73,12 @@ export default function WaitingForPlayers({ navigation }) {
       .then((data) => {
         if (data.result) {
           console.log("Scène envoyée");
-          
         }
       });
-  }, [])
+  }, []);
 
   const handleSubmit = () => {
-    navigation.navigate('StartingGame')
+    navigation.navigate("StartingGame");
   };
 
   return (
@@ -94,9 +95,7 @@ export default function WaitingForPlayers({ navigation }) {
         <TouchableOpacity onPress={() => navigation.navigate("StartingGame")}>
           <Text style={styles.code}>CODE DE PARTIE : {gameCode}</Text>
         </TouchableOpacity>
-        <Text style={styles.joueurs}>
-          Nombre de Joueurs : {playersNumber}
-        </Text>
+        <Text style={styles.joueurs}>Nombre de Joueurs : {playersNumber}</Text>
       </View>
       <View style={styles.players}>
         <ScrollView
@@ -118,8 +117,8 @@ export default function WaitingForPlayers({ navigation }) {
         </ScrollView>
       </View>
       <Text style={styles.joueursAttente}>
-          En attente des joueurs : {players.length}/{playersNumber}
-        </Text>
+        En attente des joueurs : {players.length}/{playersNumber}
+      </Text>
       <View style={styles.bottom}>
         <TouchableOpacity
           style={styles.button}
@@ -143,7 +142,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FBF1F1",
     alignItems: "center",
-    padding: 20
+    padding: 20,
   },
   buttonText: {
     color: "#EADDFF",
@@ -211,8 +210,8 @@ const styles = StyleSheet.create({
     backgroundColor: "green",
   },
   players: {
-    height: '45%',
-    width: '90%',
+    height: "45%",
+    width: "90%",
   },
   button: {
     backgroundColor: "#65558F",

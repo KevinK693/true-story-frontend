@@ -3,7 +3,6 @@ import {
   StyleSheet,
   Text,
   Image,
-  ScrollView,
   TouchableOpacity,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
@@ -18,9 +17,12 @@ export default function VoteWinnerScreen({ navigation }) {
   const game = useSelector((state) => state.game.value);
   const code = game.code;
   const user = useSelector((state) => state.user.value);
+  const token = user.token
+  const scene = useSelector((state) => state.scene.value)
+  const sceneNumber = scene.sceneNumber
   const [gameImage, setGameImage] = useState(null);
   const [gameTitle, setGameTitle] = useState("");
-  const [gameWinner, setGameWinner] = useState("");
+  const [sceneWinner, setSceneWinner] = useState("");
 
   //Récupération de l'image de la partie
   useEffect(() => {
@@ -30,11 +32,19 @@ export default function VoteWinnerScreen({ navigation }) {
         if (data.result) {
           setGameImage(data.game.image);
           setGameTitle(data.game.title);
-          setGameWinner(data.game.winner);
         } else {
           console.log("Erreur de récupération des données utilisateur");
         }
       });
+
+      fetch(`${BACKEND_URL}/scenes/code/${code}/scene/${sceneNumber}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data)
+        if (data.result) {
+          console.log(data.data.propositions)
+        }
+      })
   }, []);
 
   const handleResumeGame = () => {
