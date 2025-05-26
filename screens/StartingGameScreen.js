@@ -7,19 +7,19 @@ import {
   ScrollView,
   TextInput,
   KeyboardAvoidingView,
-  Platform
+  Platform,
 } from "react-native";
 import { useEffect } from "react";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch} from "react-redux";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { updateScene } from "../reducers/scene";
 
 export default function StartingGameScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+  const dispatch = useDispatch();
 
-  const game = useSelector((state) => state.game.value);
-  const code = game.code;
   const [sceneText, setSceneText] = useState("");
   const [sceneNb, setSceneNb] = useState("");
   const [propositionsNb, setPropositionsNb] = useState([]);
@@ -29,6 +29,15 @@ export default function StartingGameScreen({ navigation }) {
   const [image, setImage] = useState(null);
   const [clicked, setClicked] = useState(false);
   const [userText, setUserText] = useState("");
+
+  const game = useSelector((state) => state.game.value);
+  const code = game.code;
+
+  const user = useSelector((state) => state.user.value);
+  const token = user.token;
+
+  const scene = useSelector((state) => state.scene.value);
+  const sceneNumber = scene.sceneNumber;
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/games/game/${code}`)
@@ -100,7 +109,29 @@ export default function StartingGameScreen({ navigation }) {
     navigation.navigate("GameHistory");
   };
   const handleNextScreen = () => {
-    navigation.navigate("UserInput");
+    fetch(`${BACKEND_URL}/scenes/proposition/${code}/${sceneNumber}/${token}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text: userText,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          console.log("Text sent successfully :", data);
+          dispatch(updateScene(data));
+          setUserText(""); // Réinitialiser le champ de texte
+          navigation.navigate("Voting"); // Naviguer vers l'écran suivant
+        } else {
+          console.error("Erreur lors de l'envoi du texte :", data.error);
+        }
+      })
+      .catch((error) => {
+        console.error("Erreur réseau :", error);
+      });
   };
 
   return (
