@@ -10,8 +10,8 @@ export const sceneSlice = createSlice({
   name: "scene",
   initialState,
   reducers: {
-    updateScene: (state, action) => {
-      state.value.sceneNumber = action.payload;
+    updateScene: (state) => {
+      state.value.sceneNumber += 1;
     },
     resetScene: (state) => {
       state.value.sceneNumber = 1

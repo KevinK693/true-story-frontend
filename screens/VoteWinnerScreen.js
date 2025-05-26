@@ -6,13 +6,15 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { updateScene } from "../reducers/scene";
 
 export default function VoteWinnerScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+  const dispatch = useDispatch()
   const game = useSelector((state) => state.game.value);
   const code = game.code;
   const user = useSelector((state) => state.user.value);
@@ -34,6 +36,11 @@ export default function VoteWinnerScreen({ navigation }) {
         }
       });
   }, []);
+
+  const handleResumeGame = () => {
+    navigation.navigate("StartingGame")
+    dispatch(updateScene())
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -65,7 +72,7 @@ export default function VoteWinnerScreen({ navigation }) {
       </View>
 
       <TouchableOpacity
-        onPress={() => navigation.navigate("EndGame")}
+        onPress={() => handleResumeGame()}
         style={styles.button}
         activeOpacity={0.8}
       >

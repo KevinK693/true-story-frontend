@@ -18,10 +18,8 @@ import { updateScene } from "../reducers/scene";
 
 export default function StartingGameScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
-  const dispatch = useDispatch();
 
   const [sceneText, setSceneText] = useState("");
-  const [sceneNb, setSceneNb] = useState(1);
   const [propositionsNb, setPropositionsNb] = useState([]);
   const [playersNb, setPlayersNb] = useState([]);
   const [totalScenesNb, setTotalScenesNb] = useState([]);
@@ -132,7 +130,6 @@ export default function StartingGameScreen({ navigation }) {
       .then((data) => {
         if (data.result) {
           console.log("Text sent successfully :", data);
-          dispatch(updateScene(sceneNb));
           setUserText(""); // Réinitialiser le champ de texte
           navigation.navigate("Voting"); // Naviguer vers l'écran suivant
         } else {
@@ -169,7 +166,7 @@ export default function StartingGameScreen({ navigation }) {
         {/* fin de la topBar */}
         <Text style={[styles.textTitle, { textAlign: "center" }]}>{title}</Text>
         <Text style={[styles.textScene, { textAlign: "center" }]}>
-          Scène actuelle: {sceneNb}/{totalScenesNb}
+          Scène actuelle: {sceneNumber}/{totalScenesNb}
         </Text>
         {/* Le prompt IA avec son container */}
         <View style={styles.containerTexteIa}>
