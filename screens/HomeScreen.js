@@ -83,7 +83,7 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.textbutton}>CONTINUER</Text>
         </TouchableOpacity>
         <View style={{ flexDirection: "row" }}>
-          <Button title="Votes" onPress={() => navigation.navigate("Voting")} />
+          <Button title="Votes" onPress={() => navigation.navigate("WaitingForPlayers")} />
           <Button
             title="VOte winner"
             onPress={() => navigation.navigate("VoteWinner")}
