@@ -19,9 +19,9 @@ export default function ProfileScreen({ navigation }) {
   const [nickname, setNickname] = useState(null);
   const [image, setImage] = useState(null);
   const [modified, setModified] = useState(false);
-  const [gamesPlayed, setGamesPlayed] = useState(0)
-  const [gamesWon, setGamesWon] = useState(0)
-  let victoryRate = 0
+  const [gamesPlayed, setGamesPlayed] = useState(0);
+  const [gamesWon, setGamesWon] = useState(0);
+  const [victoryRate, setVictoryRate] = useState(0)
 
   const user = useSelector((state) => state.user.value);
   const token = user.token;
@@ -36,34 +36,35 @@ export default function ProfileScreen({ navigation }) {
           setAvatarUrl(data.user.avatar);
           setNickname(data.user.nickname);
         } else {
-          console.log("Erreur de récupération des données utilisateur");
+          console.log("Cannot fetch user data");
         }
       });
 
-      //Récupération du nombre de parties jouées et gagnées
-      fetch(`${BACKEND_URL}/games/user/${token}`)
+    // Récupération du nombre de parties jouées et gagnées
+    fetch(`${BACKEND_URL}/games/user/${token}`)
       .then((response) => response.json())
-      .then(data => {
+      .then((data) => {
         if (data.result) {
-          setGamesPlayed(data.games.length)
-          for (const game of data.games) {
-            if (game.winner === token) {
-              setGamesWon(gamesWon + 1)
-            }
-          }
+          const games = data.games;
+          const totalGames = games.length;
+          const wins = games.filter((game) => game.winner === token).length;
+
+          setGamesPlayed(totalGames);
+          setGamesWon(wins);
+          setVictoryRate(((wins * 100) / totalGames).toFixed(1))
         }
-      })
-      victoryRate = ((gamesWon*100)/gamesPlayed).toFixed(1)
+      });
   }, []);
 
   const handleShowGames = () => {
     console.log("Afficher les jeux");
+    navigation.navigate("UserPastGames");
   };
 
   const pickImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      alert("Permission requise pour accéder à la galerie.");
+      alert("Permission to access the camera roll is required");
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -104,7 +105,7 @@ export default function ProfileScreen({ navigation }) {
           dispatch(updateAvatar(data.url));
           setModified(true);
         } else {
-          console.log("Erreur lors de la modification du profil :", data.error);
+          console.log("Failed to update profile :", data.error);
         }
       });
   };
@@ -179,12 +180,12 @@ const styles = StyleSheet.create({
     borderColor: "#65558F",
   },
   inputContainer: {
-    width: '70%',
+    width: "70%",
     position: "relative",
     marginTop: 20,
   },
   inputLabel: {
-    position: 'absolute',
+    position: "absolute",
     top: 5,
     left: 10,
     borderRadius: 5,
