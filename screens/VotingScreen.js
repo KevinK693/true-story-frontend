@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-
+console.log("modif")
 export default function VotingScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
   const game = useSelector((state) => state.game.value);
@@ -40,9 +40,10 @@ export default function VotingScreen({ navigation }) {
     fetch(`${BACKEND_URL}/scenes/code/${code}/scene/${sceneNumber}`)
       .then((response) => response.json())
       .then((data) => {
+        console.log("PROPOSITIONS=>",data.data)
         if (data.result) {
-          setPropositions(data.propositions);
-          checkAllPlayersReady(data.propositions)
+          setPropositions(data.data.propositions);
+          checkAllPlayersReady(data.data.propositions)
         } else {
           console.log("Erreur de récupération des propositions");
         }
@@ -53,6 +54,8 @@ export default function VotingScreen({ navigation }) {
     fetch(`${BACKEND_URL}/games/${code}/players`)
     .then((response) => response.json(),)
     .then((data) => {
+
+      console.log("PLAYERS=>",data)
       if (data.result) {
         const players = data.players;
         const propositionsCount = propositions.length;
