@@ -84,7 +84,7 @@ export default function PlayersList({ navigation, route }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate("SartingGame")}>
+        <TouchableOpacity onPress={() => navigation.navigate("StartingGame")}>
           <Image source={{ uri: gameImage }} style={styles.user} />
         </TouchableOpacity>
       </View>
