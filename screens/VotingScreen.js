@@ -165,7 +165,7 @@ export default function VotingScreen({ navigation }) {
                   key={proposition._id || `proposition-${index}`}
                   style={styles.voteContainer}
                 >
-                  <ScrollView
+                  <View
                     style={[
                       styles.containerProposition,
                       isOwnProposition && styles.ownProposition,
@@ -187,12 +187,12 @@ export default function VotingScreen({ navigation }) {
                       disabled={isOwnProposition}
                     >
                       <FontAwesome5
-                        name="check"
+                        name={isOwnProposition ? "times" : "check"}
                         size={24}
                         color="#FBF1F1"
                       />
                     </TouchableOpacity>
-                  </ScrollView>
+                  </View>
                 </View>
               );
             })}
@@ -248,11 +248,14 @@ const styles = StyleSheet.create({
   },
   proposition: {
     fontSize: 16,
+    margin: 30,
     flexWrap: "wrap",
+    fontFamily: "NotoSans_400Regular",
   },
   containerProposition: {
     borderRadius: 10,
     backgroundColor: "white",
+    minHeight: 150,
     width: "90%",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
@@ -282,7 +285,7 @@ const styles = StyleSheet.create({
   checkIcon: {
     position: "absolute",
     right: -25,
-    top: 50,
+    bottom: '30%',
     backgroundColor: "#65558F",
     padding: 15,
     borderRadius: "50%",
