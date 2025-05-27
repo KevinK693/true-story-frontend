@@ -288,8 +288,7 @@ const styles = StyleSheet.create({
   },
   propositionsContainer: {
     width: "100%",
-    marginTop: 20,
-    marginBottom: 40,
+    marginVertical: 20,
     alignItems: "center",
   },
   subtitle: {
