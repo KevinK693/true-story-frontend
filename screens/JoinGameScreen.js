@@ -8,12 +8,14 @@ import {
 } from "react-native";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { resetScene } from "../reducers/scene";
 
 
 export default function JoinGame({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
  
+  const dispatch = useDispatch();
   const [code, setCode] = useState("");
   const [incorrectCode, setIncorrectCode] = useState(false)
   const user = useSelector((state) => state.user.value);
@@ -34,6 +36,7 @@ export default function JoinGame({ navigation }) {
       if (data.result) {
         navigation.navigate('WaitingForPlayers', { code: code })
         setCode('')
+        dispatch(resetScene())
       } else {
         console.log('Erreur de récupération de la partie', data.error)
         setIncorrectCode(true)
