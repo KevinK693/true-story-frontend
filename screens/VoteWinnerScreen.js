@@ -10,8 +10,6 @@ export default function VoteWinnerScreen({ navigation }) {
   const dispatch = useDispatch();
   const game = useSelector((state) => state.game.value);
   const code = game.code;
-  const nbPlayers = game.nbPlayers;
-  const [nbVotes, setNbVotes] = useState(null);
   const scene = useSelector((state) => state.scene.value);
   const sceneNumber = scene.sceneNumber;
   const [gameImage, setGameImage] = useState(null);
@@ -20,24 +18,6 @@ export default function VoteWinnerScreen({ navigation }) {
   const [winningProposition, setWinningProposition] = useState("");
   const [winningVotes, setWinningVotes] = useState(0);
   const [avatar, setAvatar] = useState(null);
-
-  // Récupération du nombre de votes effectifs
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetch(`${BACKEND_URL}/scenes/code/${code}/scene/${sceneNumber}`)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.result) {
-            setNbVotes(
-              data.data.propositions.reduce((acc, curr) => acc + curr.votes, 0)
-            );
-          }
-        })
-        .catch((err) => console.error("Erreur fetch votes:", err));
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [sceneNumber]);
 
   //Récupération de l'image de la partie
   useEffect(() => {
@@ -100,21 +80,14 @@ export default function VoteWinnerScreen({ navigation }) {
       <Text style={styles.gameTitle}>{gameTitle}</Text>
       <Text style={styles.subtitle}>Vainqueur du vote</Text>
 
-      {nbPlayers === nbVotes ? (
-        <View style={styles.propositionsContainer}>
-          <Image style={styles.winnerAvatar} source={{ uri: avatar }} />
-          <Text style={styles.winnerName}>{sceneWinner}</Text>
-          <Text style={styles.voteNumber}>Votes : {winningVotes}</Text>
-          <View style={styles.containerProposition}>
-            <Text style={styles.proposition}>{winningProposition}</Text>
-          </View>
+      <View style={styles.propositionsContainer}>
+        <Image style={styles.winnerAvatar} source={{ uri: avatar }} />
+        <Text style={styles.winnerName}>{sceneWinner}</Text>
+        <Text style={styles.voteNumber}>Votes : {winningVotes}</Text>
+        <View style={styles.containerProposition}>
+          <Text style={styles.proposition}>{winningProposition}</Text>
         </View>
-      ) : (
-        <Text style={styles.waitingText}>
-          En attente que tous les joueurs aient soumis leur vote : {nbVotes}/
-          {nbPlayers}
-        </Text>
-      )}
+      </View>
 
       <TouchableOpacity
         onPress={() => handleResumeGame()}

@@ -6,7 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { useSelector} from "react-redux"
+import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
@@ -100,16 +100,19 @@ export default function VotingScreen({ navigation }) {
       const selectedProposition = propositions[selectedButton];
 
       // Envoyer le vote à la base de données
-      fetch(`${BACKEND_URL}/scenes/vote/${sceneId}/${selectedProposition._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
+      fetch(
+        `${BACKEND_URL}/scenes/vote/${sceneId}/${selectedProposition._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
         .then((response) => response.json())
         .then((data) => {
           if (data.result) {
-            navigation.navigate("VoteWinner");
+            navigation.navigate("WaitingForVoteResult");
           } else {
             console.log("Erreur lors de l'enregistrement du vote");
           }
