@@ -14,14 +14,16 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 export default function VotingScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
   const game = useSelector((state) => state.game.value);
+  const user = useSelector((state) => state.user.value); // Récupération de l'utilisateur
   const code = game.code;
-  const scene = useSelector((state) => state.scene.value)
-  const sceneNumber = scene.sceneNumber
+  const scene = useSelector((state) => state.scene.value);
+  const sceneNumber = scene.sceneNumber;
   const [gameImage, setGameImage] = useState(null);
-  const [gameTitle, setGameTitle] = useState('')
+  const [gameTitle, setGameTitle] = useState("");
   const [selectedButton, setSelectedButton] = useState(null);
   const [propositions, setPropositions] = useState([]);
-  const [allPlayersReady, setAllPlayersReady] = useState(false)
+  const [allPlayersReady, setAllPlayersReady] = useState(false);
+  const [voteDone, setVoteDone] = useState(null);
 
   //Récupération de l'image de la partie et des propositions
   useEffect(() => {
@@ -40,65 +42,75 @@ export default function VotingScreen({ navigation }) {
     fetch(`${BACKEND_URL}/scenes/code/${code}/scene/${sceneNumber}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log("PROPOSITIONS=>",data.data)
+        console.log("PROPOSITIONS=>", data.data);
         if (data.result) {
           setPropositions(data.data.propositions);
-          checkAllPlayersReady(data.data.propositions)
+          checkAllPlayersReady(data.data.propositions);
         } else {
           console.log("Erreur de récupération des propositions");
         }
-      })
+      });
   }, []);
 
   const checkAllPlayersReady = (propositions) => {
     fetch(`${BACKEND_URL}/games/${code}/players`)
-    .then((response) => response.json(),)
-    .then((data) => {
-
-      console.log("PLAYERS=>",data)
-      if (data.result) {
-        const players = data.players;
-        const propositionsCount = propositions.length;
-        setAllPlayersReady(propositionsCount >= players)
-      } else {
-        console.log("Erreur de récupérération des joueurs")
-      }
-    })
-  }
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("PLAYERS=>", data);
+        if (data.result) {
+          const players = data.players;
+          const propositionsCount = propositions.length;
+          setAllPlayersReady(propositionsCount >= players);
+        } else {
+          console.log("Erreur de récupérération des joueurs");
+        }
+      });
+  };
 
   const handleHistorySubmit = () => {
     navigation.navigate("GameHistory");
   };
 
   const handleButtonPress = (buttonIndex) => {
+    // Vérifier si c'est sa propre proposition
+    const proposition = propositions[buttonIndex];
+    if (proposition.usersId === user._id) {
+      console.log("Vous ne pouvez pas voter pour votre propre proposition");
+      return;
+    }
     setSelectedButton(buttonIndex);
   };
 
   const handleVote = () => {
     if (selectedButton !== null && allPlayersReady) {
       const selectedProposition = propositions[selectedButton];
-      
-      // Envoyer le vote à la base de données
-      fetch(`${BACKEND_URL}/games/${code}/vote`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          propositionId: selectedProposition.id,
-        }),
-      })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.result) {
-          navigation.navigate('VoteWinner');
-        } else {
-          console.log("Erreur lors de l'enregistrement du vote");
-        }
-      })
-    } 
-  };
 
+      // Vérification supplémentaire avant d'envoyer le vote
+      if (selectedProposition.usersId === user._id) {
+        console.log("Vous ne pouvez pas voter pour votre propre proposition");
+        return;
+      }
+
+      // Envoyer le vote à la base de données
+      fetch(`${BACKEND_URL}/vote/${scene._id}/${selectedProposition._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.result) {
+            // Augmenter voteDone de 1 et naviguer
+            const newVoteDone = voteDone + 1;
+            setVoteDone(newVoteDone);
+            navigation.navigate("VoteWinner", { voteDone: newVoteDone });
+          } else {
+            console.log("Erreur lors de l'enregistrement du vote");
+          }
+        });
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topBar}>
@@ -116,7 +128,11 @@ export default function VotingScreen({ navigation }) {
         </TouchableOpacity>
       </View>
       <Text style={styles.gameTitle}>{gameTitle}</Text>
-      <Text style={styles.subtitle}>{allPlayersReady ? "Votez pour l'une des propositions" : "En attente que tous les joueurs fassent leur proposition..."}</Text>
+      <Text style={styles.subtitle}>
+        {allPlayersReady
+          ? "Votez pour l'une des propositions"
+          : "En attente que tous les joueurs fassent leur proposition..."}
+      </Text>
       {!allPlayersReady && (
         <Text style={styles.waitingText}>
           {propositions.length} proposition(s) reçue(s)
@@ -124,25 +140,44 @@ export default function VotingScreen({ navigation }) {
       )}
       <ScrollView style={{ width: "100%" }}>
         <View style={styles.propositionsContainer}>
-          {propositions.map((proposition, index) => (
-            <View 
-              key={proposition.id || `proposition-${index}`} 
-              style={styles.voteContainer}
-            >
-              <View style={styles.containerProposition}>
-                <Text style={styles.proposition}>{proposition.text}</Text>
-                <TouchableOpacity 
+          {propositions.map((proposition, index) => {
+            const isOwnProposition = proposition.usersId === user._id;
+            return (
+              <View
+                key={proposition.id || `proposition-${index}`}
+                style={styles.voteContainer}
+              >
+                <View
                   style={[
-                    styles.checkIcon, 
-                    selectedButton === index && styles.checkIconSelected
-                  ]} 
-                  onPress={() => handleButtonPress(index)}
+                    styles.containerProposition,
+                    isOwnProposition && styles.ownProposition,
+                  ]}
                 >
-                  <FontAwesome5 name="check" size={24} color="#FBF1F1" />
-                </TouchableOpacity>
+                  <Text style={styles.proposition}>{proposition.text}</Text>
+                  {isOwnProposition && (
+                    <Text style={styles.ownPropositionLabel}>
+                      Votre proposition
+                    </Text>
+                  )}
+                  <TouchableOpacity
+                    style={[
+                      styles.checkIcon,
+                      selectedButton === index && styles.checkIconSelected,
+                      isOwnProposition && styles.checkIconDisabled,
+                    ]}
+                    onPress={() => handleButtonPress(index)}
+                    disabled={isOwnProposition}
+                  >
+                    <FontAwesome5
+                      name={isOwnProposition ? "times" : "check"}
+                      size={24}
+                      color="#FBF1F1"
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          ))}
+            );
+          })}
         </View>
         <TouchableOpacity style={styles.voteButton} onPress={handleVote}>
           <Text style={styles.voteButtonText}>Voter</Text>
@@ -196,7 +231,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     margin: 30,
     flexWrap: "wrap",
-    fontFamily: "Montserrat",
+    fontFamily: "Noto Sans Gujarati",
   },
   containerProposition: {
     borderRadius: 10,
@@ -210,6 +245,19 @@ const styles = StyleSheet.create({
     elevation: 6,
     marginHorizontal: 5,
     marginVertical: 10,
+  },
+  ownProposition: {
+    backgroundColor: "#f0f0f0",
+    opacity: 0.7,
+  },
+  ownPropositionLabel: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    fontSize: 12,
+    fontFamily: "NotoSans_400Regular",
+    color: "#65558F",
+    fontStyle: "italic",
   },
   voteContainer: {
     width: "100%",
@@ -225,12 +273,17 @@ const styles = StyleSheet.create({
   },
   checkIconSelected: {
     backgroundColor: "#4CAF50",
+    borderRadius: 50,
+  },
+  checkIconDisabled: {
+    backgroundColor: "#999",
+    borderRadius: 50
   },
   propositionsContainer: {
     width: "100%",
     marginTop: 20,
     marginBottom: 40,
-    alignItems: 'center'
+    alignItems: "center",
   },
   subtitle: {
     fontSize: 18,
@@ -255,7 +308,7 @@ const styles = StyleSheet.create({
   waitingText: {
     fontSize: 16,
     fontFamily: "NotoSans_400Regular",
-    color: "#65558F",
+    color: "#335561",
     marginTop: 10,
   },
 });
