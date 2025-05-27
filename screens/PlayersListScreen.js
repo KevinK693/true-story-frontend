@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, ScrollView } from "react-native";
+import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { updateAvatar } from "../reducers/user";
@@ -84,12 +84,16 @@ export default function PlayersList({ navigation, route }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Image source={{ uri: gameImage }} style={styles.user} />
+        <TouchableOpacity onPress={() => navigation.navigate("SartingGame")}>
+          <Image source={{ uri: gameImage }} style={styles.user} />
+        </TouchableOpacity>
       </View>
-      <View style={styles.textTitle} ></View>
-      <Text>{title}</Text>
+      <Text style={styles.textTitle}>{title}</Text>
+      <View>
+        <Text style={styles.genre}>{genre}</Text>
+      </View>
       <View style={styles.middle}>
-        <Text style={styles.joueurs}>Nombre de Joueurs : {playersNumber}</Text>
+        <Text style={styles.joueurs}>Nombre de Joueurs : {players.length}</Text>
       </View>
       <View style={styles.players}>
         <ScrollView
@@ -131,6 +135,12 @@ const styles = StyleSheet.create({
     fontFamily: "Noto Sans Gujarati",
     color: "#335561",
     fontWeight: "bold",
+    paddingTop: 15,
+  },
+  genre: {
+    paddingTop: 10,
+    fontFamily: "Noto Sans Gujarati",
+    color: "#335561",
   },
   user: {
     width: 100,
