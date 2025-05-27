@@ -6,7 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { useSelector } from "react-redux";
+import { useSelector} from "react-redux"
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
@@ -14,7 +14,7 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 export default function VotingScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
   const game = useSelector((state) => state.game.value);
-  const user = useSelector((state) => state.user.value); 
+  const user = useSelector((state) => state.user.value);
   const code = game.code;
   const scene = useSelector((state) => state.scene.value);
   const sceneNumber = scene.sceneNumber;
@@ -23,21 +23,19 @@ export default function VotingScreen({ navigation }) {
   const [selectedButton, setSelectedButton] = useState(null);
   const [propositions, setPropositions] = useState([]);
   const [allPlayersReady, setAllPlayersReady] = useState(false);
-  const [voteDone, setVoteDone] = useState(null);
   const [userId, setUserId] = useState(null);
   const [sceneId, setSceneId] = useState(null);
-  
 
   //Récupération de l'utilisateut actif
   useEffect(() => {
-  fetch(`${BACKEND_URL}/users/${user.token}`)
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.result) {
-        setUserId(data.user._id); 
-      }
-    });
-}, []);
+    fetch(`${BACKEND_URL}/users/${user.token}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.result) {
+          setUserId(data.user._id);
+        }
+      });
+  }, []);
 
   //Récupération de l'image de la partie
   useEffect(() => {
@@ -61,7 +59,7 @@ export default function VotingScreen({ navigation }) {
         .then((data) => {
           console.log("PROPOSITIONS=>", data.data);
           if (data.result) {
-            setSceneId(data.data._id)
+            setSceneId(data.data._id);
             setPropositions(data.data.propositions);
             checkAllPlayersReady(data.data.propositions);
           } else {
@@ -79,9 +77,10 @@ export default function VotingScreen({ navigation }) {
       .then((data) => {
         console.log("PLAYERS=>", data);
         if (data.result) {
-          const players = data.players;
           const propositionsCount = propositions.length;
-          setAllPlayersReady(propositionsCount >= players);
+          if (propositionsCount === game.nbPlayers) {
+            setAllPlayersReady(true);
+          }
         } else {
           console.log("Erreur de récupérération des joueurs");
         }
@@ -101,7 +100,7 @@ export default function VotingScreen({ navigation }) {
       const selectedProposition = propositions[selectedButton];
 
       // Envoyer le vote à la base de données
-      fetch(`${BACKEND_URL}/vote/${sceneId}/${selectedProposition._id}`, {
+      fetch(`${BACKEND_URL}/scenes/vote/${sceneId}/${selectedProposition._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -110,10 +109,7 @@ export default function VotingScreen({ navigation }) {
         .then((response) => response.json())
         .then((data) => {
           if (data.result) {
-            // Augmenter voteDone de 1 et naviguer
-            const newVoteDone = voteDone + 1;
-            setVoteDone(newVoteDone);
-            navigation.navigate("VoteWinner", { voteDone: newVoteDone });
+            navigation.navigate("VoteWinner");
           } else {
             console.log("Erreur lors de l'enregistrement du vote");
           }
@@ -278,13 +274,13 @@ const styles = StyleSheet.create({
     top: 50,
     backgroundColor: "#65558F",
     padding: 15,
-    borderRadius: '50%',
+    borderRadius: "50%",
   },
   checkIconSelected: {
     backgroundColor: "#E089FF",
   },
   checkIconDisabled: {
-    display: 'none'
+    display: "none",
   },
   propositionsContainer: {
     width: "100%",
