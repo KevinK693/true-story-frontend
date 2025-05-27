@@ -26,6 +26,7 @@ import VoteWinnerScreen from "./screens/VoteWinnerScreen";
 import EndGameScreen from "./screens/EndGameScreen";
 import UserPastGamesScreen from "./screens/UserPastGamesScreen";
 import PlayersListScreen from "./screens/PlayersListScreen";
+import WaitingForVoteResultScreen from "./screens/WaitingForVoteResultScreen";
 
 import { persistStore, persistReducer } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
@@ -70,6 +71,7 @@ const MainStackScreen = () => (
     <MainStack.Screen name="EndGame" component={EndGameScreen} />
     <MainStack.Screen name="UserPastGames" component={UserPastGamesScreen} />
     <MainStack.Screen name="PlayerList" component={PlayersListScreen} />
+    <MainStack.Screen name="WaitingForVoteResult" component={WaitingForVoteResultScreen} />
   </MainStack.Navigator>
 );
 
