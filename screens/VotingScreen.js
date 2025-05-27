@@ -165,7 +165,7 @@ export default function VotingScreen({ navigation }) {
                   key={proposition._id || `proposition-${index}`}
                   style={styles.voteContainer}
                 >
-                  <View
+                  <ScrollView
                     style={[
                       styles.containerProposition,
                       isOwnProposition && styles.ownProposition,
@@ -187,12 +187,12 @@ export default function VotingScreen({ navigation }) {
                       disabled={isOwnProposition}
                     >
                       <FontAwesome5
-                        name={isOwnProposition ? "times" : "check"}
+                        name="check"
                         size={24}
                         color="#FBF1F1"
                       />
                     </TouchableOpacity>
-                  </View>
+                  </ScrollView>
                 </View>
               );
             })}
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   gameScene: {
-    fontFamily: "Noto Sans Gujarati",
+    fontFamily: "NotoSans_400Regular",
     fontSize: 20,
     color: "#335561",
     marginTop: 10,
@@ -248,14 +248,11 @@ const styles = StyleSheet.create({
   },
   proposition: {
     fontSize: 16,
-    margin: 30,
     flexWrap: "wrap",
-    fontFamily: "Noto Sans Gujarati",
   },
   containerProposition: {
     borderRadius: 10,
     backgroundColor: "white",
-    height: 150,
     width: "90%",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
