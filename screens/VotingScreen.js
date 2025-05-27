@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-console.log("modif")
+
 export default function VotingScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
   const game = useSelector((state) => state.game.value);
@@ -125,7 +125,10 @@ export default function VotingScreen({ navigation }) {
       <ScrollView style={{ width: "100%" }}>
         <View style={styles.propositionsContainer}>
           {propositions.map((proposition, index) => (
-            <View key={proposition.id} style={styles.voteContainer}>
+            <View 
+              key={proposition.id || `proposition-${index}`} 
+              style={styles.voteContainer}
+            >
               <View style={styles.containerProposition}>
                 <Text style={styles.proposition}>{proposition.text}</Text>
                 <TouchableOpacity 
@@ -248,5 +251,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: "NotoSans_700Bold",
     textAlign: "center",
+  },
+  waitingText: {
+    fontSize: 16,
+    fontFamily: "NotoSans_400Regular",
+    color: "#65558F",
+    marginTop: 10,
   },
 });
