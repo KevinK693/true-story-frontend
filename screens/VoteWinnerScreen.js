@@ -1,28 +1,25 @@
-import {
-  View,
-  StyleSheet,
-  Text,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { View, StyleSheet, Text, Image, TouchableOpacity } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { updateScene } from "../reducers/scene";
 
-export default function VoteWinnerScreen({ navigation }) {
+export default function VoteWinnerScreen({ navigation, route }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const game = useSelector((state) => state.game.value);
   const code = game.code;
-  const user = useSelector((state) => state.user.value);
-  const token = user.token
-  const scene = useSelector((state) => state.scene.value)
-  const sceneNumber = scene.sceneNumber
+  const nbPlayers = game.nbPlayers;
+  const scene = useSelector((state) => state.scene.value);
+  const sceneNumber = scene.sceneNumber;
   const [gameImage, setGameImage] = useState(null);
   const [gameTitle, setGameTitle] = useState("");
   const [sceneWinner, setSceneWinner] = useState("");
+  const [winningProposition, setWinningProposition] = useState("");
+  const [winningVotes, setWinningVotes] = useState(0);
+  const [avatar, setAvatar] = useState(null);
+  // const { nbVotes } = route.params
 
   //Récupération de l'image de la partie
   useEffect(() => {
@@ -36,21 +33,31 @@ export default function VoteWinnerScreen({ navigation }) {
           console.log("Erreur de récupération des données utilisateur");
         }
       });
+  }, []);
 
-      fetch(`${BACKEND_URL}/scenes/code/${code}/scene/${sceneNumber}`)
-      .then(response => response.json())
-      .then(data => {
-        console.log(data)
+  //Récupération du gagnant du vote
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/scenes/voteWinner/${code}/${sceneNumber}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((response) => response.json())
+      .then((data) => {
         if (data.result) {
-          console.log(data.data.propositions)
+          setSceneWinner(data.data.nickname);
+          setWinningProposition(data.data.text);
+          setWinningVotes(data.data.votes);
+          setAvatar(data.data.avatar);
+        } else {
+          console.log("Erreur de récupération du gagnant du vote");
         }
-      })
+      });
   }, []);
 
   const handleResumeGame = () => {
-    navigation.navigate("StartingGame")
-    dispatch(updateScene())
-  }
+    navigation.navigate("StartingGame");
+    dispatch(updateScene());
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -71,15 +78,21 @@ export default function VoteWinnerScreen({ navigation }) {
       <Text style={styles.gameTitle}>{gameTitle}</Text>
       <Text style={styles.subtitle}>Vainqueur du vote</Text>
 
-      <View style={styles.propositionsContainer}>
-        <Image style={styles.winnerAvatar} source={{ uri: user.avatar }} />
-        <Text style={styles.winnerName}>Winner</Text>
-        <Text style={styles.propositionNumber}>Proposition #2</Text>
-        <Text style={styles.voteNumber}>Votes : 3</Text>
-        <View style={styles.containerProposition}>
-          <Text style={styles.proposition}>Proposition choisie</Text>
+      {nbPlayers === propositionsNumber ? (
+        <View style={styles.propositionsContainer}>
+          <Image style={styles.winnerAvatar} source={{ uri: avatar }} />
+          <Text style={styles.winnerName}>{sceneWinner}</Text>
+          <Text style={styles.propositionNumber}>Proposition #X</Text>
+          <Text style={styles.voteNumber}>Votes : {winningVotes}</Text>
+          <View style={styles.containerProposition}>
+            <Text style={styles.proposition}>{winningProposition}</Text>
+          </View>
         </View>
-      </View>
+      ) : (
+        <Text style={styles.waitingText}>
+          En attente que tous les joueurs aient soumis leur vote : {nbVotes}/{nbPlayers}
+        </Text>
+      )}
 
       <TouchableOpacity
         onPress={() => handleResumeGame()}
@@ -153,7 +166,7 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 22,
     fontFamily: "NotoSans_700Bold",
     color: "#335561",
   },
@@ -203,5 +216,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: "NotoSans_700Bold",
     textAlign: "center",
+  },
+  waitingText: {
+    fontSize: 20,
+    fontFamily: "NotoSans_400Regular",
+    textAlign: "center",
+    color: "#335561",
+    marginVertical: 50,
   },
 });
