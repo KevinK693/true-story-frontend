@@ -38,31 +38,9 @@ export default function StartingGameScreen({ navigation }) {
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/games/game/${code}`)
-      .then((response) => {
-        if (!response.ok) {
-          console.error(
-            `Erreur HTTP: ${response.status} ${response.statusText}`
-          );
-          return response.text().then((text) => {
-            console.log("Réponse reçue :", text);
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-          });
-        }
-
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          console.error("La réponse n'est pas du JSON:", contentType);
-          return response.text().then((text) => {
-            console.log("Contenu reçu :", text);
-            throw new Error("Réponse non-JSON reçue");
-          });
-        }
-
-        return response.json();
-      })
+      .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          console.log("Données de la partie :", data);
           setPlayersNb(data.game.nbPlayers);
           setTitle(data.game.title);
           setTotalScenesNb(data.game.nbScenes);
@@ -72,20 +50,14 @@ export default function StartingGameScreen({ navigation }) {
             "Erreur côté backend (game):",
             data.error || "Structure de données inattendue"
           );
-          console.log("Structure reçue :", data);
         }
       })
-      .catch((error) => {
-        console.error("Erreur lors du fetch du jeu :", error);
-        console.log("Type d'erreur :", error.constructor.name);
-      });
 
     // Récupérer la scène
     const interval = setInterval(() => {
       fetch(`${BACKEND_URL}/scenes/code/${code}/scene/${sceneNumber}`)
         .then((response) => response.json())
         .then((data) => {
-          console.log("DATA DU FETCH (scène):", data);
           if (data.result) {
             setSceneText(data.data.text);
             setPropositionsNb(data.data.propositions.length);
@@ -94,12 +66,8 @@ export default function StartingGameScreen({ navigation }) {
               "Erreur côté backend (scène):",
               data.error || "Structure de données inattendue"
             );
-            console.log("Structure reçue :", data);
           }
         })
-        .catch((error) => {
-          console.error("Erreur lors du fetch de la scène :", error);
-        });
     }, 3000);
     return () => clearInterval(interval);
   }, [code]);
@@ -108,16 +76,6 @@ export default function StartingGameScreen({ navigation }) {
     navigation.navigate("GameHistory");
   };
   const handleNextScreen = () => {
-    console.log(
-      "Sending PUT to:",
-      `${BACKEND_URL}/scenes/proposition/${code}/${sceneNumber}/${token}`
-    );
-    console.log(
-      "sceneNumber value type:",
-      typeof sceneNumber,
-      "value:",
-      sceneNumber
-    );
     fetch(`${BACKEND_URL}/scenes/proposition/${code}/${sceneNumber}/${token}`, {
       method: "PUT",
       headers: {
@@ -130,20 +88,15 @@ export default function StartingGameScreen({ navigation }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          console.log("Text sent successfully :", data);
-          setUserText(""); // Réinitialiser le champ de texte
-          navigation.navigate("Voting"); // Naviguer vers l'écran suivant
+          setUserText(""); 
+          navigation.navigate("Voting"); 
         } else {
           console.error("Erreur lors de l'envoi du texte :", data.error);
         }
       })
-      .catch((error) => {
-        console.error("Erreur réseau :", error);
-      });
   };
 
   const handlePlayersList = () => {
-    console.log("Navigating to PlayersListScreen with code:", code);
     navigation.navigate("PlayerList", { code: code });
   }
 
@@ -153,7 +106,6 @@ export default function StartingGameScreen({ navigation }) {
       style={{ flex: 1 }}
     >
       <SafeAreaView style={styles.container}>
-        {/* topBar = La barre du haut qui contient le logo et l'icone d'historique */}
         <View style={styles.topBar}>
           <TouchableOpacity
            onPress={handlePlayersList}>
@@ -172,12 +124,10 @@ export default function StartingGameScreen({ navigation }) {
             <FontAwesome5 name="history" size={35} color="#335561" />
           </TouchableOpacity>
         </View>
-        {/* fin de la topBar */}
         <Text style={[styles.textTitle, { textAlign: "center" }]}>{title}</Text>
         <Text style={[styles.textScene, { textAlign: "center" }]}>
           Scène actuelle: {sceneNumber}/{totalScenesNb}
         </Text>
-        {/* Le prompt IA avec son container */}
         <View style={styles.containerTexteIa}>
           <ScrollView style={{ flex: 1 }}>
             <Text style={styles.texteIa}>{sceneText}</Text>
@@ -188,7 +138,7 @@ export default function StartingGameScreen({ navigation }) {
             <View style={styles.containerUserInput}>
               <ScrollView>
                 <TextInput
-                  multiline={true} //Pour que le texte soit sur plusieurs lignes
+                  multiline={true} 
                   style={styles.texteUserInput}
                   placeholder="Écrivez votre histoire..."
                   value={userText}
@@ -198,8 +148,6 @@ export default function StartingGameScreen({ navigation }) {
                 <Text style={styles.maxLength}>{userText.length}/280</Text>
               </ScrollView>
             </View>
-
-            {/* Bouton */}
             <TouchableOpacity
               style={styles.button}
               activeOpacity={0.8}
