@@ -2,7 +2,6 @@ import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from "rea
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { updateAvatar } from "../reducers/user";
-import { updateGame } from "../reducers/game";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PlayersList({ navigation, route }) {
