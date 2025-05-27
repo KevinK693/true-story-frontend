@@ -5,12 +5,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { updateScene } from "../reducers/scene";
 
-export default function VoteWinnerScreen({ navigation, route }) {
+export default function VoteWinnerScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
   const dispatch = useDispatch();
   const game = useSelector((state) => state.game.value);
   const code = game.code;
   const nbPlayers = game.nbPlayers;
+  const [nbVotes, setNbVotes] = useState(null);
   const scene = useSelector((state) => state.scene.value);
   const sceneNumber = scene.sceneNumber;
   const [gameImage, setGameImage] = useState(null);
@@ -19,7 +20,24 @@ export default function VoteWinnerScreen({ navigation, route }) {
   const [winningProposition, setWinningProposition] = useState("");
   const [winningVotes, setWinningVotes] = useState(0);
   const [avatar, setAvatar] = useState(null);
-  const { voteDone } = route.params
+
+  // Récupération du nombre de votes effectifs
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetch(`${BACKEND_URL}/scenes/code/${code}/scene/${sceneNumber}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.result) {
+            setNbVotes(
+              data.data.propositions.reduce((acc, curr) => acc + curr.votes, 0)
+            );
+          }
+        })
+        .catch((err) => console.error("Erreur fetch votes:", err));
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [sceneNumber]);
 
   //Récupération de l'image de la partie
   useEffect(() => {
@@ -37,22 +55,26 @@ export default function VoteWinnerScreen({ navigation, route }) {
 
   //Récupération du gagnant du vote
   useEffect(() => {
-    fetch(`${BACKEND_URL}/scenes/voteWinner/${code}/${sceneNumber}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.result) {
-          setSceneWinner(data.data.nickname);
-          setWinningProposition(data.data.text);
-          setWinningVotes(data.data.votes);
-          setAvatar(data.data.avatar);
-        } else {
-          console.log("Erreur de récupération du gagnant du vote");
-        }
-      });
-  }, []);
+    const interval = setInterval(() => {
+      fetch(`${BACKEND_URL}/scenes/voteWinner/${code}/${sceneNumber}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.result) {
+            setSceneWinner(data.data.nickname);
+            setWinningProposition(data.data.text);
+            setWinningVotes(data.data.votes);
+            setAvatar(data.data.avatar);
+          } else {
+            console.log("Erreur de récupération du gagnant du vote");
+          }
+        });
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [sceneNumber]);
 
   const handleResumeGame = () => {
     navigation.navigate("StartingGame");
@@ -78,11 +100,10 @@ export default function VoteWinnerScreen({ navigation, route }) {
       <Text style={styles.gameTitle}>{gameTitle}</Text>
       <Text style={styles.subtitle}>Vainqueur du vote</Text>
 
-      {nbPlayers === propositionsNumber ? (
+      {nbPlayers === nbVotes ? (
         <View style={styles.propositionsContainer}>
           <Image style={styles.winnerAvatar} source={{ uri: avatar }} />
           <Text style={styles.winnerName}>{sceneWinner}</Text>
-          <Text style={styles.propositionNumber}>Proposition #X</Text>
           <Text style={styles.voteNumber}>Votes : {winningVotes}</Text>
           <View style={styles.containerProposition}>
             <Text style={styles.proposition}>{winningProposition}</Text>
@@ -90,7 +111,8 @@ export default function VoteWinnerScreen({ navigation, route }) {
         </View>
       ) : (
         <Text style={styles.waitingText}>
-          En attente que tous les joueurs aient soumis leur vote : {voteDone}/{nbPlayers}
+          En attente que tous les joueurs aient soumis leur vote : {nbVotes}/
+          {nbPlayers}
         </Text>
       )}
 
@@ -183,14 +205,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     zIndex: 2,
     left: 50,
-    top: -10,
-    fontFamily: "NotoSans_700Bold",
-    color: "#335561",
-  },
-  propositionNumber: {
-    position: "absolute",
-    zIndex: 2,
-    right: 20,
     top: -10,
     fontFamily: "NotoSans_700Bold",
     color: "#335561",

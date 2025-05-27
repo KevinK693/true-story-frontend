@@ -82,7 +82,7 @@ export default function StartingGameScreen({ navigation }) {
 
     // Récupérer la scène
     const interval = setInterval(() => {
-      fetch(`${BACKEND_URL}/scenes/code/${code}/scene/1`)
+      fetch(`${BACKEND_URL}/scenes/code/${code}/scene/${sceneNumber}`)
         .then((response) => response.json())
         .then((data) => {
           console.log("DATA DU FETCH (scène):", data);
