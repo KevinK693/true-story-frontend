@@ -14,7 +14,7 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 export default function VotingScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
   const game = useSelector((state) => state.game.value);
-  const user = useSelector((state) => state.user.value); // Récupération de l'utilisateur
+  const user = useSelector((state) => state.user.value); 
   const code = game.code;
   const scene = useSelector((state) => state.scene.value);
   const sceneNumber = scene.sceneNumber;
@@ -24,8 +24,22 @@ export default function VotingScreen({ navigation }) {
   const [propositions, setPropositions] = useState([]);
   const [allPlayersReady, setAllPlayersReady] = useState(false);
   const [voteDone, setVoteDone] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [sceneId, setSceneId] = useState(null);
+  
 
-  //Récupération de l'image de la partie et des propositions
+  //Récupération de l'utilisateut actif
+  useEffect(() => {
+  fetch(`${BACKEND_URL}/users/${user.token}`)
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.result) {
+        setUserId(data.user._id); 
+      }
+    });
+}, []);
+
+  //Récupération de l'image de la partie
   useEffect(() => {
     fetch(`${BACKEND_URL}/games/game/${code}`)
       .then((response) => response.json())
@@ -37,23 +51,30 @@ export default function VotingScreen({ navigation }) {
           console.log("Erreur de récupération des données du jeu");
         }
       });
-
-    // Récupération des propositions de la scène active depuis la base de données
-    fetch(`${BACKEND_URL}/scenes/code/${code}/scene/${sceneNumber}`)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("PROPOSITIONS=>", data.data);
-        if (data.result) {
-          setPropositions(data.data.propositions);
-          checkAllPlayersReady(data.data.propositions);
-        } else {
-          console.log("Erreur de récupération des propositions");
-        }
-      });
   }, []);
 
+  // Récupération des propositions de la scène active depuis la base de données
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetch(`${BACKEND_URL}/scenes/code/${code}/scene/${sceneNumber}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("PROPOSITIONS=>", data.data);
+          if (data.result) {
+            setSceneId(data.data._id)
+            setPropositions(data.data.propositions);
+            checkAllPlayersReady(data.data.propositions);
+          } else {
+            console.log("Erreur de récupération des propositions");
+          }
+        });
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [sceneNumber]);
+
   const checkAllPlayersReady = (propositions) => {
-    fetch(`${BACKEND_URL}/games/${code}/players`)
+    fetch(`${BACKEND_URL}/games/players/${code}`)
       .then((response) => response.json())
       .then((data) => {
         console.log("PLAYERS=>", data);
@@ -72,12 +93,6 @@ export default function VotingScreen({ navigation }) {
   };
 
   const handleButtonPress = (buttonIndex) => {
-    // Vérifier si c'est sa propre proposition
-    const proposition = propositions[buttonIndex];
-    if (proposition.usersId === user._id) {
-      console.log("Vous ne pouvez pas voter pour votre propre proposition");
-      return;
-    }
     setSelectedButton(buttonIndex);
   };
 
@@ -85,14 +100,8 @@ export default function VotingScreen({ navigation }) {
     if (selectedButton !== null && allPlayersReady) {
       const selectedProposition = propositions[selectedButton];
 
-      // Vérification supplémentaire avant d'envoyer le vote
-      if (selectedProposition.usersId === user._id) {
-        console.log("Vous ne pouvez pas voter pour votre propre proposition");
-        return;
-      }
-
       // Envoyer le vote à la base de données
-      fetch(`${BACKEND_URL}/vote/${scene._id}/${selectedProposition._id}`, {
+      fetch(`${BACKEND_URL}/vote/${sceneId}/${selectedProposition._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -141,10 +150,10 @@ export default function VotingScreen({ navigation }) {
       <ScrollView style={{ width: "100%" }}>
         <View style={styles.propositionsContainer}>
           {propositions.map((proposition, index) => {
-            const isOwnProposition = proposition.usersId === user._id;
+            const isOwnProposition = proposition.userId === userId;
             return (
               <View
-                key={proposition.id || `proposition-${index}`}
+                key={proposition._id || `proposition-${index}`}
                 style={styles.voteContainer}
               >
                 <View
@@ -228,7 +237,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   proposition: {
-    fontSize: 18,
+    fontSize: 16,
     margin: 30,
     flexWrap: "wrap",
     fontFamily: "Noto Sans Gujarati",
@@ -269,15 +278,13 @@ const styles = StyleSheet.create({
     top: 50,
     backgroundColor: "#65558F",
     padding: 15,
-    borderRadius: 50,
+    borderRadius: '50%',
   },
   checkIconSelected: {
-    backgroundColor: "#4CAF50",
-    borderRadius: 50,
+    backgroundColor: "#E089FF",
   },
   checkIconDisabled: {
-    backgroundColor: "#999",
-    borderRadius: 50
+    display: 'none'
   },
   propositionsContainer: {
     width: "100%",
@@ -310,5 +317,11 @@ const styles = StyleSheet.create({
     fontFamily: "NotoSans_400Regular",
     color: "#335561",
     marginTop: 10,
+  },
+  subtitle: {
+    textAlign: "center",
+    fontSize: 14,
+    fontFamily: "NotoSans_400Regular",
+    color: "#335561",
   },
 });
