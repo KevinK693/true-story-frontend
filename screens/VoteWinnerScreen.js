@@ -19,7 +19,7 @@ export default function VoteWinnerScreen({ navigation, route }) {
   const [winningProposition, setWinningProposition] = useState("");
   const [winningVotes, setWinningVotes] = useState(0);
   const [avatar, setAvatar] = useState(null);
-  // const { nbVotes } = route.params
+  const { voteDone } = route.params
 
   //Récupération de l'image de la partie
   useEffect(() => {
@@ -90,7 +90,7 @@ export default function VoteWinnerScreen({ navigation, route }) {
         </View>
       ) : (
         <Text style={styles.waitingText}>
-          En attente que tous les joueurs aient soumis leur vote : {nbVotes}/{nbPlayers}
+          En attente que tous les joueurs aient soumis leur vote : {voteDone}/{nbPlayers}
         </Text>
       )}
 
