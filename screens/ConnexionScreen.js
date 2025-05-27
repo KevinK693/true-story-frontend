@@ -76,7 +76,6 @@ export default function ConnexionScreen({ navigation }) {
           />
           <Text style={styles.inputLabel}>Mot de passe</Text>
         </View>
-        <Text style={styles.link}>Mot de passe oublié ?</Text>
         <TouchableOpacity
           onPress={() => handleLogin()}
           style={styles.button}
@@ -84,8 +83,6 @@ export default function ConnexionScreen({ navigation }) {
         >
           <Text style={styles.buttonText}>Connexion</Text>
         </TouchableOpacity>
-        <Text style={styles.text}>Ou connectez-vous via un autre compte</Text>
-        <View style={styles.accountsContainer}></View>
         <TouchableOpacity onPress={() => navigation.navigate("Inscription")}>
           <Text style={styles.link}>Pas encore de compte ? Inscrivez-vous</Text>
         </TouchableOpacity>
@@ -99,8 +96,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FBF1F1",
     alignItems: "center",
-    paddingTop: 40,
-    paddingHorizontal: 20,
+    padding: 20
   },
   title: {
     fontSize: 34,
@@ -154,10 +150,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   link: {
-    fontSize: 16,
+    fontSize: 18,
     color: "#335561",
     textDecorationLine: "underline",
     fontFamily: "NotoSans_400Regular",
+    marginTop: 15,
+    textAlign: 'center'
   },
   accountsContainer: {
     flexDirection: "row",

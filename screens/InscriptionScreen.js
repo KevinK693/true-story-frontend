@@ -89,8 +89,6 @@ export default function ConnexionScreen({ navigation }) {
         >
           <Text style={styles.buttonText}>Inscription</Text>
         </TouchableOpacity>
-        <Text style={styles.text}>Ou inscrivez-vous via un autre compte</Text>
-        <View style={styles.accountsContainer}></View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -101,8 +99,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FBF1F1",
     alignItems: "center",
-    paddingTop: 40,
-    paddingHorizontal: 20,
+    padding: 20
   },
   title: {
     fontSize: 34,
@@ -115,7 +112,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     width: "100%",
-    marginTop: 50,
+    marginTop: 40,
     marginBottom: 20,
     height: 50,
   },
@@ -138,7 +135,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 8,
     padding: 10,
-    marginTop: 30,
+    marginTop: 20,
     fontSize: 16,
     color: "#335561",
     height: 50,
@@ -148,7 +145,7 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     position: 'absolute',
-    top: 5,
+    top: -5,
     left: 10,
     borderRadius: 5,
     color: "#335561",
