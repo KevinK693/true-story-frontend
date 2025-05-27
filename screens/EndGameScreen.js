@@ -12,6 +12,8 @@ export default function EndGameScreen({ navigation }) {
   const [gameImage, setGameImage] = useState(null);
   const [gameTitle, setGameTitle] = useState("");
   const [gameWinner, setGameWinner] = useState("");
+  const [lastScene, setLastScene] = useState(null);
+  const [winnerVotes, setWinnerVotes] = useState(0);
 
   //Récupération de l'image de la partie
   useEffect(() => {
@@ -27,6 +29,65 @@ export default function EndGameScreen({ navigation }) {
         }
       });
   }, []);
+
+  // Récupération de la dernière scène
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/scenes/${code}`)
+      .then(response => response.json())
+      .then(data => {
+        if (!data.scenes || data.scenes.length === 0) return;
+        const lastScene = data.scenes.reduce((max, scene) => 
+          scene.numero > max.numero ? scene : max
+        );
+        console.log("Dernière scène :", lastScene);
+
+      });
+  }, [code]);
+
+  // Récupération du nom du gagnant
+  useEffect(() => {
+    if (gameWinner) {
+      fetch(`${BACKEND_URL}/users/${gameWinner}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.result) {
+            setWinnerName(data.user.nickname);
+          } else {
+            console.log("Erreur lors de la récupération du gagnant");
+          }
+        })
+        .catch(error => {
+          console.error("Erreur:", error);
+        });
+    }
+  }, [gameWinner]);
+
+  // Récupération du nombre total de votes du gagnant
+useEffect(() => {
+  if (gameWinner) {
+    fetch(`${BACKEND_URL}/users/${gameWinner}`)
+      .then(response => response.json())
+      .then(userData => {
+        if (userData.result) {
+          fetch(`${BACKEND_URL}/scenes/${code}`)
+            .then(response => response.json())
+            .then(scenesData => {
+              if (scenesData.result && scenesData.scenes) {
+                const totalVotes = scenesData.scenes.reduce((total, scene) => {
+                  const winnerPropositions = scene.propositions.filter(
+                    prop => prop.userId === userData.user._id
+                  );
+                  return total + winnerPropositions.reduce((sum, prop) => sum + prop.votes, 0);
+                }, 0);
+                setWinnerVotes(totalVotes);
+              }
+            });
+        }
+      })
+  }
+}, [gameWinner, code]);
+
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -47,11 +108,11 @@ export default function EndGameScreen({ navigation }) {
       <Text style={styles.gameTitle}>{gameTitle}</Text>
       <Text style={styles.subtitle}>Fin de la partie | Scène finale</Text>
       <View style={styles.containerProposition}>
-        <Text style={styles.proposition}>Fin de l'histoire</Text>
+        <Text style={styles.proposition}>{lastScene}</Text>
       </View>
       <View>
-        <Text style={styles.winnerText}>Félicitations, [winner name] !</Text>
-        <Text style={styles.winnerText}>Tu as gagné avec 8 votes.</Text>
+        <Text style={styles.winnerText}>Félicitations, {gameWinner} !</Text>
+        <Text style={styles.winnerText}>Tu as gagné avec {winnerVotes} votes.</Text>
       </View>
       <View style={styles.buttonsContainer}>
         <View style={styles.buttonContainer}>
