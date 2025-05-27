@@ -93,7 +93,7 @@ export default function CreateGameScreen({ navigation }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          console.log("Partie créée avec succès", data.result);
+          console.log("Partie créée avec succès");
           setTitle(null);
           setImage(null);
           setSelectedPlayers(null);

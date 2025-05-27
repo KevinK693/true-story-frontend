@@ -10,6 +10,7 @@ export default function VoteWinnerScreen({ navigation }) {
   const dispatch = useDispatch();
   const game = useSelector((state) => state.game.value);
   const code = game.code;
+  const nbScenes = game.nbScenes;
   const scene = useSelector((state) => state.scene.value);
   const sceneNumber = scene.sceneNumber;
   const [gameImage, setGameImage] = useState(null);
@@ -35,33 +36,43 @@ export default function VoteWinnerScreen({ navigation }) {
 
   //Récupération du gagnant du vote
   useEffect(() => {
-    const interval = setInterval(() => {
-      fetch(`${BACKEND_URL}/scenes/voteWinner/${code}/${sceneNumber}`, {
-        method: "PUT",
+    fetch(`${BACKEND_URL}/scenes/voteWinner/${code}/${sceneNumber}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          setSceneWinner(data.data.nickname);
+          setWinningProposition(data.data.text);
+          setWinningVotes(data.data.votes);
+          setAvatar(data.data.avatar);
+        } else {
+          console.log("Erreur de récupération du gagnant du vote");
+        }
+      });
+  }, []);
+
+  const handleResumeGame = () => {
+    if (sceneNumber < nbScenes) {
+      fetch(`${BACKEND_URL}/scenes/nextScene`, {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: code,
+          text: winningProposition,
+          sceneNumber: sceneNumber + 1,
+        })
       })
         .then((response) => response.json())
         .then((data) => {
           if (data.result) {
-            setSceneWinner(data.data.nickname);
-            setWinningProposition(data.data.text);
-            setWinningVotes(data.data.votes);
-            setAvatar(data.data.avatar);
+            console.log("Scene updated successfully");
           } else {
-            console.log("Erreur de récupération du gagnant du vote");
+            console.log("Error updating scene");
           }
         });
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [sceneNumber]);
-
-  const handleResumeGame = () => {
-    if (sceneNumber < nbScenes) {
       navigation.navigate("StartingGame");
       dispatch(updateScene());
     } else {
-      navigation.navigate("EndGame")
+      navigation.navigate("EndGame");
     }
   };
 
