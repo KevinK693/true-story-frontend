@@ -5,27 +5,31 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { updateAvatar } from "../reducers/user";
-import { updateGame } from '../reducers/game';
+import { updateGame } from "../reducers/game";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function WaitingForPlayers({ navigation, route }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+
   const user = useSelector((state) => state.user.value);
   const token = user.token;
-  const { code } = route.params
+
+  const { code } = route.params;
 
   const [gameImage, setGameImage] = useState(null);
   const [title, setTitle] = useState("");
   const [scenesNumber, setScenesNumber] = useState(0);
-  const [genre, setGenre] = useState("")
+  const [genre, setGenre] = useState("");
   const [players, setPlayers] = useState([]);
   const [playersNumber, setPlayersNumber] = useState(0);
   const [status, setStatus] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (token) {
@@ -50,10 +54,10 @@ export default function WaitingForPlayers({ navigation, route }) {
         if (data.result) {
           setGameImage(data.game.image);
           setPlayersNumber(data.game.nbPlayers);
-          setTitle(data.game.title)
-          setScenesNumber(data.game.nbScenes)
-          setGenre(data.game.genre)
-          setStatus(data.game.status)
+          setTitle(data.game.title);
+          setScenesNumber(data.game.nbScenes);
+          setGenre(data.game.genre);
+          setStatus(data.game.status);
         } else {
           console.log("Erreur de récupération des données utilisateur");
         }
@@ -67,6 +71,7 @@ export default function WaitingForPlayers({ navigation, route }) {
         .then((data) => {
           if (data.result) {
             setPlayers(data.players);
+            setLoading(false);
           }
         });
     }, 3000);
@@ -89,7 +94,17 @@ export default function WaitingForPlayers({ navigation, route }) {
   }, []);
 
   const handleSubmit = () => {
-    dispatch(updateGame({ image: gameImage, title: title, code: code, genre: genre, nbPlayers: playersNumber, nbScenes: scenesNumber, status: status }))
+    dispatch(
+      updateGame({
+        image: gameImage,
+        title: title,
+        code: code,
+        genre: genre,
+        nbPlayers: playersNumber,
+        nbScenes: scenesNumber,
+        status: status,
+      })
+    );
     navigation.navigate("StartingGame");
   };
 
@@ -110,23 +125,29 @@ export default function WaitingForPlayers({ navigation, route }) {
         <Text style={styles.joueurs}>Nombre de Joueurs : {playersNumber}</Text>
       </View>
       <View style={styles.players}>
-        <ScrollView
-          style={styles.scrollContainer}
-          contentContainerStyle={styles.content}
-          showsVerticalScrollIndicator={true}
-          persistentScrollbar={true}
-        >
-          {players.map((player, i) => (
-            <View key={i} style={styles.player}>
-              <Image
-                style={styles.useronline}
-                source={{ uri: player.avatar }}
-              />
-              <Text style={styles.item}>{player.nickname}</Text>
-              <View style={styles.rond} />
-            </View>
-          ))}
-        </ScrollView>
+        {loading ? (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color="#65558F" />
+          </View>
+        ) : (
+          <ScrollView
+            style={styles.scrollContainer}
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={true}
+            persistentScrollbar={true}
+          >
+            {players.map((player, i) => (
+              <View key={i} style={styles.player}>
+                <Image
+                  style={styles.useronline}
+                  source={{ uri: player.avatar }}
+                />
+                <Text style={styles.item}>{player.nickname}</Text>
+                <View style={styles.rond} />
+              </View>
+            ))}
+          </ScrollView>
+        )}
       </View>
       <Text style={styles.joueursAttente}>
         En attente des joueurs : {players.length}/{playersNumber}
@@ -237,5 +258,11 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: "#335561",
     fontFamily: "NotoSans_700Bold",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
   },
 });

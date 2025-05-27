@@ -5,6 +5,7 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
@@ -13,11 +14,15 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 export default function VotingScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+
   const game = useSelector((state) => state.game.value);
-  const user = useSelector((state) => state.user.value);
   const code = game.code;
+
+  const user = useSelector((state) => state.user.value);
+
   const scene = useSelector((state) => state.scene.value);
   const sceneNumber = scene.sceneNumber;
+
   const [gameImage, setGameImage] = useState(null);
   const [gameTitle, setGameTitle] = useState("");
   const [selectedButton, setSelectedButton] = useState(null);
@@ -25,8 +30,9 @@ export default function VotingScreen({ navigation }) {
   const [allPlayersReady, setAllPlayersReady] = useState(false);
   const [userId, setUserId] = useState(null);
   const [sceneId, setSceneId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  //Récupération de l'utilisateut actif
+  //Récupération de l'utilisateur actif
   useEffect(() => {
     fetch(`${BACKEND_URL}/users/${user.token}`)
       .then((res) => res.json())
@@ -57,11 +63,11 @@ export default function VotingScreen({ navigation }) {
       fetch(`${BACKEND_URL}/scenes/code/${code}/scene/${sceneNumber}`)
         .then((response) => response.json())
         .then((data) => {
-          console.log("PROPOSITIONS=>", data.data);
           if (data.result) {
             setSceneId(data.data._id);
             setPropositions(data.data.propositions);
             checkAllPlayersReady(data.data.propositions);
+            setLoading(false);
           } else {
             console.log("Erreur de récupération des propositions");
           }
@@ -75,7 +81,6 @@ export default function VotingScreen({ navigation }) {
     fetch(`${BACKEND_URL}/games/players/${code}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log("PLAYERS=>", data);
         if (data.result) {
           const propositionsCount = propositions.length;
           if (propositionsCount === game.nbPlayers) {
@@ -147,46 +152,52 @@ export default function VotingScreen({ navigation }) {
         </Text>
       )}
       <ScrollView style={{ width: "100%" }}>
-        <View style={styles.propositionsContainer}>
-          {propositions.map((proposition, index) => {
-            const isOwnProposition = proposition.userId === userId;
-            return (
-              <View
-                key={proposition._id || `proposition-${index}`}
-                style={styles.voteContainer}
-              >
+        {loading ? (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color="#65558F" />
+          </View>
+        ) : (
+          <View style={styles.propositionsContainer}>
+            {propositions.map((proposition, index) => {
+              const isOwnProposition = proposition.userId === userId;
+              return (
                 <View
-                  style={[
-                    styles.containerProposition,
-                    isOwnProposition && styles.ownProposition,
-                  ]}
+                  key={proposition._id || `proposition-${index}`}
+                  style={styles.voteContainer}
                 >
-                  <Text style={styles.proposition}>{proposition.text}</Text>
-                  {isOwnProposition && (
-                    <Text style={styles.ownPropositionLabel}>
-                      Votre proposition
-                    </Text>
-                  )}
-                  <TouchableOpacity
+                  <View
                     style={[
-                      styles.checkIcon,
-                      selectedButton === index && styles.checkIconSelected,
-                      isOwnProposition && styles.checkIconDisabled,
+                      styles.containerProposition,
+                      isOwnProposition && styles.ownProposition,
                     ]}
-                    onPress={() => handleButtonPress(index)}
-                    disabled={isOwnProposition}
                   >
-                    <FontAwesome5
-                      name={isOwnProposition ? "times" : "check"}
-                      size={24}
-                      color="#FBF1F1"
-                    />
-                  </TouchableOpacity>
+                    <Text style={styles.proposition}>{proposition.text}</Text>
+                    {isOwnProposition && (
+                      <Text style={styles.ownPropositionLabel}>
+                        Votre proposition
+                      </Text>
+                    )}
+                    <TouchableOpacity
+                      style={[
+                        styles.checkIcon,
+                        selectedButton === index && styles.checkIconSelected,
+                        isOwnProposition && styles.checkIconDisabled,
+                      ]}
+                      onPress={() => handleButtonPress(index)}
+                      disabled={isOwnProposition}
+                    >
+                      <FontAwesome5
+                        name={isOwnProposition ? "times" : "check"}
+                        size={24}
+                        color="#FBF1F1"
+                      />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
-            );
-          })}
-        </View>
+              );
+            })}
+          </View>
+        )}
         <TouchableOpacity style={styles.voteButton} onPress={handleVote}>
           <Text style={styles.voteButtonText}>Voter</Text>
         </TouchableOpacity>
@@ -321,5 +332,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "NotoSans_400Regular",
     color: "#335561",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
   },
 });

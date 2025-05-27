@@ -8,9 +8,9 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -26,6 +26,7 @@ export default function StartingGameScreen({ navigation }) {
   const [image, setImage] = useState(null);
   const [clicked, setClicked] = useState(false);
   const [userText, setUserText] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const game = useSelector((state) => state.game.value);
   const code = game.code;
@@ -51,7 +52,7 @@ export default function StartingGameScreen({ navigation }) {
             data.error || "Structure de données inattendue"
           );
         }
-      })
+      });
 
     // Récupérer la scène
     const interval = setInterval(() => {
@@ -59,6 +60,7 @@ export default function StartingGameScreen({ navigation }) {
         .then((response) => response.json())
         .then((data) => {
           if (data.result) {
+            setLoading(false);
             setSceneText(data.data.text);
             setPropositionsNb(data.data.propositions.length);
           } else {
@@ -67,7 +69,7 @@ export default function StartingGameScreen({ navigation }) {
               data.error || "Structure de données inattendue"
             );
           }
-        })
+        });
     }, 3000);
     return () => clearInterval(interval);
   }, [sceneNumber]);
@@ -88,17 +90,17 @@ export default function StartingGameScreen({ navigation }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          setUserText(""); 
-          navigation.navigate("Voting"); 
+          setUserText("");
+          navigation.navigate("Voting");
         } else {
           console.error("Erreur lors de l'envoi du texte :", data.error);
         }
-      })
+      });
   };
 
   const handlePlayersList = () => {
     navigation.navigate("PlayerList", { code: code });
-  }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -107,15 +109,14 @@ export default function StartingGameScreen({ navigation }) {
     >
       <SafeAreaView style={styles.container}>
         <View style={styles.topBar}>
-          <TouchableOpacity
-           onPress={handlePlayersList}>
-          <Image
-            source={{
-              uri: image,
-            }}
-            style={styles.logoImage}
-            resizeMode="contain"
-          />
+          <TouchableOpacity onPress={handlePlayersList}>
+            <Image
+              source={{
+                uri: image,
+              }}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.iconHistory}
@@ -130,7 +131,13 @@ export default function StartingGameScreen({ navigation }) {
         </Text>
         <View style={styles.containerTexteIa}>
           <ScrollView style={{ flex: 1 }}>
-            <Text style={styles.texteIa}>{sceneText}</Text>
+            {loading ? (
+              <View style={styles.loaderContainer}>
+                <ActivityIndicator size="large" color="#65558F" />
+              </View>
+            ) : (
+              <Text style={styles.texteIa}>{sceneText}</Text>
+            )}
           </ScrollView>
         </View>
         {clicked ? (
@@ -138,7 +145,7 @@ export default function StartingGameScreen({ navigation }) {
             <View style={styles.containerUserInput}>
               <ScrollView>
                 <TextInput
-                  multiline={true} 
+                  multiline={true}
                   style={styles.texteUserInput}
                   placeholder="Écrivez votre histoire..."
                   value={userText}
@@ -233,6 +240,8 @@ const styles = StyleSheet.create({
     elevation: 6,
     flex: 1,
     maxHeight: "38%",
+    justifyContent: 'center', 
+    alignItems: 'center'
   },
   button: {
     backgroundColor: "#65558F",
@@ -281,5 +290,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#888",
     fontFamily: "Montserrat",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
   },
 });
