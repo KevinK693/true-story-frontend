@@ -70,7 +70,7 @@ export default function StartingGameScreen({ navigation }) {
         })
     }, 3000);
     return () => clearInterval(interval);
-  }, [code]);
+  }, [sceneNumber]);
 
   const handleHistorySubmit = () => {
     navigation.navigate("GameHistory");
