@@ -43,9 +43,7 @@ export default function VotingScreen() {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          const playedScenesOnly = data.scenes.filter(
-            (scene) => scene.status === true
-          );
+          const playedScenesOnly = data.scenes
           const sortedScenes = playedScenesOnly.sort(
             (a, b) => a.sceneNumber - b.sceneNumber
           );
@@ -74,24 +72,21 @@ export default function VotingScreen() {
     );
   };
 
-  const renderSceneCard = (scene) => {
-    const winner = getWinnerProposition(scene);
+  const renderSceneCard = (scene) => (
+     
 
-    return (
-      <TouchableOpacity
-        key={scene._id}
-        style={styles.sceneCard}
-        onPress={() => openModal(scene)}
+    <TouchableOpacity
+      key={scene._id}
+      style={styles.sceneCard}
+      onPress={() => openModal(scene)}
       >
-        <Text style={styles.sceneCardTitle}>Scène n°{scene.sceneNumber}</Text>
-        {winner && (
-          <Text style={styles.winnerText}>
-            Proposition retenue: {winner.text}
-          </Text>
-        )}
-      </TouchableOpacity>
-    );
-  };
+      <Text style={styles.sceneCardTitle}>Scène n°{scene.sceneNumber}</Text>
+      <Text numberOfLines={2} style={styles.sceneCardText}>
+        {scene.text}
+      </Text>
+    </TouchableOpacity>
+   
+  );
 
   const currentScene = playedScenes[playedScenes.length - 1];
 
@@ -130,23 +125,11 @@ export default function VotingScreen() {
               <Text style={styles.currentSceneNumber}>
                 Scène n°{currentScene.sceneNumber}
               </Text>
-              <ScrollView
-                style={styles.currentSceneTextContainer}
-                nestedScrollEnabled={true}
-              >
+         
                 <Text style={styles.currentSceneText}>
                   {currentScene.text}
                 </Text>
-              </ScrollView>
-              {currentScene.propositions &&
-                currentScene.propositions.length > 0 && (
-                  <View style={styles.propositionsPreview}>
-                    <Text style={styles.propositionsTitle}>
-                      {currentScene.propositions.length} proposition(s) en
-                      cours
-                    </Text>
-                  </View>
-                )}
+       
             </View>
           </View>
         )}
@@ -158,11 +141,7 @@ export default function VotingScreen() {
         visible={modalVisible}
         onRequestClose={closeModal}
       >
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={closeModal}
-        >
+        <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <TouchableOpacity
               style={styles.closeButton}
@@ -172,40 +151,15 @@ export default function VotingScreen() {
             </TouchableOpacity>
 
             {selectedScene && (
-              <ScrollView style={styles.modalScrollView}>
+              <ScrollView style={{ maxHeight: 350 }}>
                 <Text style={styles.modalTitle}>
                   Scène n°{selectedScene.sceneNumber}
                 </Text>
-
-                <View style={styles.modalSection}>
-                  <Text style={styles.modalSectionTitle}>
-                    Texte de la scène :
-                  </Text>
-                  <Text style={styles.modalText}>{selectedScene.text}</Text>
-                </View>
-
-                {selectedScene.propositions &&
-                  selectedScene.propositions.length > 0 && (
-                    <View style={styles.modalSection}>
-                      <Text style={styles.modalSectionTitle}>
-                        Propositions des joueurs :
-                      </Text>
-                      {selectedScene.propositions.map((proposition, index) => (
-                        <View key={index} style={styles.propositionItem}>
-                          <Text style={styles.propositionText}>
-                            {proposition.text}
-                          </Text>
-                          <Text style={styles.propositionVotes}>
-                            Votes: {proposition.votes || 0}
-                          </Text>
-                        </View>
-                      ))}
-                    </View>
-                  )}
+                <Text style={styles.modalText}>{selectedScene.text}</Text>
               </ScrollView>
             )}
           </View>
-        </TouchableOpacity>
+        </View>
       </Modal>
     </SafeAreaView>
   );
@@ -235,14 +189,14 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   gameTitle: {
-    fontSize: 30,
+    fontSize: 25,
     fontFamily: "NotoSans_700Bold",
     color: "#335561",
-    paddingTop: 10,
+    paddingTop: 5,
     textAlign: "center",
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 15,
     fontFamily: "NotoSans_400Regular",
     color: "#335561",
     marginBottom: 20,
@@ -269,6 +223,12 @@ const styles = StyleSheet.create({
     color: "#335561",
     marginBottom: 5,
   },
+  sceneCardText: {
+    fontSize: 14,
+    fontFamily: "NotoSans_400Regular",
+    color: "#335561",
+    lineHeight: 20,
+  },
   winnerText: {
     fontSize: 14,
     fontFamily: "NotoSans_400Regular",
@@ -276,7 +236,7 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
   },
   currentSceneContainer: {
-    marginTop: 30,
+    marginTop: 25,
     width: "100%",
     alignItems: "center",
   },
@@ -313,16 +273,6 @@ const styles = StyleSheet.create({
     fontFamily: "NotoSans_400Regular",
     color: "#335561",
     lineHeight: 22,
-  },
-  propositionsPreview: {
-    borderTopWidth: 1,
-    borderTopColor: "#eee",
-    paddingTop: 10,
-  },
-  propositionsTitle: {
-    fontSize: 14,
-    fontFamily: "NotoSans_700Bold",
-    color: "#335561",
   },
   loadingText: {
     fontSize: 16,
