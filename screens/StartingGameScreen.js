@@ -142,6 +142,11 @@ export default function StartingGameScreen({ navigation }) {
       });
   };
 
+  const handlePlayersList = () => {
+    console.log("Navigating to PlayersListScreen with code:", code);
+    navigation.navigate("PlayerList", { code: code });
+  }
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -150,6 +155,8 @@ export default function StartingGameScreen({ navigation }) {
       <SafeAreaView style={styles.container}>
         {/* topBar = La barre du haut qui contient le logo et l'icone d'historique */}
         <View style={styles.topBar}>
+          <TouchableOpacity
+           onPress={handlePlayersList}>
           <Image
             source={{
               uri: image,
@@ -157,6 +164,7 @@ export default function StartingGameScreen({ navigation }) {
             style={styles.logoImage}
             resizeMode="contain"
           />
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.iconHistory}
             onPress={handleHistorySubmit}
@@ -276,7 +284,7 @@ const styles = StyleSheet.create({
     // Ombre pour Android
     elevation: 6,
     flex: 1,
-    maxHeight: 300,
+    maxHeight: "38%",
   },
   button: {
     backgroundColor: "#65558F",
@@ -285,7 +293,7 @@ const styles = StyleSheet.create({
     width: "80%",
     marginTop: 30,
     marginBottom: 10,
-    height: 50,
+    height: "18%",
   },
 
   buttonText: {
@@ -320,7 +328,7 @@ const styles = StyleSheet.create({
   },
   maxLength: {
     position: "absolute",
-    bottom: -25,
+    bottom: "-15",
     right: 8,
     fontSize: 12,
     color: "#888",
