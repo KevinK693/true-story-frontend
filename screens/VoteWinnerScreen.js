@@ -57,8 +57,12 @@ export default function VoteWinnerScreen({ navigation }) {
   }, [sceneNumber]);
 
   const handleResumeGame = () => {
-    navigation.navigate("StartingGame");
-    dispatch(updateScene());
+    if (sceneNumber < nbScenes) {
+      navigation.navigate("StartingGame");
+      dispatch(updateScene());
+    } else {
+      navigation.navigate("EndGame")
+    }
   };
 
   return (
