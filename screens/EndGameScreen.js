@@ -22,18 +22,23 @@ export default function EndGameScreen({ navigation }) {
   const game = useSelector((state) => state.game.value);
   const code = game.code;
   const user = useSelector((state) => state.user.value);
+  const scene = useSelector((state) => state.user.scenes);
   const [gameImage, setGameImage] = useState(null);
   const [gameTitle, setGameTitle] = useState("");
   const [gameWinner, setGameWinner] = useState("");
-  const [lastScene, setLastScene] = useState(null);
   const [winnerVotes, setWinnerVotes] = useState(0);
   const [loading, setLoading] = useState(false);
   const [sound, setSound] = useState(null);
   const fileUri = FileSystem.documentDirectory + "elevenlabs_podcast.mp3";
  
+  const lastScene = useSelector((state) => {
+  const scenes = state.scene.value.scenes;
+  return scenes.length > 0 ? scenes[scenes.length - 1].text : "";
+});
+
   const handleGenerateAudio = async () => {
     setLoading(true);
-   const lastScene = game.lastScene;
+    const lastScene = game.lastScene;
 
     try {
       const response = await fetch(`${BACKEND_URL}/exports/generate`, {
@@ -94,10 +99,6 @@ export default function EndGameScreen({ navigation }) {
       });
   }, []);
 
-  // Récupération de la dernière scène
-  useEffect(() => {
-    setLastScene(game.lastScene);
-  }, [game.lastScene]);
 
   // Récupération du nom du gagnant
   useEffect(() => {
@@ -186,7 +187,7 @@ export default function EndGameScreen({ navigation }) {
           <Text style={styles.text}>Exporter à l'écrit</Text>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity  onPress={handleGenerateAudio}  style={styles.button}>
+          <TouchableOpacity onPress={handleGenerateAudio} style={styles.button}>
             <FontAwesome5 size={30} name="podcast" color="#FBF1F1" />
           </TouchableOpacity>
           <Text style={styles.text}>Exporter en podcast</Text>
