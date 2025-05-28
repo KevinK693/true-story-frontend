@@ -1,8 +1,21 @@
-import { View, StyleSheet, Text, Image, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  ActivityIndicator,
+} from "react-native";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { updateToken, updateAvatar, updateNickname } from "../reducers/user";
+import { Audio } from "expo-av";
+import * as Sharing from "expo-sharing";
+import * as FileSystem from "expo-file-system";
 
 export default function EndGameScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -14,6 +27,57 @@ export default function EndGameScreen({ navigation }) {
   const [gameWinner, setGameWinner] = useState("");
   const [lastScene, setLastScene] = useState(null);
   const [winnerVotes, setWinnerVotes] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [sound, setSound] = useState(null);
+  const fileUri = FileSystem.documentDirectory + "elevenlabs_podcast.mp3";
+ 
+  const handleGenerateAudio = async () => {
+    setLoading(true);
+   const lastScene = game.lastScene;
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/exports/generate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: lastScene }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error("Erreur serveur : " + errorText);
+      }
+
+      const blob = await response.blob();
+      const fileUri = FileSystem.documentDirectory + "podcast.mp3";
+
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64data = reader.result.split(",")[1];
+
+        await FileSystem.writeAsStringAsync(fileUri, base64data, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+
+        const { sound: playbackObj } = await Audio.Sound.createAsync({
+          uri: fileUri,
+        });
+        setSound(playbackObj);
+        await playbackObj.playAsync();
+
+        if (await Sharing.isAvailableAsync()) {
+          await Sharing.shareAsync(fileUri);
+        } else {
+          Alert.alert("Partage non dispo sur cet appareil.");
+        }
+      };
+      reader.readAsDataURL(blob);
+    } catch (error) {
+      console.error("Erreur génération audio :", error);
+      Alert.alert("Erreur", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   //Récupération de l'image de la partie
   useEffect(() => {
@@ -32,62 +96,60 @@ export default function EndGameScreen({ navigation }) {
 
   // Récupération de la dernière scène
   useEffect(() => {
-    fetch(`${BACKEND_URL}/scenes/${code}`)
-      .then(response => response.json())
-      .then(data => {
-        if (!data.scenes || data.scenes.length === 0) return;
-        const lastScene = data.scenes.reduce((max, scene) => 
-          scene.numero > max.numero ? scene : max
-        );
-        console.log("Dernière scène :", lastScene);
-
-      });
-  }, [code]);
+    setLastScene(game.lastScene);
+  }, [game.lastScene]);
 
   // Récupération du nom du gagnant
   useEffect(() => {
     if (gameWinner) {
       fetch(`${BACKEND_URL}/users/${gameWinner}`)
-        .then(response => response.json())
-        .then(data => {
+        .then((response) => response.json())
+        .then((data) => {
           if (data.result) {
             setWinnerName(data.user.nickname);
           } else {
             console.log("Erreur lors de la récupération du gagnant");
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Erreur:", error);
         });
     }
   }, [gameWinner]);
 
   // Récupération du nombre total de votes du gagnant
-useEffect(() => {
-  if (gameWinner) {
-    fetch(`${BACKEND_URL}/users/${gameWinner}`)
-      .then(response => response.json())
-      .then(userData => {
-        if (userData.result) {
-          fetch(`${BACKEND_URL}/scenes/${code}`)
-            .then(response => response.json())
-            .then(scenesData => {
-              if (scenesData.result && scenesData.scenes) {
-                const totalVotes = scenesData.scenes.reduce((total, scene) => {
-                  const winnerPropositions = scene.propositions.filter(
-                    prop => prop.userId === userData.user._id
+  useEffect(() => {
+    if (gameWinner) {
+      fetch(`${BACKEND_URL}/users/${gameWinner}`)
+        .then((response) => response.json())
+        .then((userData) => {
+          if (userData.result) {
+            fetch(`${BACKEND_URL}/scenes/${code}`)
+              .then((response) => response.json())
+              .then((scenesData) => {
+                if (scenesData.result && scenesData.scenes) {
+                  const totalVotes = scenesData.scenes.reduce(
+                    (total, scene) => {
+                      const winnerPropositions = scene.propositions.filter(
+                        (prop) => prop.userId === userData.user._id
+                      );
+                      return (
+                        total +
+                        winnerPropositions.reduce(
+                          (sum, prop) => sum + prop.votes,
+                          0
+                        )
+                      );
+                    },
+                    0
                   );
-                  return total + winnerPropositions.reduce((sum, prop) => sum + prop.votes, 0);
-                }, 0);
-                setWinnerVotes(totalVotes);
-              }
-            });
-        }
-      })
-  }
-}, [gameWinner, code]);
-
-
+                  setWinnerVotes(totalVotes);
+                }
+              });
+          }
+        });
+    }
+  }, [gameWinner, code]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -112,7 +174,9 @@ useEffect(() => {
       </View>
       <View>
         <Text style={styles.winnerText}>Félicitations, {gameWinner} !</Text>
-        <Text style={styles.winnerText}>Tu as gagné avec {winnerVotes} votes.</Text>
+        <Text style={styles.winnerText}>
+          Tu as gagné avec {winnerVotes} votes.
+        </Text>
       </View>
       <View style={styles.buttonsContainer}>
         <View style={styles.buttonContainer}>
@@ -121,8 +185,8 @@ useEffect(() => {
           </TouchableOpacity>
           <Text style={styles.text}>Exporter à l'écrit</Text>
         </View>
-         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button}>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity  onPress={handleGenerateAudio}  style={styles.button}>
             <FontAwesome5 size={30} name="podcast" color="#FBF1F1" />
           </TouchableOpacity>
           <Text style={styles.text}>Exporter en podcast</Text>
@@ -222,13 +286,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
   buttonContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     margin: 30,
   },
   text: {
     color: "#335561",
     marginTop: 5,
     fontFamily: "NotoSans_400Regular",
-  }
+  },
 });
+
+
