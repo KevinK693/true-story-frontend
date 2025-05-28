@@ -12,14 +12,14 @@ import {
 } from "react-native";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { addScene, updateScene } from 'react-redux'
+import { addFirstScene } from "../reducers/scene";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function StartingGameScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const [sceneText, setSceneText] = useState("");
   const [propositionsNb, setPropositionsNb] = useState([]);
@@ -33,7 +33,7 @@ export default function StartingGameScreen({ navigation }) {
 
   const game = useSelector((state) => state.game.value);
   const code = game.code;
-  const nbScenes = game.nbScenes
+  const nbScenes = game.nbScenes;
 
   const user = useSelector((state) => state.user.value);
   const token = user.token;
@@ -50,7 +50,6 @@ export default function StartingGameScreen({ navigation }) {
           setTitle(data.game.title);
           setTotalScenesNb(data.game.nbScenes);
           setImage(data.game.image);
-        
         } else {
           console.error(
             "Erreur côté backend (game):",
@@ -69,8 +68,8 @@ export default function StartingGameScreen({ navigation }) {
             setSceneText(data.data.text);
             setPropositionsNb(data.data.propositions.length);
             if (sceneNumber === 1) {
-              dispatch(addScene({remainingScenes: nbScenes, scene: sceneText}))
-            } 
+              dispatch(addFirstScene(data.data.text));
+            }
           } else {
             console.error(
               "Erreur côté backend (scène):",
@@ -178,7 +177,11 @@ export default function StartingGameScreen({ navigation }) {
               activeOpacity={0.8}
               onPress={() => setClicked(true)}
             >
-              {(sceneNumber === nbScenes - 1) ? <Text style={styles.buttonText}>Proposer une fin</Text> : <Text style={styles.buttonText}>Proposer une suite</Text>}
+              {sceneNumber === nbScenes - 1 ? (
+                <Text style={styles.buttonText}>Proposer une fin</Text>
+              ) : (
+                <Text style={styles.buttonText}>Proposer une suite</Text>
+              )}
             </TouchableOpacity>
             <Text style={[styles.textNbPropositions, { textAlign: "center" }]}>
               Nombre de propositions: {propositionsNb}/{playersNb}
@@ -248,8 +251,8 @@ const styles = StyleSheet.create({
     elevation: 6,
     flex: 1,
     maxHeight: "38%",
-    justifyContent: 'center', 
-    alignItems: 'center'
+    justifyContent: "center",
+    alignItems: "center",
   },
   button: {
     backgroundColor: "#65558F",

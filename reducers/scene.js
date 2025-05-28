@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   value: {
-    sceneNumber: 1, scenes: [], fullstory: '', remainingScenes: null
+    sceneNumber: 1, scenes: [], fullstory: ''
   },
 };
 
@@ -14,20 +14,17 @@ export const sceneSlice = createSlice({
       state.value.sceneNumber += 1
       state.value.scenes.push(action.payload)
       state.value.fullstory = state.value.scenes.join('\n\n')
-      state.value.remainingScenes -= 1
     },
     resetScene: (state) => {
       state.value.sceneNumber = 1
       state.value.scenes = []
       state.value.fullstory = ''
     },
-    addScene: (state, action) => {
-      state.value.sceneNumber = 1
-      state.value.scenes.push(action.payload.scene)
-      state.value.remainingScenes = (action.payload.remainingScenes)
+    addFirstScene: (state, action) => {
+      state.value.scenes.push(action.payload)
     }
   },
 });
 
-export const { updateScene, resetScene, addScene } = sceneSlice.actions;
+export const { updateScene, resetScene, addFirstScene } = sceneSlice.actions;
 export default sceneSlice.reducer;
