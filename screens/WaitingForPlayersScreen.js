@@ -30,6 +30,7 @@ export default function WaitingForPlayers({ navigation, route }) {
   const [playersNumber, setPlayersNumber] = useState(0);
   const [status, setStatus] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [waitingForPlayers, setWaitingForPlayers] = useState(false)
 
   useEffect(() => {
     if (token) {
@@ -105,7 +106,12 @@ export default function WaitingForPlayers({ navigation, route }) {
         status: status,
       })
     );
-    navigation.navigate("StartingGame");
+    if (players.length === playersNumber) {
+      setWaitingForPlayers(false)
+      navigation.navigate("StartingGame");
+    } else {
+      setWaitingForPlayers(true)
+    }
   };
 
   return (
@@ -159,6 +165,7 @@ export default function WaitingForPlayers({ navigation, route }) {
           onPress={handleSubmit}
         >
           <Text style={styles.buttonText}>Lancer la partie</Text>
+          {waitingForPlayers && <Text>Nombre de joueurs insuffisant</Text> }
         </TouchableOpacity>
       </View>
     </SafeAreaView>
