@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, ActivityIndicator} from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { updateAvatar } from "../reducers/user";
@@ -18,6 +18,7 @@ export default function PlayersList({ navigation, route }) {
   const [players, setPlayers] = useState([]);
   const [playersNumber, setPlayersNumber] = useState(0);
   const [status, setStatus] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (token) {
@@ -59,26 +60,13 @@ export default function PlayersList({ navigation, route }) {
         .then((data) => {
           if (data.result) {
             setPlayers(data.players);
+            setLoading(false);
           }
         });
     }, 3000);
 
     return () => clearInterval(interval);
   }, [code]);
-
-  useEffect(() => {
-    fetch(`${BACKEND_URL}/scenes/firstScene`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: code }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.result) {
-          console.log("Scène envoyée");
-        }
-      });
-  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -95,6 +83,11 @@ export default function PlayersList({ navigation, route }) {
         <Text style={styles.joueurs}>Nombre de Joueurs : {players.length}</Text>
       </View>
       <View style={styles.players}>
+            {loading ? (
+                  <View style={styles.loaderContainer}>
+                    <ActivityIndicator size="large" color="#65558F" />
+                  </View>
+                ) : (
         <ScrollView
           style={styles.scrollContainer}
           contentContainerStyle={styles.content}
@@ -112,6 +105,7 @@ export default function PlayersList({ navigation, route }) {
             </View>
           ))}
         </ScrollView>
+                )}
       </View>
     </SafeAreaView>
   );
@@ -194,5 +188,11 @@ const styles = StyleSheet.create({
     height: 12,
     borderRadius: 6,
     backgroundColor: "green",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
   },
 });
