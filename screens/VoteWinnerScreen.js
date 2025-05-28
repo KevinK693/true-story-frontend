@@ -82,7 +82,22 @@ export default function VoteWinnerScreen({ navigation }) {
         });
       navigation.navigate("StartingGame");
     } else {
-      navigation.navigate("EndGame");
+      fetch(`${BACKEND_URL}/scenes/lastScene`, {
+        method: 'POST',
+        headers: {'Content-Type' : 'application/json'},
+        body: JSON.stringify({
+          code: code, 
+          text: winningProposition,
+          history: history
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.result) {
+          dispatch(updateScene(data.data.text))
+          navigation.navigate("EndGame");
+        }
+      })
     }
   };
 
