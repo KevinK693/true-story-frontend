@@ -51,7 +51,7 @@ export default function VoteWinnerScreen({ navigation }) {
   }, []);
 
   const handleResumeGame = () => {
-    if (sceneNumber < nbScenes) {
+    if (sceneNumber < nbScenes - 1) {
       fetch(`${BACKEND_URL}/scenes/nextScene`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
