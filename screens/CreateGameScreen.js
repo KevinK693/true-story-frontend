@@ -40,6 +40,12 @@ export default function CreateGameScreen({ navigation }) {
     "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834381/chalet_sa1x2p.png",
     "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834382/comme_qtwh8d.png",
     "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834381/molecule_zjn0wj.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1748441445/ramen_yad3oi.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1748441445/robot_rpdqwe.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1748441445/fleur-de-lotus_oy0umi.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1748441445/manette-de-jeu_v8rxnq.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1748441445/le-football_ylfmnh.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1748441446/astronaute_oaasse.png"
   ];
 
   const scenesOptions = [4, 8, 12, 16, 20, 24].map((num) => ({
