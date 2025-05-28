@@ -203,7 +203,7 @@ export default function CreateGameScreen({ navigation }) {
           </TouchableOpacity>
         </View>
         <Dropdown
-          style={styles.dropdown}
+          style={styles.dropdownPublic}
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
           data={publicOptions}
@@ -411,6 +411,17 @@ const styles = StyleSheet.create({
     height: 45,
     backgroundColor: "#fff",
     width: "30%",
+    justifyContent: "center",
+    marginLeft: "10%",
+  },
+  dropdownPublic: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    paddingHorizontal: "3%",
+    height: 45,
+    backgroundColor: "#fff",
+    width: "50%",
     justifyContent: "center",
     marginLeft: "10%",
   },
