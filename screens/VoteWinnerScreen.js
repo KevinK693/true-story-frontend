@@ -7,12 +7,18 @@ import { updateScene } from "../reducers/scene";
 
 export default function VoteWinnerScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+
   const dispatch = useDispatch();
+
   const game = useSelector((state) => state.game.value);
   const code = game.code;
   const nbScenes = game.nbScenes;
+
   const scene = useSelector((state) => state.scene.value);
   const sceneNumber = scene.sceneNumber;
+  const history = scene.fullstory
+  console.log('HISTORY =>', history)
+
   const [gameImage, setGameImage] = useState(null);
   const [gameTitle, setGameTitle] = useState("");
   const [sceneWinner, setSceneWinner] = useState("");
@@ -94,6 +100,7 @@ export default function VoteWinnerScreen({ navigation }) {
       </View>
       <Text style={styles.gameTitle}>{gameTitle}</Text>
       <Text style={styles.subtitle}>Vainqueur du vote</Text>
+      <Text>En cas d'égalité, le/la plus rapide à répondre l'emporte !</Text>  
 
       <View style={styles.propositionsContainer}>
         <Image style={styles.winnerAvatar} source={{ uri: avatar }} />
