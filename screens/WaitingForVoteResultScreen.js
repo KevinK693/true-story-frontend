@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { useSelector } from "react-redux";
 
 export default function WaitingForVoteResultScreen({ navigation }) {
@@ -8,6 +8,7 @@ export default function WaitingForVoteResultScreen({ navigation }) {
   const game = useSelector((state) => state.game.value);
   const code = game.code;
   const nbPlayers = game.nbPlayers;
+
   const scene = useSelector((state) => state.scene.value);
   const sceneNumber = scene.sceneNumber;
 
@@ -36,8 +37,13 @@ export default function WaitingForVoteResultScreen({ navigation }) {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                   }
-                );
-                navigation.navigate("VoteWinner");
+                )
+                  .then((response) => response.json())
+                  .then((data) => {
+                    if (data.result) {
+                      navigation.navigate("VoteWinner");
+                    }
+                  });
               }
             }
           }
@@ -52,6 +58,9 @@ export default function WaitingForVoteResultScreen({ navigation }) {
       <Text style={styles.text}>
         En attente des votes des autres joueurs...
       </Text>
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#65558F" />
+      </View>
     </View>
   );
 }
@@ -67,5 +76,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#335561",
     fontWeight: "bold",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
   },
 });

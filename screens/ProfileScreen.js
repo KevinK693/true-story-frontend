@@ -21,7 +21,7 @@ export default function ProfileScreen({ navigation }) {
   const [modified, setModified] = useState(false);
   const [gamesPlayed, setGamesPlayed] = useState(0);
   const [gamesWon, setGamesWon] = useState(0);
-  const [victoryRate, setVictoryRate] = useState(0)
+  const [victoryRate, setVictoryRate] = useState(0);
 
   const user = useSelector((state) => state.user.value);
   const token = user.token;
@@ -51,10 +51,16 @@ export default function ProfileScreen({ navigation }) {
 
           setGamesPlayed(totalGames);
           setGamesWon(wins);
-          setVictoryRate(((wins * 100) / totalGames).toFixed(1))
+          if (setGamesPlayed === 0) {
+            setVictoryRate(0);
+          } else {
+            setVictoryRate(((wins * 100) / totalGames).toFixed(1));
+          }
         }
       });
   }, []);
+
+  console.log(victoryRate)
 
   const handleShowGames = () => {
     console.log("Afficher les jeux");
@@ -204,7 +210,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   text: {
-    fontSize: 20,
+    fontSize: 18,
     color: "#335561",
     fontWeight: "600",
     marginVertical: 15,

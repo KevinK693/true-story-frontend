@@ -83,7 +83,7 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.textbutton}>CONTINUER</Text>
         </TouchableOpacity>
         <View style={{ flexDirection: "row" }}>
-          <Button title="Votes" onPress={() => navigation.navigate("EndGame")} />
+          <Button title="End" onPress={() => navigation.navigate("EndGame")} />
           <Button
             title="VOte winner"
             onPress={() => navigation.navigate("VoteWinner")}
@@ -120,8 +120,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#65558F",
     borderRadius: 6,
-    marginVertical: 20,
-    padding: 30,
+    marginVertical: 15,
+    padding: 25,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
