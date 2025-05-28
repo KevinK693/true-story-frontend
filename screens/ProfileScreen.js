@@ -60,7 +60,7 @@ export default function ProfileScreen({ navigation }) {
       });
   }, []);
 
-  console.log(victoryRate)
+  console.log(victoryRate);
 
   const handleShowGames = () => {
     console.log("Afficher les jeux");
@@ -89,31 +89,48 @@ export default function ProfileScreen({ navigation }) {
   };
 
   const handleModifications = () => {
-    const formData = new FormData();
-    formData.append("token", token);
-    formData.append("nickname", nickname);
-
-    if (image) {
-      formData.append("photoFromFront", {
-        uri: image,
-        name: "photo.jpg",
-        type: "image/jpeg",
-      });
-    }
-    fetch(`${BACKEND_URL}/users/profile`, {
-      method: "PUT",
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((data) => {
+    if (image === null) {
+      fetch(`${BACKEND_URL}/users/profile/nickname`, {
+        method: 'PUT',
+        headers: { 'Content-Type' : "application/json" },
+        body: JSON.stringify({
+          token: token,
+          nickname: nickname
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
         if (data.result) {
-          setAvatarUrl(data.url);
-          dispatch(updateAvatar(data.url));
-          setModified(true);
-        } else {
-          console.log("Failed to update profile :", data.error);
+          console.log("Nickname updated successfully")
         }
-      });
+      })
+    } else {
+      const formData = new FormData();
+      formData.append("token", token);
+      formData.append("nickname", nickname);
+
+      if (image) {
+        formData.append("photoFromFront", {
+          uri: image,
+          name: "photo.jpg",
+          type: "image/jpeg",
+        });
+      }
+      fetch(`${BACKEND_URL}/users/profile`, {
+        method: "PUT",
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.result) {
+            setAvatarUrl(data.url);
+            dispatch(updateAvatar(data.url));
+            setModified(true);
+          } else {
+            console.log("Failed to update profile :", data.error);
+          }
+        });
+    }
   };
 
   return (
