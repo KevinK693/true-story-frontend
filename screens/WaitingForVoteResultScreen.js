@@ -37,13 +37,8 @@ export default function WaitingForVoteResultScreen({ navigation }) {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                   }
-                )
-                  .then((response) => response.json())
-                  .then((data) => {
-                    if (data.result) {
-                      navigation.navigate("VoteWinner");
-                    }
-                  });
+                );
+                navigation.navigate("VoteWinner");
               }
             }
           }
@@ -55,10 +50,10 @@ export default function WaitingForVoteResultScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>
-        En attente des votes des autres joueurs...
-      </Text>
       <View style={styles.loaderContainer}>
+        <Text style={styles.text}>
+          En attente des votes des autres joueurs...
+        </Text>
         <ActivityIndicator size="large" color="#65558F" />
       </View>
     </View>

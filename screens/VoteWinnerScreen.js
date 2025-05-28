@@ -65,12 +65,12 @@ export default function VoteWinnerScreen({ navigation }) {
         .then((data) => {
           if (data.result) {
             console.log("Scene updated successfully");
+            dispatch(updateScene(data.data.text))
           } else {
             console.log("Error updating scene");
           }
         });
       navigation.navigate("StartingGame");
-      dispatch(updateScene());
     } else {
       navigation.navigate("EndGame");
     }
