@@ -158,16 +158,14 @@ export default function WaitingForPlayers({ navigation, route }) {
       <Text style={styles.joueursAttente}>
         En attente des joueurs : {players.length}/{playersNumber}
       </Text>
-      <View style={styles.bottom}>
         <TouchableOpacity
           style={styles.button}
           activeOpacity={0.8}
           onPress={handleSubmit}
         >
           <Text style={styles.buttonText}>Lancer la partie</Text>
-          {waitingForPlayers && <Text>Nombre de joueurs insuffisant</Text> }
         </TouchableOpacity>
-      </View>
+          {waitingForPlayers && <Text style={{textAlign: 'center', color: 'red'}}>Nombre de joueurs insuffisant</Text> }
     </SafeAreaView>
   );
 }
@@ -257,8 +255,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#65558F",
     padding: 10,
     borderRadius: 8,
-    width: 260,
-    marginTop: 20,
+    width: '80%',
+    marginVertical: 20,
     height: 50,
   },
   joueursAttente: {
