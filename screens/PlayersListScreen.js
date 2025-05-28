@@ -89,7 +89,7 @@ export default function PlayersList({ navigation, route }) {
       </View>
       <Text style={styles.textTitle}>{title}</Text>
       <View>
-        <Text style={styles.genre}>{genre}</Text>
+        <Text style={styles.genre}>Genre : {genre}</Text>
       </View>
       <View style={styles.middle}>
         <Text style={styles.joueurs}>Nombre de Joueurs : {players.length}</Text>
