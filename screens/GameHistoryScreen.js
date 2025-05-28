@@ -39,7 +39,7 @@ export default function VotingScreen() {
   }, []);
 
   useEffect(() => {
-    fetch(`${BACKEND_URL}/scenes/${code}`)
+    fetch(`${BACKEND_URL}/scenes/all/${code}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {

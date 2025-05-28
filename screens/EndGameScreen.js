@@ -14,6 +14,7 @@ export default function EndGameScreen({ navigation }) {
   const [gameWinner, setGameWinner] = useState("");
   const [lastScene, setLastScene] = useState(null);
   const [winnerVotes, setWinnerVotes] = useState(0);
+  const [winnerName, setWinnerName] = useState("");
 
   //Récupération de l'image de la partie
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function EndGameScreen({ navigation }) {
 
   // Récupération de la dernière scène
   useEffect(() => {
-    fetch(`${BACKEND_URL}/scenes/${code}`)
+    fetch(`${BACKEND_URL}/scenes/all/${code}`)
       .then(response => response.json())
       .then(data => {
         if (!data.scenes || data.scenes.length === 0) return;
@@ -111,7 +112,7 @@ useEffect(() => {
         <Text style={styles.proposition}>{lastScene}</Text>
       </View>
       <View>
-        <Text style={styles.winnerText}>Félicitations, {gameWinner} !</Text>
+      <Text style={styles.winnerText}>Félicitations, {winnerName} !</Text>
         <Text style={styles.winnerText}>Tu as gagné avec {winnerVotes} votes.</Text>
       </View>
       <View style={styles.buttonsContainer}>
