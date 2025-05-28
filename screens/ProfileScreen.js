@@ -102,6 +102,7 @@ export default function ProfileScreen({ navigation }) {
       .then(data => {
         if (data.result) {
           console.log("Nickname updated successfully")
+          setModified(true);
         }
       })
     } else {
