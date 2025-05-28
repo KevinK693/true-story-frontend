@@ -67,7 +67,8 @@ export default function VoteWinnerScreen({ navigation }) {
           code: code,
           text: winningProposition,
           remainingScenes: remainingScenes,
-          history: history
+          history: history,
+          sceneNumber: sceneNumber + 1
         })
       })
         .then((response) => response.json())
