@@ -421,7 +421,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: "3%",
     height: 45,
     backgroundColor: "#fff",
-    width: "60%",
+    width: "50%",
     justifyContent: "center",
     marginLeft: "10%",
   },
