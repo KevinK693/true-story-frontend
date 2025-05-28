@@ -19,6 +19,8 @@ export default function VoteWinnerScreen({ navigation }) {
   const history = scene.fullstory
   console.log('HISTORY =>', history)
 
+  const remainingScenes = nbScenes - sceneNumber
+
   const [gameImage, setGameImage] = useState(null);
   const [gameTitle, setGameTitle] = useState("");
   const [sceneWinner, setSceneWinner] = useState("");
@@ -64,7 +66,8 @@ export default function VoteWinnerScreen({ navigation }) {
         body: JSON.stringify({
           code: code,
           text: winningProposition,
-          sceneNumber: sceneNumber + 1,
+          remainingScenes: remainingScenes,
+          history: history
         })
       })
         .then((response) => response.json())
