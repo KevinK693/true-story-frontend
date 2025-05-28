@@ -20,6 +20,7 @@ export default function CreateGameScreen({ navigation }) {
   const [selectedPlayers, setSelectedPlayers] = useState(null);
   const [selectedScenes, setSelectedScenes] = useState(null);
   const [selectedGenre, setSelectedGenre] = useState(null);
+  const [selectedPublic, setSelectedPublic] = useState(null);
   const [title, setTitle] = useState(null);
   const [image, setImage] = useState(null);
   const [modalPlayersVisible, setModalPlayersVisible] = useState(false);
@@ -39,6 +40,12 @@ export default function CreateGameScreen({ navigation }) {
     "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834381/chalet_sa1x2p.png",
     "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834382/comme_qtwh8d.png",
     "https://res.cloudinary.com/dxgix5q4e/image/upload/v1747834381/molecule_zjn0wj.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1748441445/ramen_yad3oi.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1748441445/robot_rpdqwe.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1748441445/fleur-de-lotus_oy0umi.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1748441445/manette-de-jeu_v8rxnq.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1748441445/le-football_ylfmnh.png",
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1748441446/astronaute_oaasse.png"
   ];
 
   const scenesOptions = [4, 8, 12, 16, 20, 24].map((num) => ({
@@ -51,7 +58,7 @@ export default function CreateGameScreen({ navigation }) {
     value: num,
   }));
 
-  const genresOPtions = [
+  const genresOptions = [
     "Action",
     "Aventure",
     "Comédie",
@@ -69,12 +76,20 @@ export default function CreateGameScreen({ navigation }) {
     value: text,
   }));
 
+  const publicOptions = [
+    "Enfants",
+    "Adultes",
+  ].map((text) => ({
+    label: `${text}`,
+    value: text,
+  }));
+
   const pickImage = async () => {
     setModalImageVisible(true);
   };
 
   const handleSubmit = () => {
-    if (!title || !selectedPlayers || !selectedScenes || !selectedGenre) {
+    if (!title || !selectedPlayers || !selectedScenes || !selectedGenre || !image || !selectedPublic) {
       alert("Veuillez remplir tous les champs");
       return;
     }
@@ -185,6 +200,28 @@ export default function CreateGameScreen({ navigation }) {
         />
       </View>
 
+      {/* Public */}
+      <View style={styles.optionContainer}>
+        <View style={styles.labelContainer}>
+          <Text style={styles.text}>Public</Text>
+          <TouchableOpacity onPress={() => setModalScenesVisible(true)}>
+            <FontAwesome5 name="info-circle" size={22} style={styles.icon} />
+          </TouchableOpacity>
+        </View>
+        <Dropdown
+          style={styles.dropdownPublic}
+          placeholderStyle={styles.placeholderStyle}
+          selectedTextStyle={styles.selectedTextStyle}
+          data={publicOptions}
+          maxHeight={200}
+          labelField="label"
+          valueField="value"
+          placeholder="Select"
+          value={selectedPublic}
+          onChange={(item) => setSelectedPublic(item.value)}
+        />
+      </View>
+
       {/* Genre */}
       <View style={styles.genreContainer}>
         <Text style={[styles.text, { textAlign: "center" }]}>
@@ -194,7 +231,7 @@ export default function CreateGameScreen({ navigation }) {
           style={styles.dropdownGenre}
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
-          data={genresOPtions}
+          data={genresOptions}
           maxHeight={200}
           labelField="label"
           valueField="value"
@@ -203,6 +240,7 @@ export default function CreateGameScreen({ navigation }) {
           onChange={(item) => setSelectedGenre(item.value)}
         />
       </View>
+
 
       {/* Bouton */}
       <TouchableOpacity
@@ -246,6 +284,26 @@ export default function CreateGameScreen({ navigation }) {
               <Text style={styles.modalText}>
                 Le nombre de scènes correspond aux étapes ou moments clés du
                 scénario. Plus il y a de scènes, plus le jeu est long.
+              </Text>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
+       {/* Modal Public */}
+       <Modal
+        transparent
+        visible={modalScenesVisible}
+        animationType="fade"
+        onRequestClose={() => setModalScenesVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setModalScenesVisible(false)}>
+          <View style={styles.modal}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalText}>
+              Le choix du public détermine le ton et le contenu du scénario.
+              Un scénario pour enfants privilégiera des thèmes ludiques, simples et bienveillants.
+              Un scénario pour adultes peut inclure des intrigues plus complexes, des enjeux matures et un ton plus réaliste.
               </Text>
             </View>
           </View>
@@ -359,6 +417,17 @@ const styles = StyleSheet.create({
     height: 45,
     backgroundColor: "#fff",
     width: "30%",
+    justifyContent: "center",
+    marginLeft: "10%",
+  },
+  dropdownPublic: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    paddingHorizontal: "3%",
+    height: 45,
+    backgroundColor: "#fff",
+    width: "50%",
     justifyContent: "center",
     marginLeft: "10%",
   },

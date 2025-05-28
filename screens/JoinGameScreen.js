@@ -58,6 +58,7 @@ export default function JoinGame({ navigation }) {
         <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
+          autoCapitalize="characters"
           placeholder="Code de la partie"
           placeholderTextColor="#335561"
           onChangeText={(text) => setCode(text)}
