@@ -21,7 +21,6 @@ export default function VoteWinnerScreen({ navigation }) {
   const scene = useSelector((state) => state.scene.value);
   const sceneNumber = scene.sceneNumber;
   const history = scene.fullstory;
-  console.log("HISTORY =>", history);
 
   const remainingScenes = nbScenes - sceneNumber;
 
@@ -40,7 +39,7 @@ export default function VoteWinnerScreen({ navigation }) {
     }
   };
 
-  //Récupération de l'image de la partie
+  //Récupération des infos de la partie
   useEffect(() => {
     fetch(`${BACKEND_URL}/games/game/${code}`)
       .then((response) => response.json())
@@ -68,52 +67,91 @@ export default function VoteWinnerScreen({ navigation }) {
           console.log("Erreur de récupération du gagnant du vote");
         }
       });
-  }, []);
+  }, [code]);
 
-  const handleResumeGame = () => {
-    if (sceneNumber < nbScenes - 1) {
-      fetch(`${BACKEND_URL}/scenes/nextScene`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          code: code,
-          text: winningProposition,
-          remainingScenes: remainingScenes,
-          history: history,
-          sceneNumber: sceneNumber + 1,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.result) {
-            console.log("Scene updated successfully");
-            dispatch(updateScene(data.data.text));
-          } else {
-            console.log("Error updating scene");
-          }
+  const handleResumeGame = async () => {
+    try {
+      // Étape 1 : Modifier le statut de la scène en cours
+      const statusResponse = await fetch(
+        `${BACKEND_URL}/scenes/status/${code}/${sceneNumber}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      const statusData = await statusResponse.json();
+
+      // Étape 2 : Mettre à jour la scène selon s'il en reste ou non
+      let sceneData;
+      if (sceneNumber < nbScenes - 1) {
+        const nextSceneRes = await fetch(`${BACKEND_URL}/scenes/nextScene`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            code: code,
+            text: winningProposition,
+            remainingScenes: remainingScenes,
+            history: history,
+            sceneNumber: sceneNumber + 1,
+          }),
         });
-      navigation.replace("StartingGame");
-    } else {
-      fetch(`${BACKEND_URL}/scenes/lastScene`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          code: code,
-          text: winningProposition,
-          history: history,
-          sceneNumber: nbScenes,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.result) {
-            console.log;
-            dispatch(updateScene(data.data.text));
-            navigation.replace("EndGame");
-          }
+        sceneData = await nextSceneRes.json();
+      } else {
+        const lastSceneRes = await fetch(`${BACKEND_URL}/scenes/lastScene`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            code: code,
+            text: winningProposition,
+            history: history,
+            sceneNumber: nbScenes,
+          }),
         });
+        sceneData = await lastSceneRes.json();
+      }
+      if (sceneData?.result) {
+        dispatch(updateScene(sceneData.data.text));
+        navigation.navigate(
+          sceneNumber < nbScenes - 1 ? "StartingGame" : "EndGame"
+        );
+      } 
+    } catch (error) {
+      console.error("Erreur dans handleResumeGame:", error);
     }
   };
+
+  useEffect(() => {
+    if (!isHost()) {
+      const interval = setInterval(async () => {
+        try {
+          const response = await fetch(`${BACKEND_URL}/scenes/all/${code}`);
+          const data = await response.json();
+
+          if (!data.result) {
+            console.error("Erreur récupération des scènes :", data.error);
+            return;
+          }
+
+          const scenes = data.scenes;
+          const latestScene = scenes[scenes.length - 1];
+
+          if (latestScene.sceneNumber > sceneNumber) {
+            // La nouvelle scène est prête !
+            dispatch(updateScene(latestScene.text));
+            clearInterval(interval);
+            navigation.navigate(
+              latestScene.sceneNumber < nbScenes ? "StartingGame" : "EndGame"
+            );
+          }
+        } catch (error) {
+          console.error("Erreur dans le polling des scènes :", error);
+        }
+      }, 3000);
+
+      return () => clearInterval(interval);
+    }
+  }, [code, sceneNumber, nbScenes, navigation]);
 
   return (
     <SafeAreaView style={styles.container}>

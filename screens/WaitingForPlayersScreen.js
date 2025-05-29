@@ -60,21 +60,41 @@ export default function WaitingForPlayers({ navigation, route }) {
   }, [token]);
 
   useEffect(() => {
-    fetch(`${BACKEND_URL}/games/game/${code}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.result) {
-          setGameImage(data.game.image);
-          setPlayersNumber(data.game.nbPlayers);
-          setTitle(data.game.title);
-          setScenesNumber(data.game.nbScenes);
-          setGenre(data.game.genre);
-          setStatus(data.game.status);
-        } else {
-          console.log("Erreur de récupération des données utilisateur");
-        }
-      });
-  }, []);
+    const interval = setInterval(() => {
+      fetch(`${BACKEND_URL}/games/game/${code}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.result) {
+            setGameImage(data.game.image);
+            setPlayersNumber(data.game.nbPlayers);
+            setTitle(data.game.title);
+            setScenesNumber(data.game.nbScenes);
+            setGenre(data.game.genre);
+            setStatus(data.game.status);
+            console.log("NBPLAYERS IN DB", data.game.nbPlayers)
+            if (data.game.started) {
+              console.log('THE GAME HAS STARTED', data.game.status)
+              dispatch(
+                updateGame({
+                  image: data.game.image,
+                  title: data.game.title,
+                  code: code,
+                  genre: data.game.genre,
+                  nbPlayers: data.game.nbPlayers,
+                  nbScenes: data.game.nbScenes,
+                  status: data.game.status,
+                })
+              );
+              navigation.replace("StartingGame");
+            }
+          } else {
+            console.log("Erreur de récupération des données utilisateur");
+          }
+        });
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [code, navigation]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -106,23 +126,20 @@ export default function WaitingForPlayers({ navigation, route }) {
   }, []);
 
   const handleSubmit = () => {
-    dispatch(
-      updateGame({
-        image: gameImage,
-        title: title,
-        code: code,
-        genre: genre,
-        nbPlayers: playersNumber,
-        nbScenes: scenesNumber,
-        status: status,
-      })
-    );
-    if (players.length === playersNumber) {
-      setWaitingForPlayers(false);
-      navigation.navigate("StartingGame");
-    } else {
-      setWaitingForPlayers(true);
-    }
+    fetch(`${BACKEND_URL}/games/start/${code}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          if (players.length === playersNumber) {
+            setWaitingForPlayers(false);
+          } else {
+            setWaitingForPlayers(true);
+          }
+        }
+      });
   };
 
   return (

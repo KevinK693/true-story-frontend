@@ -97,6 +97,7 @@ export default function StartingGameScreen({ navigation }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
+          console.log("PASSAGE A L'ECRAN DE VOTES")
           setUserText("");
           navigation.replace("Voting");
         } else {
@@ -151,7 +152,7 @@ export default function StartingGameScreen({ navigation }) {
                   <TextInput
                     multiline={true}
                     style={styles.texteUserInput}
-                    placeholder="Écrivez la suite de l'histoire..."
+                    placeholder="Écrivez la fin de l'histoire..."
                     value={userText}
                     onChangeText={setUserText}
                     maxLength={280}
@@ -160,7 +161,7 @@ export default function StartingGameScreen({ navigation }) {
                   <TextInput
                     multiline={true}
                     style={styles.texteUserInput}
-                    placeholder="Écrivez la fin de l'histoire..."
+                    placeholder="Écrivez la suite de l'histoire..."
                     value={userText}
                     onChangeText={setUserText}
                     maxLength={280}

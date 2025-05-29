@@ -24,6 +24,7 @@ export default function WaitingForVoteResultScreen({ navigation }) {
                 (acc, proposition) => acc + proposition.votes,
                 0
               );
+              console.log("TOTAL VOTES", totalVotes, 'NBPLAYERS', nbPlayers)
               return totalVotes === nbPlayers;
             };
             if (allPlayersHaveVoted(data)) {
@@ -37,7 +38,10 @@ export default function WaitingForVoteResultScreen({ navigation }) {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                   }
-                );
+                ).then(response => response.json())
+                .then(data => {
+                  console.log('WINNER CALCULE')
+                })
               }
               navigation.replace("VoteWinner");
             }
