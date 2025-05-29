@@ -43,9 +43,9 @@ export default function HomeScreen({ navigation }) {
   };
 
   const handleCreateGame = () => {
-    navigation.navigate("CreateGame")
-    dispatch(resetScene())
-  }
+    navigation.navigate("CreateGame");
+    dispatch(resetScene());
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -82,13 +82,6 @@ export default function HomeScreen({ navigation }) {
         >
           <Text style={styles.textbutton}>CONTINUER</Text>
         </TouchableOpacity>
-        <View style={{ flexDirection: "row" }}>
-          <Button title="End" onPress={() => navigation.navigate("EndGame")} />
-          <Button
-            title="VOte winner"
-            onPress={() => navigation.navigate("VoteWinner")}
-          />
-        </View>
       </View>
     </SafeAreaView>
   );
