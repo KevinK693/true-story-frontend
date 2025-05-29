@@ -105,10 +105,6 @@ export default function StartingGameScreen({ navigation }) {
       });
   };
 
-  const handlePlayersList = () => {
-    navigation.navigate("PlayersList", { code: code });
-  };
-
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -116,7 +112,7 @@ export default function StartingGameScreen({ navigation }) {
     >
       <SafeAreaView style={styles.container}>
         <View style={styles.topBar}>
-          <TouchableOpacity onPress={handlePlayersList}>
+          <TouchableOpacity onPress={() => navigation.navigate('PlayersList')}>
             <Image
               source={{
                 uri: image,
