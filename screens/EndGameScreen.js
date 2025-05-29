@@ -154,7 +154,7 @@ export default function EndGameScreen({ navigation }) {
   };
 
   const handlePlayersList = () => {
-    navigation.navigate("PlayerList", { code: code });
+    navigation.navigate("PlayersList", { code: code });
   };
 
   return (

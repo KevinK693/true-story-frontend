@@ -70,7 +70,7 @@ const MainStackScreen = () => (
     <MainStack.Screen name="VoteWinner" component={VoteWinnerScreen} />
     <MainStack.Screen name="EndGame" component={EndGameScreen} />
     <MainStack.Screen name="UserPastGames" component={UserPastGamesScreen} />
-    <MainStack.Screen name="PlayerList" component={PlayersListScreen} />
+    <MainStack.Screen name="PlayersList" component={PlayersListScreen} />
     <MainStack.Screen name="WaitingForVoteResult" component={WaitingForVoteResultScreen} />
   </MainStack.Navigator>
 );
