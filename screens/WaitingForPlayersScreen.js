@@ -108,7 +108,7 @@ export default function WaitingForPlayers({ navigation, route }) {
     );
     if (players.length === playersNumber) {
       setWaitingForPlayers(false)
-      navigation.navigate("StartingGame");
+      navigation.replace("StartingGame");
     } else {
       setWaitingForPlayers(true)
     }
