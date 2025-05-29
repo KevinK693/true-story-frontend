@@ -81,8 +81,8 @@ export default function CreateGameScreen({ navigation }) {
   }));
 
   const publicOptions = [
-    "Enfants",
     "Adultes",
+    "Enfants",
   ].map((text) => ({
     label: `${text}`,
     value: text,
