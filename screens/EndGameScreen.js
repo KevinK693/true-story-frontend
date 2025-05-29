@@ -152,15 +152,21 @@ export default function EndGameScreen({ navigation }) {
     }
   }, [gameWinner, code]);
 
+  const handlePlayersList = () => {
+    navigation.navigate("PlayerList", { code: code });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topBar}>
+        <TouchableOpacity onPress={handlePlayersList}>
         <Image
           source={{
             uri: gameImage,
           }}
           style={styles.gameImage}
         />
+        </TouchableOpacity>
         <TouchableOpacity
           style={styles.iconHistory}
           onPress={() => navigation.navigate("Home")}
