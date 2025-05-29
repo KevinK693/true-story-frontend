@@ -3,13 +3,15 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { updateAvatar } from "../reducers/user";
 import { SafeAreaView } from "react-native-safe-area-context";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 export default function PlayersList({ navigation, route }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.value);
+  const game = useSelector((state) => state.game.value);
   const token = user.token;
-  const code = route.params.code;
+  const code = game.code;
 
   const [gameImage, setGameImage] = useState(null);
   const [title, setTitle] = useState("");
@@ -70,8 +72,14 @@ export default function PlayersList({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container}>
+              <TouchableOpacity
+                    style={styles.iconHistory}
+                    onPress={() => navigation.goBack()}
+                  >
+                    <FontAwesome5 name="undo-alt" size={35} color="#335561" />
+                  </TouchableOpacity>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate("StartingGame")}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image source={{ uri: gameImage }} style={styles.user} />
         </TouchableOpacity>
       </View>
@@ -194,5 +202,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
+  },
+  iconHistory: {
+    padding: 5,
+    paddingTop: 10,
+  marginLeft: "85%"
   },
 });
