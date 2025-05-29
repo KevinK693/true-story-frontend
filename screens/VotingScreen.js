@@ -117,22 +117,25 @@ export default function VotingScreen({ navigation }) {
         .then((response) => response.json())
         .then((data) => {
           if (data.result) {
-            navigation.navigate("WaitingForVoteResult");
+            navigation.replace("WaitingForVoteResult");
           } else {
             console.log("Erreur lors de l'enregistrement du vote");
           }
         });
     }
   };
+  
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topBar}>
+        <TouchableOpacity onPress={() => navigation.navigate('PlayersList')}>
         <Image
           source={{
             uri: gameImage,
           }}
           style={styles.gameImage}
         />
+        </TouchableOpacity>
         <TouchableOpacity
           style={styles.iconHistory}
           onPress={handleHistorySubmit}

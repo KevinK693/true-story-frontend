@@ -16,10 +16,10 @@ export default function VoteWinnerScreen({ navigation }) {
 
   const scene = useSelector((state) => state.scene.value);
   const sceneNumber = scene.sceneNumber;
-  const history = scene.fullstory
-  console.log('HISTORY =>', history)
+  const history = scene.fullstory;
+  console.log("HISTORY =>", history);
 
-  const remainingScenes = nbScenes - sceneNumber
+  const remainingScenes = nbScenes - sceneNumber;
 
   const [gameImage, setGameImage] = useState(null);
   const [gameTitle, setGameTitle] = useState("");
@@ -68,48 +68,53 @@ export default function VoteWinnerScreen({ navigation }) {
           text: winningProposition,
           remainingScenes: remainingScenes,
           history: history,
-          sceneNumber: sceneNumber + 1
-        })
+          sceneNumber: sceneNumber + 1,
+        }),
       })
         .then((response) => response.json())
         .then((data) => {
           if (data.result) {
             console.log("Scene updated successfully");
-            dispatch(updateScene(data.data.text))
+            dispatch(updateScene(data.data.text));
           } else {
             console.log("Error updating scene");
           }
         });
-      navigation.navigate("StartingGame");
+      navigation.replace("StartingGame");
     } else {
       fetch(`${BACKEND_URL}/scenes/lastScene`, {
-        method: 'POST',
-        headers: {'Content-Type' : 'application/json'},
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          code: code, 
+          code: code,
           text: winningProposition,
-          history: history
-        })
+          history: history,
+          sceneNumber: nbScenes
+        }),
       })
-      .then(response => response.json())
-      .then(data => {
-        if (data.result) {
-          dispatch(updateScene(data.data.text))
-          navigation.navigate("EndGame");
-        }
-      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.result) {
+            console.log;
+            dispatch(updateScene(data.data.text));
+            navigation.replace("EndGame");
+          }
+        });
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topBar}>
-        <Image
-          source={{
-            uri: gameImage,
-          }}
-          style={styles.gameImage}
-        />
+        <TouchableOpacity onPress={() => navigation.navigate('PlayersList')}>
+          <Image
+            source={{
+              uri: gameImage,
+            }}
+            style={styles.gameImage}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
         <TouchableOpacity
           style={styles.iconHistory}
           onPress={() => navigation.navigate("GameHistory")}
@@ -119,7 +124,7 @@ export default function VoteWinnerScreen({ navigation }) {
       </View>
       <Text style={styles.gameTitle}>{gameTitle}</Text>
       <Text style={styles.subtitle}>Vainqueur du vote</Text>
-      <Text>En cas d'égalité, le/la plus rapide à répondre l'emporte !</Text>  
+      <Text style={{textAlign: 'center'}}>En cas d'égalité, le/la plus rapide à répondre l'emporte !</Text>
 
       <View style={styles.propositionsContainer}>
         <Image style={styles.winnerAvatar} source={{ uri: avatar }} />

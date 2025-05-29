@@ -155,7 +155,7 @@ export default function ProfileScreen({ navigation }) {
           style={styles.input}
           placeholder={nickname}
           placeholderTextColor="#335561"
-          autoCapitalize="none"
+          autoCapitalize="words"
           value={nickname}
           onChangeText={(text) => setNickname(text)}
         />

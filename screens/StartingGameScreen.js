@@ -98,15 +98,11 @@ export default function StartingGameScreen({ navigation }) {
       .then((data) => {
         if (data.result) {
           setUserText("");
-          navigation.navigate("Voting");
+          navigation.replace("Voting");
         } else {
           console.error("Erreur lors de l'envoi du texte :", data.error);
         }
       });
-  };
-
-  const handlePlayersList = () => {
-    navigation.navigate("PlayerList", { code: code });
   };
 
   return (
@@ -116,7 +112,7 @@ export default function StartingGameScreen({ navigation }) {
     >
       <SafeAreaView style={styles.container}>
         <View style={styles.topBar}>
-          <TouchableOpacity onPress={handlePlayersList}>
+          <TouchableOpacity onPress={() => navigation.navigate('PlayersList')}>
             <Image
               source={{
                 uri: image,
@@ -151,14 +147,26 @@ export default function StartingGameScreen({ navigation }) {
           <View style={{ width: "100%", alignItems: "center" }}>
             <View style={styles.containerUserInput}>
               <ScrollView>
-                <TextInput
-                  multiline={true}
-                  style={styles.texteUserInput}
-                  placeholder="Écrivez votre histoire..."
-                  value={userText}
-                  onChangeText={setUserText}
-                  maxLength={280}
-                />
+                {sceneNumber === nbScenes - 1 ? (
+                  <TextInput
+                    multiline={true}
+                    style={styles.texteUserInput}
+                    placeholder="Écrivez la suite de l'histoire..."
+                    value={userText}
+                    onChangeText={setUserText}
+                    maxLength={280}
+                  />
+                ) : (
+                  <TextInput
+                    multiline={true}
+                    style={styles.texteUserInput}
+                    placeholder="Écrivez la fin de l'histoire..."
+                    value={userText}
+                    onChangeText={setUserText}
+                    maxLength={280}
+                  />
+                )}
+
                 <Text style={styles.maxLength}>{userText.length}/280</Text>
               </ScrollView>
             </View>
