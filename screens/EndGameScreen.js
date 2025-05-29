@@ -19,26 +19,23 @@ import * as FileSystem from "expo-file-system";
 
 export default function EndGameScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+
   const game = useSelector((state) => state.game.value);
   const code = game.code;
-  const user = useSelector((state) => state.user.value);
-  const scene = useSelector((state) => state.user.scenes);
+
+  const scene = useSelector((state) => state.scene.value);
+
   const [gameImage, setGameImage] = useState(null);
   const [gameTitle, setGameTitle] = useState("");
   const [gameWinner, setGameWinner] = useState("");
   const [winnerVotes, setWinnerVotes] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true)
+  const lastScene = scene.scenes[scene.scenes.length - 1]
+
   const [sound, setSound] = useState(null);
   const fileUri = FileSystem.documentDirectory + "elevenlabs_podcast.mp3";
- 
-  const lastScene = useSelector((state) => {
-  const scenes = state.scene.value.scenes;
-  return scenes.length > 0 ? scenes[scenes.length - 1].text : "";
-});
 
   const handleGenerateAudio = async () => {
-    setLoading(true);
-    const lastScene = game.lastScene;
 
     try {
       const response = await fetch(`${BACKEND_URL}/exports/generate`, {
@@ -71,6 +68,7 @@ export default function EndGameScreen({ navigation }) {
 
         if (await Sharing.isAvailableAsync()) {
           await Sharing.shareAsync(fileUri);
+          setLoading(false)
         } else {
           Alert.alert("Partage non dispo sur cet appareil.");
         }
@@ -98,7 +96,6 @@ export default function EndGameScreen({ navigation }) {
         }
       });
   }, []);
-
 
   // Récupération du nom du gagnant
   useEffect(() => {
@@ -164,19 +161,19 @@ export default function EndGameScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       <View style={styles.topBar}>
         <TouchableOpacity onPress={handlePlayersList}>
-        <Image
-          source={{
-            uri: gameImage,
-          }}
-          style={styles.gameImage}
-        />
+          <Image
+            source={{
+              uri: gameImage,
+            }}
+            style={styles.gameImage}
+          />
         </TouchableOpacity>
-           <TouchableOpacity
-                style={styles.iconHistory}
-                onPress={handleHistorySubmit}
-              >
-                <FontAwesome5 name="history" size={35} color="#335561" />
-              </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.iconHistory}
+          onPress={handleHistorySubmit}
+        >
+          <FontAwesome5 name="history" size={35} color="#335561" />
+        </TouchableOpacity>
       </View>
       <Text style={styles.gameTitle}>{gameTitle}</Text>
       <Text style={styles.subtitle}>Fin de la partie | Scène finale</Text>
@@ -307,5 +304,3 @@ const styles = StyleSheet.create({
     fontFamily: "NotoSans_400Regular",
   },
 });
-
-
