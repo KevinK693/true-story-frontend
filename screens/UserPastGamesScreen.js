@@ -26,7 +26,6 @@ export default function UserPastGamesScreen({ navigation }) {
         if (data.result) {
           for (const game of data.games) {
             if (game.status === false) {
-              console.log(game);
               setGames((prevGames) => [...prevGames, game]);
             }
           }

@@ -70,7 +70,7 @@ export default function CreateProfileScreen({ navigation, route }) {
 
   const pickAvatar = (selectedAvatar) => {
     setAvatar(selectedAvatar);
-    setImage(null);
+    setImage(selectedAvatar);
     setAvatarSelected(selectedAvatar);
   };
 
@@ -183,12 +183,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FBF1F1",
-    paddingTop: 40,
-    paddingHorizontal: 20,
+    padding: 20,
     alignItems: "center",
   },
   title: {
-    fontSize: 34,
+    fontSize: 30,
     fontFamily: "NotoSans_700Bold",
     color: "#335561",
   },
@@ -196,8 +195,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 8,
     padding: 10,
-    marginTop: 20,
-    marginBottom: 30,
+    marginTop: 10,
+    marginBottom: 10,
     fontSize: 16,
     color: "#335561",
     height: 50,
@@ -230,8 +229,8 @@ const styles = StyleSheet.create({
   },
   image: {
     marginVertical: 20,
-    width: 90,
-    height: 90,
+    width: 70,
+    height: 70,
     borderRadius: 50,
   },
   editIcon: {
