@@ -38,8 +38,8 @@ export default function WaitingForVoteResultScreen({ navigation }) {
                     headers: { "Content-Type": "application/json" },
                   }
                 );
-                navigation.navigate("VoteWinner");
               }
+              navigation.replace("VoteWinner");
             }
           }
         });

@@ -117,7 +117,7 @@ export default function VotingScreen({ navigation }) {
         .then((response) => response.json())
         .then((data) => {
           if (data.result) {
-            navigation.navigate("WaitingForVoteResult");
+            navigation.replace("WaitingForVoteResult");
           } else {
             console.log("Erreur lors de l'enregistrement du vote");
           }
