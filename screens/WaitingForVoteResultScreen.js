@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#335561",
     fontWeight: "bold",
+    textAlign: 'center'
   },
   loaderContainer: {
     flex: 1,

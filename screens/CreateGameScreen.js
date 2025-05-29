@@ -12,7 +12,7 @@ import { Dropdown } from "react-native-element-dropdown";
 import { useState } from "react";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 export default function CreateGameScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
