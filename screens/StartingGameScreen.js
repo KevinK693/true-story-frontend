@@ -106,7 +106,7 @@ export default function StartingGameScreen({ navigation }) {
   };
 
   const handlePlayersList = () => {
-    navigation.navigate("PlayerList", { code: code });
+    navigation.navigate("PlayersList", { code: code });
   };
 
   return (
