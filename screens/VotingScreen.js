@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
     display: "none",
   },
   propositionsContainer: {
-    width: "100%",
+    width: "80%",
     marginVertical: 20,
     alignItems: "center",
   },
