@@ -124,7 +124,7 @@ export default function VoteWinnerScreen({ navigation }) {
       </View>
       <Text style={styles.gameTitle}>{gameTitle}</Text>
       <Text style={styles.subtitle}>Vainqueur du vote</Text>
-      <Text>En cas d'égalité, le/la plus rapide à répondre l'emporte !</Text>
+      <Text style={{textAlign: 'center'}}>En cas d'égalité, le/la plus rapide à répondre l'emporte !</Text>
 
       <View style={styles.propositionsContainer}>
         <Image style={styles.winnerAvatar} source={{ uri: avatar }} />
