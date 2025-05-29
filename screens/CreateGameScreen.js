@@ -58,12 +58,13 @@ export default function CreateGameScreen({ navigation }) {
     value: num,
   }));
 
+  // Genres disponibles
   const genresOptions = [
     "Action",
     "Aventure",
     "Comédie",
-    "Comédie dramatique",
     "Drame",
+    "Romance",
     "Fantastique",
     "Guerre",
     "Horreur",
@@ -88,10 +89,28 @@ export default function CreateGameScreen({ navigation }) {
     setModalImageVisible(true);
   };
 
+  // Gestion du changement de public
+  const handlePublicChange = (item) => {
+    setSelectedPublic(item.value);
+    // Si le genre sélectionné n'est plus disponible pour le nouveau public, on le reset
+    if (selectedGenre && item.value === "Enfants" && !childrenGenres.includes(selectedGenre)) {
+      setSelectedGenre(null);
+    }
+  };
+
   const handleSubmit = () => {
     if (!title || !selectedPlayers || !selectedScenes || !selectedGenre || !image || !selectedPublic) {
       alert("Veuillez remplir tous les champs");
       return;
+    }
+
+    // Vérification des genres interdits pour les enfants
+    if (selectedPublic === "Enfants") {
+      const forbiddenGenres = ["Action", "Drame", "Guerre", "Horreur", "Science-Fiction", "Thriller"];
+      if (forbiddenGenres.includes(selectedGenre)) {
+        alert("Seuls les genres Aventure, Comédie, Fantastique, Policier et Western sont autorisés pour les enfants");
+        return;
+      }
     }
 
     const formData = new FormData();
@@ -114,6 +133,7 @@ export default function CreateGameScreen({ navigation }) {
           setSelectedPlayers(null);
           setSelectedScenes(null);
           setSelectedGenre(null);
+          setSelectedPublic(null);
           navigation.navigate("WaitingForPlayers", { code: data.code });
         } else {
           console.log("Erreur lors de la création du profil :", data.error);
@@ -240,7 +260,6 @@ export default function CreateGameScreen({ navigation }) {
           onChange={(item) => setSelectedGenre(item.value)}
         />
       </View>
-
 
       {/* Bouton */}
       <TouchableOpacity
