@@ -5,7 +5,7 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
@@ -20,6 +20,17 @@ export default function WaitingForPlayers({ navigation, route }) {
   const user = useSelector((state) => state.user.value);
   const token = user.token;
 
+  const game = useSelector((state) => state.game.value);
+  const host = game.host;
+
+  const isHost = () => {
+    if (token === host) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   const { code } = route.params;
 
   const [gameImage, setGameImage] = useState(null);
@@ -30,7 +41,7 @@ export default function WaitingForPlayers({ navigation, route }) {
   const [playersNumber, setPlayersNumber] = useState(0);
   const [status, setStatus] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [waitingForPlayers, setWaitingForPlayers] = useState(false)
+  const [waitingForPlayers, setWaitingForPlayers] = useState(false);
 
   useEffect(() => {
     if (token) {
@@ -107,10 +118,10 @@ export default function WaitingForPlayers({ navigation, route }) {
       })
     );
     if (players.length === playersNumber) {
-      setWaitingForPlayers(false)
+      setWaitingForPlayers(false);
       navigation.navigate("StartingGame");
     } else {
-      setWaitingForPlayers(true)
+      setWaitingForPlayers(true);
     }
   };
 
@@ -158,6 +169,7 @@ export default function WaitingForPlayers({ navigation, route }) {
       <Text style={styles.joueursAttente}>
         En attente des joueurs : {players.length}/{playersNumber}
       </Text>
+      {isHost() && (
         <TouchableOpacity
           style={styles.button}
           activeOpacity={0.8}
@@ -165,7 +177,17 @@ export default function WaitingForPlayers({ navigation, route }) {
         >
           <Text style={styles.buttonText}>Lancer la partie</Text>
         </TouchableOpacity>
-          {waitingForPlayers && <Text style={{textAlign: 'center', color: 'red'}}>Nombre de joueurs insuffisant</Text> }
+      )}
+      {waitingForPlayers && (
+        <Text style={{ textAlign: "center", color: "red" }}>
+          Nombre de joueurs insuffisant
+        </Text>
+      )}
+      {!isHost() && (
+        <Text style={{ textAlign: "center", color: "#335561" }}>
+          En attente de l’hôte pour démarrer la partie...
+        </Text>
+      )}
     </SafeAreaView>
   );
 }
@@ -255,7 +277,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#65558F",
     padding: 10,
     borderRadius: 8,
-    width: '80%',
+    width: "80%",
     marginVertical: 20,
     height: 50,
   },

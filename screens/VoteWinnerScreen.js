@@ -10,9 +10,13 @@ export default function VoteWinnerScreen({ navigation }) {
 
   const dispatch = useDispatch();
 
+  const user = useSelector((state) => state.user.value);
+  const token = user.token;
+
   const game = useSelector((state) => state.game.value);
   const code = game.code;
   const nbScenes = game.nbScenes;
+  const host = game.host;
 
   const scene = useSelector((state) => state.scene.value);
   const sceneNumber = scene.sceneNumber;
@@ -27,6 +31,14 @@ export default function VoteWinnerScreen({ navigation }) {
   const [winningProposition, setWinningProposition] = useState("");
   const [winningVotes, setWinningVotes] = useState(0);
   const [avatar, setAvatar] = useState(null);
+
+  const isHost = () => {
+    if (token === host) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   //Récupération de l'image de la partie
   useEffect(() => {
@@ -89,7 +101,7 @@ export default function VoteWinnerScreen({ navigation }) {
           code: code,
           text: winningProposition,
           history: history,
-          sceneNumber: nbScenes
+          sceneNumber: nbScenes,
         }),
       })
         .then((response) => response.json())
@@ -106,7 +118,7 @@ export default function VoteWinnerScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topBar}>
-        <TouchableOpacity onPress={() => navigation.navigate('PlayersList')}>
+        <TouchableOpacity onPress={() => navigation.navigate("PlayersList")}>
           <Image
             source={{
               uri: gameImage,
@@ -124,7 +136,9 @@ export default function VoteWinnerScreen({ navigation }) {
       </View>
       <Text style={styles.gameTitle}>{gameTitle}</Text>
       <Text style={styles.subtitle}>Vainqueur du vote</Text>
-      <Text style={{textAlign: 'center'}}>En cas d'égalité, le/la plus rapide à répondre l'emporte !</Text>
+      <Text style={{ textAlign: "center" }}>
+        En cas d'égalité, le/la plus rapide à répondre l'emporte !
+      </Text>
 
       <View style={styles.propositionsContainer}>
         <Image style={styles.winnerAvatar} source={{ uri: avatar }} />
@@ -135,13 +149,20 @@ export default function VoteWinnerScreen({ navigation }) {
         </View>
       </View>
 
-      <TouchableOpacity
-        onPress={() => handleResumeGame()}
-        style={styles.button}
-        activeOpacity={0.8}
-      >
-        <Text style={styles.buttonText}>Continuer</Text>
-      </TouchableOpacity>
+      {isHost() && (
+        <TouchableOpacity
+          onPress={() => handleResumeGame()}
+          style={styles.button}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.buttonText}>Continuer</Text>
+        </TouchableOpacity>
+      )}
+      {!isHost() && (
+        <Text style={{ textAlign: "center", color: "#335561" }}>
+          En attente de l’hôte pour continer la partie...
+        </Text>
+      )}
     </SafeAreaView>
   );
 }

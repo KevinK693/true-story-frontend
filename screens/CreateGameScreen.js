@@ -12,10 +12,13 @@ import { Dropdown } from "react-native-element-dropdown";
 import { useState } from "react";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { addHost } from "../reducers/game";
 
 export default function CreateGameScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+
+  const dispatch = useDispatch()
 
   const [selectedPlayers, setSelectedPlayers] = useState(null);
   const [selectedScenes, setSelectedScenes] = useState(null);
@@ -128,6 +131,7 @@ export default function CreateGameScreen({ navigation }) {
       .then((data) => {
         if (data.result) {
           console.log("Partie créée avec succès");
+          dispatch(addHost(token))
           setTitle(null);
           setImage(null);
           setSelectedPlayers(null);
