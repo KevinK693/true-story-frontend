@@ -15,6 +15,7 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { updateToken, updateAvatar, updateNickname } from "../reducers/user";
 import { Audio } from "expo-av";
 import * as Sharing from "expo-sharing";
+import { ScrollView } from "react-native";
 import * as FileSystem from "expo-file-system";
 
 export default function EndGameScreen({ navigation }) {
@@ -24,13 +25,14 @@ export default function EndGameScreen({ navigation }) {
   const code = game.code;
 
   const scene = useSelector((state) => state.scene.value);
+  const fullstory = useSelector((state) => state.scene.value.fullstory);
 
   const [gameImage, setGameImage] = useState(null);
   const [gameTitle, setGameTitle] = useState("");
   const [gameWinner, setGameWinner] = useState("");
   const [winnerVotes, setWinnerVotes] = useState(0);
   const [loading, setLoading] = useState(true)
-  const lastScene = scene.scenes[scene.scenes.length - 1]
+
 
   const [sound, setSound] = useState(null);
   const fileUri = FileSystem.documentDirectory + "elevenlabs_podcast.mp3";
@@ -41,7 +43,7 @@ export default function EndGameScreen({ navigation }) {
       const response = await fetch(`${BACKEND_URL}/exports/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: lastScene }),
+        body: JSON.stringify({ text: fullstory }),
       });
 
       if (!response.ok) {
@@ -176,7 +178,9 @@ export default function EndGameScreen({ navigation }) {
       <Text style={styles.gameTitle}>{gameTitle}</Text>
       <Text style={styles.subtitle}>Fin de la partie | Scène finale</Text>
       <View style={styles.containerProposition}>
-        <Text style={styles.proposition}>{lastScene}</Text>
+        <ScrollView>
+          <Text style={styles.proposition}>{fullstory}</Text>
+        </ScrollView>
       </View>
       <View>
         <Text style={styles.winnerText}>Félicitations, {gameWinner} !</Text>
