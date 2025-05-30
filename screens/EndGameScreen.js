@@ -7,6 +7,7 @@ import {
   BackHandler,
   Alert,
   ActivityIndicator,
+  Modal,
 } from "react-native";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
@@ -33,6 +34,8 @@ export default function EndGameScreen({ navigation }) {
   const [gameWinner, setGameWinner] = useState("");
   const [winnerVotes, setWinnerVotes] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [storyModalVisible, setStoryModalVisible] = useState(false);
 
   const [sound, setSound] = useState(null);
   const fileUri = FileSystem.documentDirectory + "elevenlabs_podcast.mp3";
@@ -114,6 +117,7 @@ export default function EndGameScreen({ navigation }) {
       setLoading(false);
     }
   };
+
   const handleDownloadPDF = async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/exports/pdf`, {
@@ -209,6 +213,15 @@ export default function EndGameScreen({ navigation }) {
   const handleHistorySubmit = () => {
     navigation.navigate("GameHistory");
   };
+  const openModal = (scene) => {
+    setSelectedScene(scene);
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedScene(null);
+  };
 
   if (loading) {
     return (
@@ -264,7 +277,38 @@ export default function EndGameScreen({ navigation }) {
           </TouchableOpacity>
           <Text style={styles.text}>Exporter en podcast</Text>
         </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            onPress={() => setStoryModalVisible(true)}
+            style={styles.button}
+          >
+            <FontAwesome5 size={30} name="book" color="#FBF1F1" />
+          </TouchableOpacity>
+          <Text style={styles.text}>Voir toute l'histoire</Text>
+        </View>
       </View>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={storyModalVisible}
+        onRequestClose={() => setStoryModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setStoryModalVisible(false)}
+            >
+              <FontAwesome5 name="times" size={24} color="#335561" />
+            </TouchableOpacity>
+            <ScrollView style={{ maxHeight: 400 }}>
+              <Text style={styles.modalTitle}>Toute l'histoire</Text>
+              <Text style={styles.modalText}>{fullstory}</Text>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -367,5 +411,42 @@ const styles = StyleSheet.create({
     color: "#335561",
     marginTop: 5,
     fontFamily: "NotoSans_400Regular",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 20,
+    margin: 20,
+    maxHeight: "80%",
+    width: "90%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  closeButton: {
+    alignSelf: "flex-end",
+    padding: 10,
+    marginBottom: 10,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontFamily: "NotoSans_700Bold",
+    color: "#335561",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  modalText: {
+    fontSize: 16,
+    fontFamily: "Montserrat",
+    color: "#335561",
+    lineHeight: 22,
   },
 });
