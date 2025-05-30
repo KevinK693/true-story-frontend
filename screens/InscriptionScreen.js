@@ -17,6 +17,7 @@ export default function ConnexionScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [invalidEmail, setInvalidEmail] = useState(false);
+  const [emailAlreadyExists, setEmailAlreadyExists] = useState(false)
 
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -43,6 +44,7 @@ export default function ConnexionScreen({ navigation }) {
             setEmail("");
             setPassword("");
           } else {
+            setEmailAlreadyExists(true)
             console.log("Erreur d'inscription");
           }
         });
@@ -69,6 +71,7 @@ export default function ConnexionScreen({ navigation }) {
           />
           <Text style={styles.inputLabel}>Email</Text>
           {invalidEmail ? <Text style={{color: "red"}}>Email invalide</Text> : null }
+          {emailAlreadyExists ? <Text style={{color: "red"}}>Vous êtes déjà inscrit</Text> : null }
           </View>
           <View style={styles.inputContainer}>
           <TextInput
