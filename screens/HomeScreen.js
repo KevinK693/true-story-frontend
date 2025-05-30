@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { removeToken, updateAvatar } from "../reducers/user";
@@ -14,10 +14,14 @@ import { resetScene } from "../reducers/scene";
 import { removeGame } from '../reducers/game'
 
 export default function HomeScreen({ navigation }) {
+  const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+
   const dispatch = useDispatch();
+
   const user = useSelector((state) => state.user.value);
   const token = user.token;
-  const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+
+  const [nickname, setNickname] = useState(null)
 
   useEffect(() => {
     if (token) {
@@ -25,6 +29,7 @@ export default function HomeScreen({ navigation }) {
         .then((response) => response.json())
         .then((data) => {
           if (data.result && data.user.avatar) {
+            setNickname(data.user.nickname)
             if (data.user.avatar !== user.avatar) {
               dispatch(updateAvatar(data.user.avatar));
             }
@@ -56,15 +61,16 @@ export default function HomeScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+        <TouchableOpacity style={styles.profileContainer} onPress={() => navigation.navigate("Profile")}>
           <Image style={styles.user} source={{ uri: avatarUrl }} />
+          <Text style={styles.greeting}>Bonjour, {nickname}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleLogout()}>
           <FontAwesome5 name="sign-out-alt" size={30} color="#335561" />
         </TouchableOpacity>
       </View>
       <View>
-        <Image style={styles.image} source={require("../assets/logo.png")} />
+        <Image style={styles.image} source={require("../assets/truestory_logo.png")} />
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
@@ -98,7 +104,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   image: {
-    width: "100%",
+    width: "90%",
     resizeMode: "contain",
     alignSelf: "center",
     marginVertical: 20,
@@ -133,4 +139,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
+  profileContainer: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  greeting: {
+    color: "#65558F",
+    fontFamily: "NotoSans_700Bold",
+    marginLeft: 10
+  }
 });
