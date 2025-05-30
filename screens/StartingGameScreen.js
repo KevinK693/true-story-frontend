@@ -131,7 +131,6 @@ export default function StartingGameScreen({ navigation }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          console.log("PASSAGE A L'ECRAN DE VOTES")
           setUserText("");
           navigation.replace("Voting");
         } else {

@@ -28,7 +28,7 @@ export default function JoinGame({ navigation }) {
         'Content-Type' : 'application/json'
       },
       body: JSON.stringify({
-        code: code,
+        code: code.trim(),
         token: token,
       })
     }).then(response => response.json())
