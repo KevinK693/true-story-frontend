@@ -52,7 +52,7 @@ export default function ConnexionScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView style={styles.keyboardview} behavior="padding">
-        <Image source={require("../assets/logo.png")} />
+        <Image source={require("../assets/truestory_logo.png")} />
         <Text style={styles.title}>S'inscrire</Text>
         <View style={styles.inputContainer}>
           <TextInput

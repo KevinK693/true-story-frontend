@@ -48,7 +48,7 @@ export default function ConnexionScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView style={styles.keyboardview} behavior="padding">
-        <Image source={require("../assets/logo.png")} />
+        <Image source={require("../assets/truestory_logo.png")} />
         <Text style={styles.title}>Se connecter</Text>
           {wrongInfo ? <Text style={{textAlign: 'center', color: 'red'}}>Identifiant ou mot de passe incorrect</Text> : null}
         <View style={styles.inputContainer}>
