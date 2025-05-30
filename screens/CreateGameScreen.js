@@ -7,6 +7,7 @@ import {
   Modal,
   Image,
   TouchableWithoutFeedback,
+  ScrollView,
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { useState } from "react";
@@ -18,7 +19,7 @@ import { addHost } from "../reducers/game";
 export default function CreateGameScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const [selectedPlayers, setSelectedPlayers] = useState(null);
   const [selectedScenes, setSelectedScenes] = useState(null);
@@ -48,7 +49,7 @@ export default function CreateGameScreen({ navigation }) {
     "https://res.cloudinary.com/dxgix5q4e/image/upload/v1748441445/fleur-de-lotus_oy0umi.png",
     "https://res.cloudinary.com/dxgix5q4e/image/upload/v1748441445/manette-de-jeu_v8rxnq.png",
     "https://res.cloudinary.com/dxgix5q4e/image/upload/v1748441445/le-football_ylfmnh.png",
-    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1748441446/astronaute_oaasse.png"
+    "https://res.cloudinary.com/dxgix5q4e/image/upload/v1748441446/astronaute_oaasse.png",
   ];
 
   const scenesOptions = [4, 8, 12, 16, 20, 24].map((num) => ({
@@ -80,10 +81,7 @@ export default function CreateGameScreen({ navigation }) {
     value: text,
   }));
 
-  const publicOptions = [
-    "Adultes",
-    "Enfants",
-  ].map((text) => ({
+  const publicOptions = ["Adultes", "Enfants"].map((text) => ({
     label: `${text}`,
     value: text,
   }));
@@ -96,22 +94,42 @@ export default function CreateGameScreen({ navigation }) {
   const handlePublicChange = (item) => {
     setSelectedPublic(item.value);
     // Si le genre sélectionné n'est plus disponible pour le nouveau public, on le reset
-    if (selectedGenre && item.value === "Enfants" && !childrenGenres.includes(selectedGenre)) {
+    if (
+      selectedGenre &&
+      item.value === "Enfants" &&
+      !childrenGenres.includes(selectedGenre)
+    ) {
       setSelectedGenre(null);
     }
   };
 
   const handleSubmit = () => {
-    if (!title || !selectedPlayers || !selectedScenes || !selectedGenre || !image || !selectedPublic) {
+    if (
+      !title ||
+      !selectedPlayers ||
+      !selectedScenes ||
+      !selectedGenre ||
+      !image ||
+      !selectedPublic
+    ) {
       alert("Veuillez remplir tous les champs");
       return;
     }
 
     // Vérification des genres interdits pour les enfants
     if (selectedPublic === "Enfants") {
-      const forbiddenGenres = ["Action", "Drame", "Guerre", "Horreur", "Science-Fiction", "Thriller"];
+      const forbiddenGenres = [
+        "Action",
+        "Drame",
+        "Guerre",
+        "Horreur",
+        "Science-Fiction",
+        "Thriller",
+      ];
       if (forbiddenGenres.includes(selectedGenre)) {
-        alert("Seuls les genres Aventure, Comédie, Fantastique, Policier et Western sont autorisés pour les enfants");
+        alert(
+          "Seuls les genres Aventure, Comédie, Fantastique, Policier et Western sont autorisés pour les enfants"
+        );
         return;
       }
     }
@@ -131,7 +149,7 @@ export default function CreateGameScreen({ navigation }) {
       .then((data) => {
         if (data.result) {
           console.log("Partie créée avec succès");
-          dispatch(addHost(token))
+          dispatch(addHost(token));
           setTitle(null);
           setImage(null);
           setSelectedPlayers(null);
@@ -147,230 +165,243 @@ export default function CreateGameScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* User */}
-      <Text style={styles.title}>Choisissez une image pour votre partie</Text>
-      {image ? (
-        <TouchableOpacity onPress={pickImage}>
-          <Image source={{ uri: image }} style={styles.image} />
-          <View style={styles.editIcon}>
-            <FontAwesome5 name="edit" size={16} color="#EADDFF" />
-          </View>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity onPress={pickImage} style={{ position: "relative" }}>
-          <Image
-            source={require("../assets/emptyAvatar.png")}
-            style={styles.image}
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* User */}
+        <Text style={styles.title}>Choisissez une image pour votre partie</Text>
+        {image ? (
+          <TouchableOpacity onPress={pickImage}>
+            <Image source={{ uri: image }} style={styles.image} />
+            <View style={styles.editIcon}>
+              <FontAwesome5 name="edit" size={16} color="#EADDFF" />
+            </View>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={pickImage}
+            style={{ position: "relative" }}
+          >
+            <Image
+              source={require("../assets/emptyAvatar.png")}
+              style={styles.image}
+            />
+            <View style={styles.editIcon}>
+              <FontAwesome5 name="edit" size={16} color="#EADDFF" />
+            </View>
+          </TouchableOpacity>
+        )}
+
+        {/* Titre */}
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Titre de l'histoire"
+            placeholderTextColor="#335561"
+            onChangeText={(text) => setTitle(text)}
+            value={title}
           />
-          <View style={styles.editIcon}>
-            <FontAwesome5 name="edit" size={16} color="#EADDFF" />
+          <Text style={styles.inputLabel}>Titre</Text>
+        </View>
+
+        {/* Nombre de joueurs */}
+        <View style={styles.optionContainer}>
+          <View style={styles.labelContainer}>
+            <Text style={styles.text}>Nombre de joueurs</Text>
+            <TouchableOpacity onPress={() => setModalPlayersVisible(true)}>
+              <FontAwesome5 name="info-circle" size={22} style={styles.icon} />
+            </TouchableOpacity>
           </View>
+          <Dropdown
+            style={styles.dropdown}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            data={playersOptions}
+            maxHeight={200}
+            labelField="label"
+            valueField="value"
+            placeholder="Select"
+            value={selectedPlayers}
+            onChange={(item) => setSelectedPlayers(item.value)}
+          />
+        </View>
+
+        {/* Nombre de scènes */}
+        <View style={styles.optionContainer}>
+          <View style={styles.labelContainer}>
+            <Text style={styles.text}>Nombre de scènes</Text>
+            <TouchableOpacity onPress={() => setModalScenesVisible(true)}>
+              <FontAwesome5 name="info-circle" size={22} style={styles.icon} />
+            </TouchableOpacity>
+          </View>
+          <Dropdown
+            style={styles.dropdown}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            data={scenesOptions}
+            maxHeight={200}
+            labelField="label"
+            valueField="value"
+            placeholder="Select"
+            value={selectedScenes}
+            onChange={(item) => setSelectedScenes(item.value)}
+          />
+        </View>
+
+        {/* Public */}
+        <View style={styles.optionContainer}>
+          <View style={styles.labelContainer}>
+            <Text style={styles.text}>Public</Text>
+            <TouchableOpacity onPress={() => setModalScenesVisible(true)}>
+              <FontAwesome5 name="info-circle" size={22} style={styles.icon} />
+            </TouchableOpacity>
+          </View>
+          <Dropdown
+            style={styles.dropdownPublic}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            data={publicOptions}
+            maxHeight={200}
+            labelField="label"
+            valueField="value"
+            placeholder="Select"
+            value={selectedPublic}
+            onChange={(item) => setSelectedPublic(item.value)}
+          />
+        </View>
+
+        {/* Genre */}
+        <View style={styles.genreContainer}>
+          <Text style={[styles.text, { textAlign: "center" }]}>
+            Choisir un genre
+          </Text>
+          <Dropdown
+            style={styles.dropdownGenre}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            data={genresOptions}
+            maxHeight={200}
+            labelField="label"
+            valueField="value"
+            placeholder="Select"
+            value={selectedGenre}
+            onChange={(item) => setSelectedGenre(item.value)}
+          />
+        </View>
+
+        {/* Bouton */}
+        <TouchableOpacity
+          style={styles.button}
+          activeOpacity={0.8}
+          onPress={() => handleSubmit()}
+        >
+          <Text style={styles.buttonText}>Suivant</Text>
         </TouchableOpacity>
-      )}
 
-      {/* Titre */}
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Titre de l'histoire"
-          placeholderTextColor="#335561"
-          onChangeText={(text) => setTitle(text)}
-          value={title}
-        />
-        <Text style={styles.inputLabel}>Titre</Text>
-      </View>
-
-      {/* Nombre de joueurs */}
-      <View style={styles.optionContainer}>
-        <View style={styles.labelContainer}>
-          <Text style={styles.text}>Nombre de joueurs</Text>
-          <TouchableOpacity onPress={() => setModalPlayersVisible(true)}>
-            <FontAwesome5 name="info-circle" size={22} style={styles.icon} />
-          </TouchableOpacity>
-        </View>
-        <Dropdown
-          style={styles.dropdown}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          data={playersOptions}
-          maxHeight={200}
-          labelField="label"
-          valueField="value"
-          placeholder="Select"
-          value={selectedPlayers}
-          onChange={(item) => setSelectedPlayers(item.value)}
-        />
-      </View>
-
-      {/* Nombre de scènes */}
-      <View style={styles.optionContainer}>
-        <View style={styles.labelContainer}>
-          <Text style={styles.text}>Nombre de scènes</Text>
-          <TouchableOpacity onPress={() => setModalScenesVisible(true)}>
-            <FontAwesome5 name="info-circle" size={22} style={styles.icon} />
-          </TouchableOpacity>
-        </View>
-        <Dropdown
-          style={styles.dropdown}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          data={scenesOptions}
-          maxHeight={200}
-          labelField="label"
-          valueField="value"
-          placeholder="Select"
-          value={selectedScenes}
-          onChange={(item) => setSelectedScenes(item.value)}
-        />
-      </View>
-
-      {/* Public */}
-      <View style={styles.optionContainer}>
-        <View style={styles.labelContainer}>
-          <Text style={styles.text}>Public</Text>
-          <TouchableOpacity onPress={() => setModalScenesVisible(true)}>
-            <FontAwesome5 name="info-circle" size={22} style={styles.icon} />
-          </TouchableOpacity>
-        </View>
-        <Dropdown
-          style={styles.dropdownPublic}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          data={publicOptions}
-          maxHeight={200}
-          labelField="label"
-          valueField="value"
-          placeholder="Select"
-          value={selectedPublic}
-          onChange={(item) => setSelectedPublic(item.value)}
-        />
-      </View>
-
-      {/* Genre */}
-      <View style={styles.genreContainer}>
-        <Text style={[styles.text, { textAlign: "center" }]}>
-          Choisir un genre
-        </Text>
-        <Dropdown
-          style={styles.dropdownGenre}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          data={genresOptions}
-          maxHeight={200}
-          labelField="label"
-          valueField="value"
-          placeholder="Select"
-          value={selectedGenre}
-          onChange={(item) => setSelectedGenre(item.value)}
-        />
-      </View>
-
-      {/* Bouton */}
-      <TouchableOpacity
-        style={styles.button}
-        activeOpacity={0.8}
-        onPress={() => handleSubmit()}
-      >
-        <Text style={styles.buttonText}>Suivant</Text>
-      </TouchableOpacity>
-
-      {/* Modal Joueurs */}
-      <Modal
-        transparent
-        visible={modalPlayersVisible}
-        animationType="fade"
-        onRequestClose={() => setModalPlayersVisible(false)}
-      >
-        <TouchableWithoutFeedback onPress={() => setModalPlayersVisible(false)}>
-          <View style={styles.modal}>
-            <View style={styles.modalContainer}>
-              <Text style={styles.modalText}>
-                Le nombre de joueurs détermine combien de participants seront
-                impliqués dans le jeu. Cela influe sur le nombre de propositions
-                à votre disposition.
-              </Text>
+        {/* Modal Joueurs */}
+        <Modal
+          transparent
+          visible={modalPlayersVisible}
+          animationType="fade"
+          onRequestClose={() => setModalPlayersVisible(false)}
+        >
+          <TouchableWithoutFeedback
+            onPress={() => setModalPlayersVisible(false)}
+          >
+            <View style={styles.modal}>
+              <View style={styles.modalContainer}>
+                <Text style={styles.modalText}>
+                  Le nombre de joueurs détermine combien de participants seront
+                  impliqués dans le jeu. Cela influe sur le nombre de
+                  propositions à votre disposition.
+                </Text>
+              </View>
             </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+          </TouchableWithoutFeedback>
+        </Modal>
 
-      {/* Modal Scènes */}
-      <Modal
-        transparent
-        visible={modalScenesVisible}
-        animationType="fade"
-        onRequestClose={() => setModalScenesVisible(false)}
-      >
-        <TouchableWithoutFeedback onPress={() => setModalScenesVisible(false)}>
-          <View style={styles.modal}>
-            <View style={styles.modalContainer}>
-              <Text style={styles.modalText}>
-                Le nombre de scènes correspond aux étapes ou moments clés du
-                scénario. Plus il y a de scènes, plus le jeu est long.
-              </Text>
+        {/* Modal Scènes */}
+        <Modal
+          transparent
+          visible={modalScenesVisible}
+          animationType="fade"
+          onRequestClose={() => setModalScenesVisible(false)}
+        >
+          <TouchableWithoutFeedback
+            onPress={() => setModalScenesVisible(false)}
+          >
+            <View style={styles.modal}>
+              <View style={styles.modalContainer}>
+                <Text style={styles.modalText}>
+                  Le nombre de scènes correspond aux étapes ou moments clés du
+                  scénario. Plus il y a de scènes, plus le jeu est long.
+                </Text>
+              </View>
             </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+          </TouchableWithoutFeedback>
+        </Modal>
 
-       {/* Modal Public */}
-       <Modal
-        transparent
-        visible={modalScenesVisible}
-        animationType="fade"
-        onRequestClose={() => setModalScenesVisible(false)}
-      >
-        <TouchableWithoutFeedback onPress={() => setModalScenesVisible(false)}>
-          <View style={styles.modal}>
-            <View style={styles.modalContainer}>
-              <Text style={styles.modalText}>
-              Le choix du public détermine le ton et le contenu du scénario.
-              Un scénario pour enfants privilégiera des thèmes ludiques, simples et bienveillants.
-              Un scénario pour adultes peut inclure des intrigues plus complexes, des enjeux matures et un ton plus réaliste.
-              </Text>
+        {/* Modal Public */}
+        <Modal
+          transparent
+          visible={modalScenesVisible}
+          animationType="fade"
+          onRequestClose={() => setModalScenesVisible(false)}
+        >
+          <TouchableWithoutFeedback
+            onPress={() => setModalScenesVisible(false)}
+          >
+            <View style={styles.modal}>
+              <View style={styles.modalContainer}>
+                <Text style={styles.modalText}>
+                  Le choix du public détermine le ton et le contenu du scénario.
+                  Un scénario pour enfants privilégiera des thèmes ludiques,
+                  simples et bienveillants. Un scénario pour adultes peut
+                  inclure des intrigues plus complexes, des enjeux matures et un
+                  ton plus réaliste.
+                </Text>
+              </View>
             </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+          </TouchableWithoutFeedback>
+        </Modal>
 
-      {/* Modal Image */}
-      <Modal
-        transparent
-        visible={modalImageVisible}
-        animationType="fade"
-        onRequestClose={() => setModalImageVisible(false)}
-      >
-        <TouchableWithoutFeedback onPress={() => setModalImageVisible(false)}>
-          <View style={styles.modal}>
-            <View style={styles.modalImage}>
-              {images.map((imgUri, index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => {
-                    setImage(imgUri);
-                    setModalImageVisible(false);
-                  }}
-                >
-                  <Image
-                    source={{ uri: imgUri }}
-                    style={{
-                      width: 70,
-                      height: 70,
-                      margin: 10,
+        {/* Modal Image */}
+        <Modal
+          transparent
+          visible={modalImageVisible}
+          animationType="fade"
+          onRequestClose={() => setModalImageVisible(false)}
+        >
+          <TouchableWithoutFeedback onPress={() => setModalImageVisible(false)}>
+            <View style={styles.modal}>
+              <View style={styles.modalImage}>
+                {images.map((imgUri, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => {
+                      setImage(imgUri);
+                      setModalImageVisible(false);
                     }}
-                  />
-                </TouchableOpacity>
-              ))}
+                  >
+                    <Image
+                      source={{ uri: imgUri }}
+                      style={{
+                        width: 70,
+                        height: 70,
+                        margin: 10,
+                      }}
+                    />
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+          </TouchableWithoutFeedback>
+        </Modal>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-    container: {
+  container: {
     flex: 1,
     backgroundColor: "#FBF1F1",
     alignItems: "center",
@@ -532,5 +563,9 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "center",
     marginVertical: "5%",
+  },
+  scrollContent: {
+    alignItems: "center",
+    paddingBottom: 40,
   },
 });

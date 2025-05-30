@@ -16,7 +16,6 @@ import { Audio } from "expo-av";
 import * as Sharing from "expo-sharing";
 import { ScrollView } from "react-native";
 import * as FileSystem from "expo-file-system";
-import { Alert } from "react-native";
 
 export default function EndGameScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -116,39 +115,39 @@ export default function EndGameScreen({ navigation }) {
     }
   };
   const handleDownloadPDF = async () => {
-  try {
-    const response = await fetch(`${BACKEND_URL}/exports/pdf`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text : fullstory }),
-    });
-
-    if (!response.ok) throw new Error("Erreur serveur PDF");
-
-    const blob = await response.blob();
-
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      const base64data = reader.result.split(",")[1];
-      const fileUri = FileSystem.documentDirectory + "story.pdf";
-
-      await FileSystem.writeAsStringAsync(fileUri, base64data, {
-        encoding: FileSystem.EncodingType.Base64,
+    try {
+      const response = await fetch(`${BACKEND_URL}/exports/pdf`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: fullstory }),
       });
 
-      if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(fileUri);
-      } else {
-        Alert.alert("Partage non dispo");
-      }
-    };
+      if (!response.ok) throw new Error("Erreur serveur PDF");
 
-    reader.readAsDataURL(blob);
-  } catch (err) {
-    console.error("Erreur PDF :", err.message);
-    Alert.alert("Erreur PDF", err.message);
-  }
-};
+      const blob = await response.blob();
+
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64data = reader.result.split(",")[1];
+        const fileUri = FileSystem.documentDirectory + "story.pdf";
+
+        await FileSystem.writeAsStringAsync(fileUri, base64data, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+
+        if (await Sharing.isAvailableAsync()) {
+          await Sharing.shareAsync(fileUri);
+        } else {
+          Alert.alert("Partage non dispo");
+        }
+      };
+
+      reader.readAsDataURL(blob);
+    } catch (err) {
+      console.error("Erreur PDF :", err.message);
+      Alert.alert("Erreur PDF", err.message);
+    }
+  };
 
   //Récupération de l'image de la partie
   useEffect(() => {
@@ -194,16 +193,16 @@ export default function EndGameScreen({ navigation }) {
             if (data.game.status === false) {
               setGameWinner(data.game.winner);
               setWinnerVotes(data.game.totalVotes);
-              setLoading(false); 
-              clearInterval(interval)
+              setLoading(false);
+              clearInterval(interval);
             }
           })
           .catch((err) => {
             console.error("Erreur de polling :", err);
           });
-      }, 2000); 
+      }, 2000);
 
-      return () => clearInterval(interval); 
+      return () => clearInterval(interval);
     }
   }, []);
 
