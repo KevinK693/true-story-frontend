@@ -1,12 +1,12 @@
+import { useEffect } from "react";
 import {
-  StyleSheet,
-  Text,
   View,
+  Text,
+  StyleSheet,
   ActivityIndicator,
   BackHandler,
   Alert,
-} from "react-native";import { useEffect } from "react";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+} from "react-native";
 import { useSelector } from "react-redux";
 
 export default function WaitingForVoteResultScreen({ navigation }) {
@@ -29,14 +29,14 @@ export default function WaitingForVoteResultScreen({ navigation }) {
           {
             text: "Annuler",
             onPress: () => null,
-            style: "cancel"
+            style: "cancel",
           },
           {
             text: "Quitter",
-            onPress: () => {           
+            onPress: () => {
               navigation.goBack();
-            }
-          }
+            },
+          },
         ]
       );
       return true; // Empêche le comportement par défaut
@@ -63,7 +63,7 @@ export default function WaitingForVoteResultScreen({ navigation }) {
                 (acc, proposition) => acc + proposition.votes,
                 0
               );
-              console.log("TOTAL VOTES", totalVotes, 'NBPLAYERS', nbPlayers)
+              console.log("TOTAL VOTES", totalVotes, "NBPLAYERS", nbPlayers);
               return totalVotes === nbPlayers;
             };
             if (allPlayersHaveVoted(data)) {
@@ -77,10 +77,11 @@ export default function WaitingForVoteResultScreen({ navigation }) {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                   }
-                ).then(response => response.json())
-                .then(data => {
-                  console.log('WINNER CALCULE')
-                })
+                )
+                  .then((response) => response.json())
+                  .then((data) => {
+                    console.log("WINNER CALCULE");
+                  });
               }
               navigation.replace("VoteWinner");
             }
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#335561",
     fontWeight: "bold",
-    textAlign: 'center'
+    textAlign: "center",
   },
   loaderContainer: {
     flex: 1,
@@ -122,4 +123,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
-})
+});
