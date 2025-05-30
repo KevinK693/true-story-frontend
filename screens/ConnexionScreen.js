@@ -16,6 +16,7 @@ export default function ConnexionScreen({ navigation }) {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [wrongInfo, setWrongInfo] = useState(false)
 
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -40,6 +41,7 @@ export default function ConnexionScreen({ navigation }) {
           setEmail("");
           setPassword("");
         } else {
+          setWrongInfo(true)
           console.log("Erreur de connexion");
         }
       });
@@ -50,6 +52,7 @@ export default function ConnexionScreen({ navigation }) {
       <KeyboardAvoidingView style={styles.keyboardview} behavior="padding">
         <Image source={require("../assets/logo.png")} />
         <Text style={styles.title}>Se connecter</Text>
+          {wrongInfo ? <Text style={{textAlign: 'center', color: 'red'}}>Identifiant ou mot de passe incorrect</Text> : null}
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
