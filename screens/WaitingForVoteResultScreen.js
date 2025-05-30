@@ -4,10 +4,9 @@ import {
   Text,
   StyleSheet,
   ActivityIndicator,
-  BackHandler,
-  Alert,
 } from "react-native";
 import { useSelector } from "react-redux";
+import useBackButtonHandler from "../hooks/useBackButtonHandler";
 
 export default function WaitingForVoteResultScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -20,36 +19,7 @@ export default function WaitingForVoteResultScreen({ navigation }) {
   const sceneNumber = scene.sceneNumber;
 
   // Gestion du bouton retour Android
-  useEffect(() => {
-    const backAction = () => {
-      Alert.alert(
-        "Quitter la partie",
-        "Êtes-vous sûr de vouloir quitter la partie en cours ?",
-        [
-          {
-            text: "Annuler",
-            onPress: () => null,
-            style: "cancel",
-          },
-          {
-            text: "Quitter",
-            onPress: () => {
-              navigation.goBack();
-            },
-          },
-        ]
-      );
-      return true; // Empêche le comportement par défaut
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    // Nettoyage du listener
-    return () => backHandler.remove();
-  }, [navigation, code]);
+  useBackButtonHandler(navigation);
 
   // Vérification si tous les joueurs ont voté
   useEffect(() => {

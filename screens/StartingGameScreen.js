@@ -9,14 +9,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  BackHandler,
-  Alert,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { addFirstScene } from "../reducers/scene";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
+import useBackButtonHandler from "../hooks/useBackButtonHandler";
 
 export default function StartingGameScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -44,36 +43,7 @@ export default function StartingGameScreen({ navigation }) {
   const sceneNumber = scene.sceneNumber;
 
   // Gestion du bouton retour Android
-  useEffect(() => {
-    const backAction = () => {
-      Alert.alert(
-        "Quitter la partie",
-        "Êtes-vous sûr de vouloir quitter la partie en cours ?",
-        [
-          {
-            text: "Annuler",
-            onPress: () => null,
-            style: "cancel"
-          },
-          {
-            text: "Quitter",
-            onPress: () => {           
-              navigation.goBack();
-            }
-          }
-        ]
-      );
-      return true; // Empêche le comportement par défaut
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    // Nettoyage du listener
-    return () => backHandler.remove();
-  }, [navigation, code]);
+  useBackButtonHandler(navigation);
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/games/game/${code}`)
@@ -146,7 +116,7 @@ export default function StartingGameScreen({ navigation }) {
     >
       <SafeAreaView style={styles.container}>
         <View style={styles.topBar}>
-          <TouchableOpacity onPress={() => navigation.navigate('PlayersList')}>
+          <TouchableOpacity onPress={() => navigation.navigate("PlayersList")}>
             <Image
               source={{
                 uri: image,
@@ -201,7 +171,7 @@ export default function StartingGameScreen({ navigation }) {
                   />
                 )}
 
-                <Text style={styles.maxLength}>{userText.length}/280</Text>
+                <Text style={styles.maxLength}>{userText.length}/140</Text>
               </ScrollView>
             </View>
             <TouchableOpacity

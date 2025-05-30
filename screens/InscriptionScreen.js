@@ -9,11 +9,8 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useDispatch } from "react-redux";
-
 
 export default function ConnexionScreen({ navigation }) {
-  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [invalidEmail, setInvalidEmail] = useState(false);

@@ -6,14 +6,13 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
-  BackHandler,
-  Alert,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { updateAvatar } from "../reducers/user";
 import { updateGame } from "../reducers/game";
 import { SafeAreaView } from "react-native-safe-area-context";
+import useBackButtonHandler from "../hooks/useBackButtonHandler";
 
 export default function WaitingForPlayers({ navigation, route }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -46,36 +45,7 @@ export default function WaitingForPlayers({ navigation, route }) {
   const [waitingForPlayers, setWaitingForPlayers] = useState(false);
 
   // Gestion du bouton retour Android
-  useEffect(() => {
-    const backAction = () => {
-      Alert.alert(
-        "Quitter la partie",
-        "Êtes-vous sûr de vouloir quitter la partie en cours ?",
-        [
-          {
-            text: "Annuler",
-            onPress: () => null,
-            style: "cancel"
-          },
-          {
-            text: "Quitter",
-            onPress: () => {           
-              navigation.goBack();
-            }
-          }
-        ]
-      );
-      return true; // Empêche le comportement par défaut
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    // Nettoyage du listener
-    return () => backHandler.remove();
-  }, [navigation, code]);
+  useBackButtonHandler(navigation);
 
   useEffect(() => {
     if (token) {

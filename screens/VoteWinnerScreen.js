@@ -4,8 +4,6 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  BackHandler,
-  Alert,
   ActivityIndicator,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
@@ -13,6 +11,7 @@ import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { updateScene } from "../reducers/scene";
+import useBackButtonHandler from "../hooks/useBackButtonHandler";
 
 export default function VoteWinnerScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -45,25 +44,7 @@ export default function VoteWinnerScreen({ navigation }) {
   const isHost = () => token === host;
 
   // Gestion du bouton retour Android
-  useEffect(() => {
-    const backAction = () => {
-      Alert.alert(
-        "Quitter la partie",
-        "Êtes-vous sûr de vouloir quitter la partie en cours ?",
-        [
-          { text: "Annuler", style: "cancel" },
-          { text: "Quitter", onPress: () => navigation.goBack() },
-        ]
-      );
-      return true;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-    return () => backHandler.remove();
-  }, [navigation, code]);
+  useBackButtonHandler(navigation);
 
   // Récupération des infos de la partie
   useEffect(() => {

@@ -6,13 +6,12 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  BackHandler,
-  Alert,
 } from "react-native";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import useBackButtonHandler from "../hooks/useBackButtonHandler";
 
 export default function VotingScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -34,37 +33,8 @@ export default function VotingScreen({ navigation }) {
   const [sceneId, setSceneId] = useState(null);
   const [loading, setLoading] = useState(true);
 
-    // Gestion du bouton retour Android
-    useEffect(() => {
-      const backAction = () => {
-        Alert.alert(
-          "Quitter la partie",
-          "Êtes-vous sûr de vouloir quitter la partie en cours ?",
-          [
-            {
-              text: "Annuler",
-              onPress: () => null,
-              style: "cancel"
-            },
-            {
-              text: "Quitter",
-              onPress: () => {           
-                navigation.goBack();
-              }
-            }
-          ]
-        );
-        return true; // Empêche le comportement par défaut
-      };
-  
-      const backHandler = BackHandler.addEventListener(
-        "hardwareBackPress",
-        backAction
-      );
-  
-      // Nettoyage du listener
-      return () => backHandler.remove();
-    }, [navigation, code]);
+  // Gestion du bouton retour Android
+  useBackButtonHandler(navigation);
 
   //Récupération de l'utilisateur actif
   useEffect(() => {
@@ -158,17 +128,17 @@ export default function VotingScreen({ navigation }) {
         });
     }
   };
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topBar}>
-        <TouchableOpacity onPress={() => navigation.navigate('PlayersList')}>
-        <Image
-          source={{
-            uri: gameImage,
-          }}
-          style={styles.gameImage}
-        />
+        <TouchableOpacity onPress={() => navigation.navigate("PlayersList")}>
+          <Image
+            source={{
+              uri: gameImage,
+            }}
+            style={styles.gameImage}
+          />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.iconHistory}
@@ -323,7 +293,7 @@ const styles = StyleSheet.create({
   checkIcon: {
     position: "absolute",
     right: -25,
-    bottom: '30%',
+    bottom: "30%",
     backgroundColor: "#65558F",
     padding: 15,
     borderRadius: "50%",
