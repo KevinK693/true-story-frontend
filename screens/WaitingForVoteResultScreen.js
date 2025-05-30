@@ -5,8 +5,8 @@ import {
   ActivityIndicator,
   BackHandler,
   Alert,
-} from "react-native";import { useEffect } from "react";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+} from "react-native";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
 export default function WaitingForVoteResultScreen({ navigation }) {

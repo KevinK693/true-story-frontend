@@ -3,10 +3,7 @@ import {
   Text,
   View,
   Image,
-  TextInput,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  ActivityIndicator,
   BackHandler,
   Alert,
 } from "react-native";
@@ -14,7 +11,6 @@ import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import { updateToken, updateAvatar, updateNickname } from "../reducers/user";
 import { Audio } from "expo-av";
 import * as Sharing from "expo-sharing";
 import { ScrollView } from "react-native";
@@ -33,14 +29,13 @@ export default function EndGameScreen({ navigation }) {
   const [gameTitle, setGameTitle] = useState("");
   const [gameWinner, setGameWinner] = useState("");
   const [winnerVotes, setWinnerVotes] = useState(0);
-  const [loading, setLoading] = useState(true)
-
+  const [loading, setLoading] = useState(true);
 
   const [sound, setSound] = useState(null);
   const fileUri = FileSystem.documentDirectory + "elevenlabs_podcast.mp3";
 
-   // Gestion du bouton retour Android
-   useEffect(() => {
+  // Gestion du bouton retour Android
+  useEffect(() => {
     const backAction = () => {
       Alert.alert(
         "Quitter la partie",
@@ -49,14 +44,14 @@ export default function EndGameScreen({ navigation }) {
           {
             text: "Annuler",
             onPress: () => null,
-            style: "cancel"
+            style: "cancel",
           },
           {
             text: "Quitter",
-            onPress: () => {           
+            onPress: () => {
               navigation.goBack();
-            }
-          }
+            },
+          },
         ]
       );
       return true; // Empêche le comportement par défaut
@@ -71,9 +66,7 @@ export default function EndGameScreen({ navigation }) {
     return () => backHandler.remove();
   }, [navigation, code]);
 
-
   const handleGenerateAudio = async () => {
-
     try {
       const response = await fetch(`${BACKEND_URL}/exports/generate`, {
         method: "POST",
@@ -105,7 +98,7 @@ export default function EndGameScreen({ navigation }) {
 
         if (await Sharing.isAvailableAsync()) {
           await Sharing.shareAsync(fileUri);
-          setLoading(false)
+          setLoading(false);
         } else {
           Alert.alert("Partage non dispo sur cet appareil.");
         }
@@ -134,6 +127,27 @@ export default function EndGameScreen({ navigation }) {
       });
   }, []);
 
+  // Finir la partie
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/games/end/${code}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fullstory: fullstory,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          console.log("Game successfully ended");
+        }
+      });
+  }, []);
+
+  const handleHistorySubmit = () => {
+    navigation.navigate("GameHistory");
+  };
+
   // Récupération du nom du gagnant
   useEffect(() => {
     if (gameWinner) {
@@ -141,7 +155,8 @@ export default function EndGameScreen({ navigation }) {
         .then((response) => response.json())
         .then((data) => {
           if (data.result) {
-            setWinnerName(data.user.nickname);
+            setGameWinner(data.winner);
+            setWinnerVotes(data.totalVotes)
           } else {
             console.log("Erreur lors de la récupération du gagnant");
           }
@@ -152,50 +167,10 @@ export default function EndGameScreen({ navigation }) {
     }
   }, [gameWinner]);
 
-  // Récupération du nombre total de votes du gagnant
-  useEffect(() => {
-    if (gameWinner) {
-      fetch(`${BACKEND_URL}/users/${gameWinner}`)
-        .then((response) => response.json())
-        .then((userData) => {
-          if (userData.result) {
-            fetch(`${BACKEND_URL}/scenes/${code}`)
-              .then((response) => response.json())
-              .then((scenesData) => {
-                if (scenesData.result && scenesData.scenes) {
-                  const totalVotes = scenesData.scenes.reduce(
-                    (total, scene) => {
-                      const winnerPropositions = scene.propositions.filter(
-                        (prop) => prop.userId === userData.user._id
-                      );
-                      return (
-                        total +
-                        winnerPropositions.reduce(
-                          (sum, prop) => sum + prop.votes,
-                          0
-                        )
-                      );
-                    },
-                    0
-                  );
-                  setWinnerVotes(totalVotes);
-                }
-              });
-          }
-        });
-    }
-  }, [gameWinner, code]);
-
-  const handleHistorySubmit = () => {
-    navigation.navigate("GameHistory");
-  };
-
-
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topBar}>
-        <TouchableOpacity onPress={() => navigation.navigate('PlayersList')}>
+        <TouchableOpacity onPress={() => navigation.navigate("PlayersList")}>
           <Image
             source={{
               uri: gameImage,
