@@ -75,13 +75,6 @@ export default function HomeScreen({ navigation }) {
         >
           <Text style={styles.textbutton}>REJOINDRE</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("StartingGame")}
-          style={styles.button}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.textbutton}>CONTINUER</Text>
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

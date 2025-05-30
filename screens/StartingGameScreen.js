@@ -9,6 +9,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  BackHandler,
+  Alert,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -40,6 +42,38 @@ export default function StartingGameScreen({ navigation }) {
 
   const scene = useSelector((state) => state.scene.value);
   const sceneNumber = scene.sceneNumber;
+
+  // Gestion du bouton retour Android
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert(
+        "Quitter la partie",
+        "Êtes-vous sûr de vouloir quitter la partie en cours ?",
+        [
+          {
+            text: "Annuler",
+            onPress: () => null,
+            style: "cancel"
+          },
+          {
+            text: "Quitter",
+            onPress: () => {           
+              navigation.goBack();
+            }
+          }
+        ]
+      );
+      return true; // Empêche le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    // Nettoyage du listener
+    return () => backHandler.remove();
+  }, [navigation, code]);
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/games/game/${code}`)

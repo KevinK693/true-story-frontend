@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  BackHandler,
+  Alert,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
@@ -42,6 +44,38 @@ export default function WaitingForPlayers({ navigation, route }) {
   const [status, setStatus] = useState(false);
   const [loading, setLoading] = useState(true);
   const [waitingForPlayers, setWaitingForPlayers] = useState(false);
+
+  // Gestion du bouton retour Android
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert(
+        "Quitter la partie",
+        "Êtes-vous sûr de vouloir quitter la partie en cours ?",
+        [
+          {
+            text: "Annuler",
+            onPress: () => null,
+            style: "cancel"
+          },
+          {
+            text: "Quitter",
+            onPress: () => {           
+              navigation.goBack();
+            }
+          }
+        ]
+      );
+      return true; // Empêche le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    // Nettoyage du listener
+    return () => backHandler.remove();
+  }, [navigation, code]);
 
   useEffect(() => {
     if (token) {
@@ -202,7 +236,7 @@ export default function WaitingForPlayers({ navigation, route }) {
       )}
       {!isHost() && (
         <Text style={{ textAlign: "center", color: "#335561" }}>
-          En attente de l’hôte pour démarrer la partie...
+          En attente de l'hôte pour démarrer la partie...
         </Text>
       )}
     </SafeAreaView>

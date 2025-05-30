@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   ActivityIndicator,
+  BackHandler,
+  Alert,
 } from "react-native";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
@@ -34,6 +36,39 @@ export default function EndGameScreen({ navigation }) {
 
   const [sound, setSound] = useState(null);
   const fileUri = FileSystem.documentDirectory + "elevenlabs_podcast.mp3";
+
+   // Gestion du bouton retour Android
+   useEffect(() => {
+    const backAction = () => {
+      Alert.alert(
+        "Quitter la partie",
+        "Êtes-vous sûr de vouloir quitter la partie en cours ?",
+        [
+          {
+            text: "Annuler",
+            onPress: () => null,
+            style: "cancel"
+          },
+          {
+            text: "Quitter",
+            onPress: () => {           
+              navigation.goBack();
+            }
+          }
+        ]
+      );
+      return true; // Empêche le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    // Nettoyage du listener
+    return () => backHandler.remove();
+  }, [navigation, code]);
+
 
   const handleGenerateAudio = async () => {
 

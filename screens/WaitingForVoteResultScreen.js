@@ -1,4 +1,11 @@
-import { useEffect } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator,
+  BackHandler,
+  Alert,
+} from "react-native";import { useEffect } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { useSelector } from "react-redux";
 
@@ -11,6 +18,38 @@ export default function WaitingForVoteResultScreen({ navigation }) {
 
   const scene = useSelector((state) => state.scene.value);
   const sceneNumber = scene.sceneNumber;
+
+  // Gestion du bouton retour Android
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert(
+        "Quitter la partie",
+        "Êtes-vous sûr de vouloir quitter la partie en cours ?",
+        [
+          {
+            text: "Annuler",
+            onPress: () => null,
+            style: "cancel"
+          },
+          {
+            text: "Quitter",
+            onPress: () => {           
+              navigation.goBack();
+            }
+          }
+        ]
+      );
+      return true; // Empêche le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    // Nettoyage du listener
+    return () => backHandler.remove();
+  }, [navigation, code]);
 
   // Vérification si tous les joueurs ont voté
   useEffect(() => {
