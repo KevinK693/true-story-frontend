@@ -4,7 +4,6 @@ import {
   View,
   Image,
   TouchableOpacity,
-  Button,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
@@ -26,12 +25,11 @@ export default function HomeScreen({ navigation }) {
         .then((response) => response.json())
         .then((data) => {
           if (data.result && data.user.avatar) {
-            // Si l'avatar du serveur est différent de celui dans Redux, mettre à jour Redux
             if (data.user.avatar !== user.avatar) {
               dispatch(updateAvatar(data.user.avatar));
             }
           } else {
-            console.log("Erreur de récupération de l'image");
+            console.log("Failed to fetch user info");
           }
         });
     }

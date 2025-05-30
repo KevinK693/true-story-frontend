@@ -32,7 +32,7 @@ export default function PlayersList({ navigation, route }) {
               dispatch(updateAvatar(data.user.avatar));
             }
           } else {
-            console.log("Erreur de récupération de l'image utilisateur");
+            console.log("Failed to fetch user info");
           }
         });
     }
@@ -50,7 +50,7 @@ export default function PlayersList({ navigation, route }) {
           setGenre(data.game.genre);
           setStatus(data.game.status);
         } else {
-          console.log("Erreur de récupération des données utilisateur");
+          console.log("Failed to fetch game info");
         }
       });
   }, []);

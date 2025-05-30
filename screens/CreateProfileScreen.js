@@ -86,7 +86,7 @@ export default function CreateProfileScreen({ navigation, route }) {
     }
   
     setLoading(true);
-    setInvalidProfile(false); // Reset le message d'erreur
+    setInvalidProfile(false); 
     
     const formData = new FormData();
     formData.append("token", token);
@@ -121,7 +121,7 @@ export default function CreateProfileScreen({ navigation, route }) {
           setPseudo("");
           setInvalidProfile(false);
         } else {
-          console.log("Erreur lors de la création du profil :", data.error);
+          console.log("Failed to create profile :", data.error);
           setInvalidProfile(true);
         }
       })

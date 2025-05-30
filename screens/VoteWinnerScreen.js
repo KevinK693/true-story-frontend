@@ -9,9 +9,9 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { updateScene } from "../reducers/scene";
 import useBackButtonHandler from "../hooks/useBackButtonHandler";
+import GameHeader from "../components/GameHeader";
 
 export default function VoteWinnerScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -29,7 +29,6 @@ export default function VoteWinnerScreen({ navigation }) {
   const scene = useSelector((state) => state.scene.value);
   const sceneNumber = scene.sceneNumber;
   const history = scene.fullstory;
-  console.log("FULLSTORY in VoteWinnerScreen =>", history);
 
   const remainingScenes = nbScenes - sceneNumber;
 
@@ -45,20 +44,6 @@ export default function VoteWinnerScreen({ navigation }) {
 
   // Gestion du bouton retour Android
   useBackButtonHandler(navigation);
-
-  // Récupération des infos de la partie
-  useEffect(() => {
-    fetch(`${BACKEND_URL}/games/game/${code}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.result) {
-          setGameImage(data.game.image);
-          setGameTitle(data.game.title);
-        } else {
-          console.log("Erreur de récupération des données utilisateur");
-        }
-      });
-  }, []);
 
   // Fonction de récupération du gagnant
   const fetchWinner = async () => {
@@ -79,7 +64,7 @@ export default function VoteWinnerScreen({ navigation }) {
         return false;
       }
     } catch (error) {
-      console.error("Erreur lors du fetch du gagnant :", error);
+      console.error("Failed to fetch winner :", error);
       return false;
     }
   };
@@ -156,7 +141,7 @@ export default function VoteWinnerScreen({ navigation }) {
         );
       }
     } catch (error) {
-      console.error("Erreur dans handleResumeGame:", error);
+      console.error("Error in handleResumeGame:", error);
     }
   };
 
@@ -169,7 +154,7 @@ export default function VoteWinnerScreen({ navigation }) {
           const data = await response.json();
 
           if (!data.result) {
-            console.error("Erreur récupération des scènes :", data.error);
+            console.error("Failed to fetch scenes :", data.error);
             return;
           }
 
@@ -195,7 +180,7 @@ export default function VoteWinnerScreen({ navigation }) {
             );
           }
         } catch (error) {
-          console.error("Erreur dans le polling des scènes :", error);
+          console.error("Failed scenes polling :", error);
         }
       }, 3000);
 
@@ -214,23 +199,15 @@ export default function VoteWinnerScreen({ navigation }) {
   }
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.topBar}>
-        <TouchableOpacity onPress={() => navigation.navigate("PlayersList")}>
-          <Image
-            source={{
-              uri: gameImage,
-            }}
-            style={styles.gameImage}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.iconHistory}
-          onPress={() => navigation.navigate("GameHistory")}
-        >
-          <FontAwesome5 name="clock" size={35} color="#335561" />
-        </TouchableOpacity>
-      </View>
+      <GameHeader
+        navigation={navigation}
+        onGameDataLoaded={(data) => {
+          setTitle(data.title);
+          setImage(data.image);
+          setTotalScenesNb(data.nbScenes);
+          setPlayersNb(data.nbPlayers);
+        }}
+      />
       <Text style={styles.gameTitle}>{gameTitle}</Text>
       <Text style={styles.subtitle}>Vainqueur du vote</Text>
       <Text style={{ textAlign: "center" }}>

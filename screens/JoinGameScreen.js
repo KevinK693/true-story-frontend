@@ -38,7 +38,7 @@ export default function JoinGame({ navigation }) {
         setCode('')
         dispatch(resetScene())
       } else {
-        console.log('Erreur de récupération de la partie', data.error)
+        console.log('Failed to fetch game info', data.error)
         setIncorrectCode(true)
       }
     })
