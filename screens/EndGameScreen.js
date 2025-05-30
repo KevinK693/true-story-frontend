@@ -26,7 +26,6 @@ export default function EndGameScreen({ navigation }) {
 
   const scene = useSelector((state) => state.scene.value);
   const fullstory = useSelector((state) => state.scene.value.fullstory);
-  console.log("FULLSTORY in EndGameScreen =>", fullstory);
   const lastScene = scene.scenes[scene.scenes.length - 1];
 
   const [gameImage, setGameImage] = useState(null);
@@ -401,16 +400,18 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
+    marginTop: 25,
   },
   buttonContainer: {
     alignItems: "center",
     justifyContent: "center",
-    margin: 30,
+    margin: 10,
   },
   text: {
     color: "#335561",
     marginTop: 5,
     fontFamily: "NotoSans_400Regular",
+    fontSize: 12,
   },
   modalOverlay: {
     flex: 1,
