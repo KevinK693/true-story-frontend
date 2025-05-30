@@ -189,7 +189,7 @@ export default function StartingGameScreen({ navigation }) {
                     placeholder="Écrivez la fin de l'histoire..."
                     value={userText}
                     onChangeText={setUserText}
-                    maxLength={280}
+                    maxLength={140}
                   />
                 ) : (
                   <TextInput
@@ -198,7 +198,7 @@ export default function StartingGameScreen({ navigation }) {
                     placeholder="Écrivez la suite de l'histoire..."
                     value={userText}
                     onChangeText={setUserText}
-                    maxLength={280}
+                    maxLength={140}
                   />
                 )}
 
