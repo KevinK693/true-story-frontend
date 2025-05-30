@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, Image, TouchableOpacity, BackHandler,
+import { View, StyleSheet, Text, Image, TouchableOpacity,BackHandler,
   Alert, } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
