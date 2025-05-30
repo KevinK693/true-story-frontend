@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
@@ -14,10 +14,13 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 export default function UserPastGamesScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+
   const user = useSelector((state) => state.user.value);
   const token = user.token;
+
   const [games, setGames] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedGame, setSelectedGame] = useState(null);
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/games/user/${token}`)
@@ -38,14 +41,15 @@ export default function UserPastGamesScreen({ navigation }) {
       <TouchableOpacity
         key={index}
         style={styles.button}
-        onPress={() => handleShowGame()}
+        onPress={() => handleShowGame(game)}
       >
         <Text style={styles.buttonText}>{game.title}</Text>
       </TouchableOpacity>
     );
   });
 
-  const handleShowGame = () => {
+  const handleShowGame = (game) => {
+    setSelectedGame(game);
     setModalVisible(true);
   };
 
@@ -74,7 +78,7 @@ export default function UserPastGamesScreen({ navigation }) {
           <View style={styles.modal}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalText}>
-                Texte généré de l'histoire ici.
+                {selectedGame?.fullstory || "Chargement de l'histoire..."}
               </Text>
             </View>
           </View>
@@ -90,7 +94,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FBF1F1",
     alignItems: "center",
     padding: 20,
-    paddingBottom: 40
+    paddingBottom: 40,
   },
   icons: {
     flexDirection: "row",
