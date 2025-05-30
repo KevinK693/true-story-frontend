@@ -76,7 +76,7 @@ export default function PlayersList({ navigation, route }) {
                     style={styles.iconHistory}
                     onPress={() => navigation.goBack()}
                   >
-                    <FontAwesome5 name="undo-alt" size={35} color="#335561" />
+                    <FontAwesome5 name="arrow-left" size={35} color="#335561" />
                   </TouchableOpacity>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
