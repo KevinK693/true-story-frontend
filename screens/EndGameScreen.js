@@ -2,9 +2,7 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
   TouchableOpacity,
-  BackHandler,
   Alert,
   ActivityIndicator,
   Modal,
@@ -17,6 +15,8 @@ import { Audio } from "expo-av";
 import * as Sharing from "expo-sharing";
 import { ScrollView } from "react-native";
 import * as FileSystem from "expo-file-system";
+import useBackButtonHandler from "../hooks/useBackButtonHandler";
+import GameHeader from "../components/GameHeader";
 
 export default function EndGameScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -40,36 +40,7 @@ export default function EndGameScreen({ navigation }) {
   const fileUri = FileSystem.documentDirectory + "elevenlabs_podcast.mp3";
 
   // Gestion du bouton retour Android
-  useEffect(() => {
-    const backAction = () => {
-      Alert.alert(
-        "Quitter la partie",
-        "Êtes-vous sûr de vouloir quitter la partie en cours ?",
-        [
-          {
-            text: "Annuler",
-            onPress: () => null,
-            style: "cancel",
-          },
-          {
-            text: "Quitter",
-            onPress: () => {
-              navigation.goBack();
-            },
-          },
-        ]
-      );
-      return true; // Empêche le comportement par défaut
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    // Nettoyage du listener
-    return () => backHandler.remove();
-  }, [navigation, code]);
+  useBackButtonHandler(navigation);
 
   const handleGenerateAudio = async () => {
     try {
@@ -78,11 +49,6 @@ export default function EndGameScreen({ navigation }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: fullstory }),
       });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error("Erreur serveur : " + errorText);
-      }
 
       const blob = await response.blob();
       const fileUri = FileSystem.documentDirectory + "podcast.mp3";
@@ -110,8 +76,8 @@ export default function EndGameScreen({ navigation }) {
       };
       reader.readAsDataURL(blob);
     } catch (error) {
-      console.error("Erreur génération audio :", error);
-      Alert.alert("Erreur", error.message);
+      console.error("Generating audio error :", error);
+      Alert.alert("Error", error.message);
     } finally {
       setLoading(false);
     }
@@ -125,7 +91,7 @@ export default function EndGameScreen({ navigation }) {
         body: JSON.stringify({ text: fullstory }),
       });
 
-      if (!response.ok) throw new Error("Erreur serveur PDF");
+      if (!response.ok) throw new Error("PDF server error");
 
       const blob = await response.blob();
 
@@ -147,24 +113,10 @@ export default function EndGameScreen({ navigation }) {
 
       reader.readAsDataURL(blob);
     } catch (err) {
-      console.error("Erreur PDF :", err.message);
-      Alert.alert("Erreur PDF", err.message);
+      console.error("PDF error :", err.message);
+      Alert.alert("PDF error", err.message);
     }
   };
-
-  //Récupération de l'image de la partie
-  useEffect(() => {
-    fetch(`${BACKEND_URL}/games/game/${code}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.result) {
-          setGameImage(data.game.image);
-          setGameTitle(data.game.title);
-        } else {
-          console.log("Erreur de récupération des données utilisateur");
-        }
-      });
-  }, []);
 
   // Finir la partie
   useEffect(() => {
@@ -201,7 +153,7 @@ export default function EndGameScreen({ navigation }) {
             }
           })
           .catch((err) => {
-            console.error("Erreur de polling :", err);
+            console.error("Polling error :", err);
           });
       }, 2000);
 
@@ -234,22 +186,15 @@ export default function EndGameScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.topBar}>
-        <TouchableOpacity onPress={() => navigation.navigate("PlayersList")}>
-          <Image
-            source={{
-              uri: gameImage,
-            }}
-            style={styles.gameImage}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.iconHistory}
-          onPress={handleHistorySubmit}
-        >
-          <FontAwesome5 name="history" size={35} color="#335561" />
-        </TouchableOpacity>
-      </View>
+      <GameHeader
+        navigation={navigation}
+        onGameDataLoaded={(data) => {
+          setGameTitle(data.title);
+          setGameImage(data.image);
+          setTotalScenesNb(data.nbScenes);
+          setPlayersNb(data.nbPlayers);
+        }}
+      />
       <Text style={styles.gameTitle}>{gameTitle}</Text>
       <Text style={styles.subtitle}>Fin de la partie | Scène finale</Text>
       <View style={styles.containerProposition}>
