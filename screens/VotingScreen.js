@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
     display: "none",
   },
   propositionsContainer: {
-    width: "80%",
+    width: "100%",
     marginVertical: 20,
     alignItems: "center",
   },
