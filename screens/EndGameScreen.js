@@ -213,13 +213,15 @@ export default function EndGameScreen({ navigation }) {
           <TouchableOpacity style={styles.button} onPress={handleDownloadPDF}>
             <FontAwesome5 size={30} name="pen-nib" color="#FBF1F1" />
           </TouchableOpacity>
-          <Text style={styles.text}>Exporter à l'écrit</Text>
+          <Text style={styles.text}>Exporter</Text>
+          <Text style={styles.text}>à l'écrit</Text>
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={handleGenerateAudio} style={styles.button}>
             <FontAwesome5 size={30} name="podcast" color="#FBF1F1" />
           </TouchableOpacity>
-          <Text style={styles.text}>Exporter en podcast</Text>
+          <Text style={styles.text}>Exporter</Text>
+          <Text style={styles.text}>en podcast</Text>
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
@@ -228,7 +230,8 @@ export default function EndGameScreen({ navigation }) {
           >
             <FontAwesome5 size={30} name="book" color="#FBF1F1" />
           </TouchableOpacity>
-          <Text style={styles.text}>Voir toute l'histoire</Text>
+          <Text style={styles.text}>Afficher</Text>
+          <Text style={styles.text}>l'histoire</Text>
         </View>
       </View>
 
@@ -351,11 +354,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     margin: 10,
+    minWidth: 80
   },
   text: {
     color: "#335561",
-    marginTop: 5,
-    fontFamily: "NotoSans_400Regular",
+    fontFamily: "NotoSans_700Bold",
     fontSize: 12,
   },
   modalOverlay: {

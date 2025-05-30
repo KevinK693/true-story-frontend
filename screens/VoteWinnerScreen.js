@@ -172,12 +172,6 @@ export default function VoteWinnerScreen({ navigation }) {
             navigation.navigate(
               latestScene.sceneNumber < nbScenes ? "StartingGame" : "EndGame"
             );
-          } else {
-            console.log(
-              `Ignore scène ${latestScene.sceneNumber}, attendu: ${
-                sceneNumber + 1
-              }`
-            );
           }
         } catch (error) {
           console.error("Failed scenes polling :", error);

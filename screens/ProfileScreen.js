@@ -62,10 +62,7 @@ export default function ProfileScreen({ navigation }) {
       });
   }, []);
 
-  console.log(victoryRate);
-
   const handleShowGames = () => {
-    console.log("Afficher les jeux");
     navigation.navigate("UserPastGames");
   };
 
