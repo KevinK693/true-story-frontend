@@ -161,9 +161,7 @@ export default function EndGameScreen({ navigation }) {
     }
   }, []);
 
-  const handleHistorySubmit = () => {
-    navigation.navigate("GameHistory");
-  };
+
   const openModal = (scene) => {
     setSelectedScene(scene);
     setModalVisible(true);
