@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
-  TouchableWithoutFeedback,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
@@ -74,15 +73,21 @@ export default function UserPastGamesScreen({ navigation }) {
         animationType="fade"
         onRequestClose={() => setModalVisible(false)}
       >
-        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-          <View style={styles.modal}>
-            <View style={styles.modalContainer}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <TouchableOpacity
+              onPress={() => setModalVisible(false)}
+              style={styles.closeButton}
+            >
+              <FontAwesome5 name="times" size={24} color="#333" />
+            </TouchableOpacity>
+            <ScrollView style={styles.scrollArea}>
               <Text style={styles.modalText}>
                 {selectedGame?.fullstory || "Chargement de l'histoire..."}
               </Text>
-            </View>
+            </ScrollView>
           </View>
-        </TouchableWithoutFeedback>
+        </View>
       </Modal>
     </SafeAreaView>
   );
@@ -129,22 +134,39 @@ const styles = StyleSheet.create({
     width: "100%",
     marginVertical: 20,
   },
-  modal: {
+  modalText: {
+    fontSize: 16,
+    fontFamily: "NotoSans_400Regular",
+    textAlign: "center",
+  },
+  modalContent: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
     alignItems: "center",
   },
+
   modalContainer: {
     backgroundColor: "white",
     padding: 20,
     borderRadius: 10,
-    width: 300,
-    alignItems: "center",
+    width: "80%",
+    maxHeight: "80%",
   },
-  modalText: {
-    fontSize: 16,
-    fontFamily: "NotoSans_400Regular",
-    textAlign: "center",
+
+  scrollArea: {
+    marginTop: 30,
+  },
+
+  closeButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    zIndex: 1,
   },
 });
