@@ -24,6 +24,7 @@ export default function EndGameScreen({ navigation }) {
 
   const scene = useSelector((state) => state.scene.value);
   const fullstory = useSelector((state) => state.scene.value.fullstory);
+  const lastScene = scene.scenes[scene.scenes.length - 1]
 
   const [gameImage, setGameImage] = useState(null);
   const [gameTitle, setGameTitle] = useState("");
@@ -120,7 +121,6 @@ export default function EndGameScreen({ navigation }) {
         if (data.result) {
           setGameImage(data.game.image);
           setGameTitle(data.game.title);
-          setGameWinner(data.game.winner);
         } else {
           console.log("Erreur de récupération des données utilisateur");
         }
@@ -130,7 +130,7 @@ export default function EndGameScreen({ navigation }) {
   // Finir la partie
   useEffect(() => {
     fetch(`${BACKEND_URL}/games/end/${code}`, {
-      method: "POST",
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         fullstory: fullstory,
@@ -140,6 +140,8 @@ export default function EndGameScreen({ navigation }) {
       .then((data) => {
         if (data.result) {
           console.log("Game successfully ended");
+          setGameWinner(data.winner)
+          setWinnerVotes(data.totalVotes)
         }
       });
   }, []);
@@ -148,24 +150,6 @@ export default function EndGameScreen({ navigation }) {
     navigation.navigate("GameHistory");
   };
 
-  // Récupération du nom du gagnant
-  useEffect(() => {
-    if (gameWinner) {
-      fetch(`${BACKEND_URL}/users/${gameWinner}`)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.result) {
-            setGameWinner(data.winner);
-            setWinnerVotes(data.totalVotes)
-          } else {
-            console.log("Erreur lors de la récupération du gagnant");
-          }
-        })
-        .catch((error) => {
-          console.error("Erreur:", error);
-        });
-    }
-  }, [gameWinner]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -189,7 +173,7 @@ export default function EndGameScreen({ navigation }) {
       <Text style={styles.subtitle}>Fin de la partie | Scène finale</Text>
       <View style={styles.containerProposition}>
         <ScrollView>
-          <Text style={styles.proposition}>{fullstory}</Text>
+          <Text style={styles.proposition}>{lastScene}</Text>
         </ScrollView>
       </View>
       <View>
