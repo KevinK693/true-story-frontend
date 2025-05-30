@@ -116,8 +116,8 @@ export default function VotingScreen({ navigation }) {
       <GameHeader
         navigation={navigation}
         onGameDataLoaded={(data) => {
-          setTitle(data.title);
-          setImage(data.image);
+          setGameTitle(data.title);
+          setGameImage(data.image);
           setTotalScenesNb(data.nbScenes);
           setPlayersNb(data.nbPlayers);
         }}
