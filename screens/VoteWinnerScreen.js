@@ -1,5 +1,13 @@
-import { View, StyleSheet, Text, Image, TouchableOpacity,BackHandler,
-  Alert, } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Image,
+  TouchableOpacity,
+  BackHandler,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -22,6 +30,7 @@ export default function VoteWinnerScreen({ navigation }) {
   const scene = useSelector((state) => state.scene.value);
   const sceneNumber = scene.sceneNumber;
   const history = scene.fullstory;
+  console.log("FULLSTORY in VoteWinnerScreen =>", history);
 
   const remainingScenes = nbScenes - sceneNumber;
 
@@ -31,14 +40,9 @@ export default function VoteWinnerScreen({ navigation }) {
   const [winningProposition, setWinningProposition] = useState("");
   const [winningVotes, setWinningVotes] = useState(0);
   const [avatar, setAvatar] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const isHost = () => {
-    if (token === host) {
-      return true;
-    } else {
-      return false;
-    }
-  };
+  const isHost = () => token === host;
 
   // Gestion du bouton retour Android
   useEffect(() => {
@@ -47,35 +51,24 @@ export default function VoteWinnerScreen({ navigation }) {
         "Quitter la partie",
         "Êtes-vous sûr de vouloir quitter la partie en cours ?",
         [
-          {
-            text: "Annuler",
-            onPress: () => null,
-            style: "cancel"
-          },
-          {
-            text: "Quitter",
-            onPress: () => {           
-              navigation.goBack();
-            }
-          }
+          { text: "Annuler", style: "cancel" },
+          { text: "Quitter", onPress: () => navigation.goBack() },
         ]
       );
-      return true; // Empêche le comportement par défaut
+      return true;
     };
 
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       backAction
     );
-
-    // Nettoyage du listener
     return () => backHandler.remove();
   }, [navigation, code]);
 
-  //Récupération des infos de la partie
+  // Récupération des infos de la partie
   useEffect(() => {
     fetch(`${BACKEND_URL}/games/game/${code}`)
-      .then((response) => response.json())
+      .then((res) => res.json())
       .then((data) => {
         if (data.result) {
           setGameImage(data.game.image);
@@ -86,25 +79,52 @@ export default function VoteWinnerScreen({ navigation }) {
       });
   }, []);
 
-  //Récupération du gagnant du vote
-  useEffect(() => {
-    fetch(`${BACKEND_URL}/scenes/voteWinner/${code}/${sceneNumber}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.result) {
-          setSceneWinner(data.data.nickname);
-          setWinningProposition(data.data.text);
-          setWinningVotes(data.data.votes);
-          setAvatar(data.data.avatar);
-        } else {
-          console.log("Erreur de récupération du gagnant du vote");
-        }
-      });
-  }, [code]);
+  // Fonction de récupération du gagnant
+  const fetchWinner = async () => {
+    try {
+      const res = await fetch(
+        `${BACKEND_URL}/scenes/voteWinner/${code}/${sceneNumber}`
+      );
+      const data = await res.json();
 
+      if (data.result && data.data?.nickname && data.data?.text) {
+        setSceneWinner(data.data.nickname);
+        setWinningProposition(data.data.text);
+        setWinningVotes(data.data.votes);
+        setAvatar(data.data.avatar);
+        setLoading(false);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error("Erreur lors du fetch du gagnant :", error);
+      return false;
+    }
+  };
+
+  // Polling pour récupérer le gagnant (jusqu'à 30s)
+  useEffect(() => {
+    setLoading(true);
+    let attempts = 0;
+    const maxAttempts = 10;
+
+    const interval = setInterval(async () => {
+      const success = await fetchWinner();
+      attempts++;
+
+      if (success || attempts >= maxAttempts) {
+        clearInterval(interval);
+        setLoading(false); // au cas où on sort sans succès
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [code, sceneNumber]);
+
+  // Reprendre la partie (host uniquement)
   const handleResumeGame = async () => {
     try {
-      // Étape 1 : Modifier le statut de la scène en cours
       const statusResponse = await fetch(
         `${BACKEND_URL}/scenes/status/${code}/${sceneNumber}`,
         {
@@ -115,17 +135,16 @@ export default function VoteWinnerScreen({ navigation }) {
 
       const statusData = await statusResponse.json();
 
-      // Étape 2 : Mettre à jour la scène selon s'il en reste ou non
       let sceneData;
       if (sceneNumber < nbScenes - 1) {
         const nextSceneRes = await fetch(`${BACKEND_URL}/scenes/nextScene`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            code: code,
+            code,
             text: winningProposition,
-            remainingScenes: remainingScenes,
-            history: history,
+            remainingScenes,
+            history,
             sceneNumber: sceneNumber + 1,
           }),
         });
@@ -135,25 +154,32 @@ export default function VoteWinnerScreen({ navigation }) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            code: code,
+            code,
             text: winningProposition,
-            history: history,
+            history,
             sceneNumber: nbScenes,
           }),
         });
         sceneData = await lastSceneRes.json();
       }
+
       if (sceneData?.result) {
-        dispatch(updateScene(sceneData.data.text));
+        dispatch(
+          updateScene({
+            text: sceneData.data.text,
+            sceneNumber: sceneData.data.sceneNumber,
+          })
+        );
         navigation.navigate(
           sceneNumber < nbScenes - 1 ? "StartingGame" : "EndGame"
         );
-      } 
+      }
     } catch (error) {
       console.error("Erreur dans handleResumeGame:", error);
     }
   };
 
+  // Polling pour joueur non-hôte en attente de nouvelle scène
   useEffect(() => {
     if (!isHost()) {
       const interval = setInterval(async () => {
@@ -169,12 +195,22 @@ export default function VoteWinnerScreen({ navigation }) {
           const scenes = data.scenes;
           const latestScene = scenes[scenes.length - 1];
 
-          if (latestScene.sceneNumber > sceneNumber) {
-            // La nouvelle scène est prête !
-            dispatch(updateScene(latestScene.text));
+          if (latestScene.sceneNumber === sceneNumber + 1) {
+            dispatch(
+              updateScene({
+                text: latestScene.text,
+                sceneNumber: latestScene.sceneNumber,
+              })
+            );
             clearInterval(interval);
             navigation.navigate(
               latestScene.sceneNumber < nbScenes ? "StartingGame" : "EndGame"
+            );
+          } else {
+            console.log(
+              `Ignore scène ${latestScene.sceneNumber}, attendu: ${
+                sceneNumber + 1
+              }`
             );
           }
         } catch (error) {
@@ -186,6 +222,15 @@ export default function VoteWinnerScreen({ navigation }) {
     }
   }, [code, sceneNumber, nbScenes, navigation]);
 
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#65558F" />
+        </View>
+      </SafeAreaView>
+    );
+  }
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topBar}>
@@ -348,5 +393,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#335561",
     marginVertical: 50,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
   },
 });
