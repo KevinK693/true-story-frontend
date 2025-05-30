@@ -112,6 +112,40 @@ export default function EndGameScreen({ navigation }) {
       setLoading(false);
     }
   };
+  const handleDownloadPDF = async () => {
+  try {
+    const response = await fetch(`${BACKEND_URL}/exports/pdf`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text : fullstory }),
+    });
+
+    if (!response.ok) throw new Error("Erreur serveur PDF");
+
+    const blob = await response.blob();
+
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64data = reader.result.split(",")[1];
+      const fileUri = FileSystem.documentDirectory + "story.pdf";
+
+      await FileSystem.writeAsStringAsync(fileUri, base64data, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(fileUri);
+      } else {
+        Alert.alert("Partage non dispo");
+      }
+    };
+
+    reader.readAsDataURL(blob);
+  } catch (err) {
+    console.error("Erreur PDF :", err.message);
+    Alert.alert("Erreur PDF", err.message);
+  }
+};
 
   //Récupération de l'image de la partie
   useEffect(() => {
@@ -184,7 +218,7 @@ export default function EndGameScreen({ navigation }) {
       </View>
       <View style={styles.buttonsContainer}>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={handleDownloadPDF}>
             <FontAwesome5 size={30} name="pen-nib" color="#FBF1F1" />
           </TouchableOpacity>
           <Text style={styles.text}>Exporter à l'écrit</Text>

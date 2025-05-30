@@ -29,6 +29,7 @@
     "expo-splash-screen": "^0.30.8",
     "expo-status-bar": "~2.2.3",
     "jwt-decode": "^4.0.0",
+    "pdfkit": "^0.17.1",
     "react": "19.0.0",
     "react-native": "0.79.2",
     "react-native-element-dropdown": "^2.12.4",
