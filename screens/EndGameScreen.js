@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   BackHandler,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
@@ -24,7 +25,8 @@ export default function EndGameScreen({ navigation }) {
 
   const scene = useSelector((state) => state.scene.value);
   const fullstory = useSelector((state) => state.scene.value.fullstory);
-  const lastScene = scene.scenes[scene.scenes.length - 1]
+  console.log("FULLSTORY in EndGameScreen =>", fullstory);
+  const lastScene = scene.scenes[scene.scenes.length - 1];
 
   const [gameImage, setGameImage] = useState(null);
   const [gameTitle, setGameTitle] = useState("");
@@ -140,16 +142,49 @@ export default function EndGameScreen({ navigation }) {
       .then((data) => {
         if (data.result) {
           console.log("Game successfully ended");
-          setGameWinner(data.winner)
-          setWinnerVotes(data.totalVotes)
+          setGameWinner(data.winner);
+          setWinnerVotes(data.totalVotes);
         }
-      });
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  //Polling pour les joueurs non-hôtes
+  useEffect(() => {
+    if (!game.isHost) {
+      const interval = setInterval(() => {
+        fetch(`${BACKEND_URL}/games/game/${code}`)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.game.status === false) {
+              setGameWinner(data.game.winner);
+              setWinnerVotes(data.game.totalVotes);
+              setLoading(false); 
+              clearInterval(interval)
+            }
+          })
+          .catch((err) => {
+            console.error("Erreur de polling :", err);
+          });
+      }, 2000); 
+
+      return () => clearInterval(interval); 
+    }
   }, []);
 
   const handleHistorySubmit = () => {
     navigation.navigate("GameHistory");
   };
 
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#65558F" />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
