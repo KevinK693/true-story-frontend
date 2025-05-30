@@ -83,13 +83,6 @@ export default function HomeScreen({ navigation }) {
         >
           <Text style={styles.textbutton}>REJOINDRE</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("StartingGame")}
-          style={styles.button}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.textbutton}>CONTINUER</Text>
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -107,10 +100,11 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   image: {
-    width: "50%",
+    width: "100%",
     resizeMode: "contain",
     alignSelf: "center",
     marginVertical: 20,
+    marginTop: 50,
   },
   buttonContainer: {
     marginTop: 30,
@@ -129,6 +123,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 6,
     width: "90%",
+    marginBottom: 35
   },
   textbutton: {
     color: "#EADDFF",

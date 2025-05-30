@@ -1,4 +1,5 @@
-import { View, StyleSheet, Text, Image, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, Image, TouchableOpacity,BackHandler,
+  Alert, } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -38,6 +39,38 @@ export default function VoteWinnerScreen({ navigation }) {
       return false;
     }
   };
+
+  // Gestion du bouton retour Android
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert(
+        "Quitter la partie",
+        "Êtes-vous sûr de vouloir quitter la partie en cours ?",
+        [
+          {
+            text: "Annuler",
+            onPress: () => null,
+            style: "cancel"
+          },
+          {
+            text: "Quitter",
+            onPress: () => {           
+              navigation.goBack();
+            }
+          }
+        ]
+      );
+      return true; // Empêche le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    // Nettoyage du listener
+    return () => backHandler.remove();
+  }, [navigation, code]);
 
   //Récupération des infos de la partie
   useEffect(() => {

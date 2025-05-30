@@ -1,5 +1,12 @@
 import { useEffect } from "react";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  BackHandler,
+  Alert,
+} from "react-native";
 import { useSelector } from "react-redux";
 
 export default function WaitingForVoteResultScreen({ navigation }) {
@@ -11,6 +18,38 @@ export default function WaitingForVoteResultScreen({ navigation }) {
 
   const scene = useSelector((state) => state.scene.value);
   const sceneNumber = scene.sceneNumber;
+
+  // Gestion du bouton retour Android
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert(
+        "Quitter la partie",
+        "Êtes-vous sûr de vouloir quitter la partie en cours ?",
+        [
+          {
+            text: "Annuler",
+            onPress: () => null,
+            style: "cancel",
+          },
+          {
+            text: "Quitter",
+            onPress: () => {
+              navigation.goBack();
+            },
+          },
+        ]
+      );
+      return true; // Empêche le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    // Nettoyage du listener
+    return () => backHandler.remove();
+  }, [navigation, code]);
 
   // Vérification si tous les joueurs ont voté
   useEffect(() => {
@@ -24,7 +63,7 @@ export default function WaitingForVoteResultScreen({ navigation }) {
                 (acc, proposition) => acc + proposition.votes,
                 0
               );
-              console.log("TOTAL VOTES", totalVotes, 'NBPLAYERS', nbPlayers)
+              console.log("TOTAL VOTES", totalVotes, "NBPLAYERS", nbPlayers);
               return totalVotes === nbPlayers;
             };
             if (allPlayersHaveVoted(data)) {
@@ -38,10 +77,11 @@ export default function WaitingForVoteResultScreen({ navigation }) {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                   }
-                ).then(response => response.json())
-                .then(data => {
-                  console.log('WINNER CALCULE')
-                })
+                )
+                  .then((response) => response.json())
+                  .then((data) => {
+                    console.log("WINNER CALCULE");
+                  });
               }
               navigation.replace("VoteWinner");
             }
@@ -75,7 +115,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#335561",
     fontWeight: "bold",
-    textAlign: 'center'
+    textAlign: "center",
   },
   loaderContainer: {
     flex: 1,
@@ -83,4 +123,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
-})
+});

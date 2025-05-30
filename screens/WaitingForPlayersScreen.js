@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  BackHandler,
+  Alert,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
@@ -43,6 +45,38 @@ export default function WaitingForPlayers({ navigation, route }) {
   const [loading, setLoading] = useState(true);
   const [waitingForPlayers, setWaitingForPlayers] = useState(false);
 
+  // Gestion du bouton retour Android
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert(
+        "Quitter la partie",
+        "Êtes-vous sûr de vouloir quitter la partie en cours ?",
+        [
+          {
+            text: "Annuler",
+            onPress: () => null,
+            style: "cancel"
+          },
+          {
+            text: "Quitter",
+            onPress: () => {           
+              navigation.goBack();
+            }
+          }
+        ]
+      );
+      return true; // Empêche le comportement par défaut
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    // Nettoyage du listener
+    return () => backHandler.remove();
+  }, [navigation, code]);
+
   useEffect(() => {
     if (token) {
       fetch(`${BACKEND_URL}/users/${token}`)
@@ -71,9 +105,7 @@ export default function WaitingForPlayers({ navigation, route }) {
             setScenesNumber(data.game.nbScenes);
             setGenre(data.game.genre);
             setStatus(data.game.status);
-            console.log("NBPLAYERS IN DB", data.game.nbPlayers)
             if (data.game.started) {
-              console.log('THE GAME HAS STARTED', data.game.status)
               dispatch(
                 updateGame({
                   image: data.game.image,
@@ -202,7 +234,7 @@ export default function WaitingForPlayers({ navigation, route }) {
       )}
       {!isHost() && (
         <Text style={{ textAlign: "center", color: "#335561" }}>
-          En attente de l’hôte pour démarrer la partie...
+          En attente de l'hôte pour démarrer la partie...
         </Text>
       )}
     </SafeAreaView>
