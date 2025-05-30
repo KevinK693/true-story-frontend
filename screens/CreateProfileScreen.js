@@ -75,22 +75,36 @@ export default function CreateProfileScreen({ navigation, route }) {
   };
 
   const handleCreateProfile = () => {
+    if (!pseudo) {
+      setInvalidProfile(true);
+      return;
+    }
+    
+    if (!image && !avatarSelected) {
+      setInvalidProfile(true);
+      return;
+    }
+  
     setLoading(true);
+    setInvalidProfile(false); // Reset le message d'erreur
+    
     const formData = new FormData();
     formData.append("token", token);
     formData.append("nickname", pseudo);
-
-    if (image) {
+  
+    // Si une image personnalisée a été sélectionnée (pas un avatar prédéfini)
+    if (image && !avatarSelected) {
       formData.append("photoFromFront", {
         uri: image,
         name: "photo.jpg",
         type: "image/jpeg",
       });
-      setAvatarSelected(null);
-    } else if (avatar) {
-      formData.append("avatarUrl", avatar);
+    } 
+    // Si un avatar prédéfini a été sélectionné
+    else if (avatarSelected) {
+      formData.append("avatarUrl", avatarSelected);
     }
-
+  
     fetch(`${BACKEND_URL}/users/profile`, {
       method: "PUT",
       body: formData,
@@ -108,8 +122,9 @@ export default function CreateProfileScreen({ navigation, route }) {
           setInvalidProfile(false);
         } else {
           console.log("Erreur lors de la création du profil :", data.error);
+          setInvalidProfile(true);
         }
-      });
+      })
   };
 
   return (
@@ -168,10 +183,10 @@ export default function CreateProfileScreen({ navigation, route }) {
         <Text style={styles.buttonText}>Créer</Text>
       </TouchableOpacity>
       {invalidProfile ? (
-        <Text style={{ color: "red" }}>
-          Veuillez choisir un pseudo et un avatar
-        </Text>
-      ) : null}
+  <Text style={{ color: "red", textAlign: "center", marginTop: 10 }}>
+    Veuillez choisir un pseudo et une image/avatar
+  </Text>
+) : null}
       {loading ? (
         <Text style={{ marginTop: 10, color: "#65558F" }}>Chargement...</Text>
       ) : null}

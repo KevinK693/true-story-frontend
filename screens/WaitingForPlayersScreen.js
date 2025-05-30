@@ -105,9 +105,7 @@ export default function WaitingForPlayers({ navigation, route }) {
             setScenesNumber(data.game.nbScenes);
             setGenre(data.game.genre);
             setStatus(data.game.status);
-            console.log("NBPLAYERS IN DB", data.game.nbPlayers)
             if (data.game.started) {
-              console.log('THE GAME HAS STARTED', data.game.status)
               dispatch(
                 updateGame({
                   image: data.game.image,

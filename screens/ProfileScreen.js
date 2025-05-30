@@ -22,6 +22,7 @@ export default function ProfileScreen({ navigation }) {
   const [gamesPlayed, setGamesPlayed] = useState(0);
   const [gamesWon, setGamesWon] = useState(0);
   const [victoryRate, setVictoryRate] = useState(0);
+  const [userId, setUserId] = useState(null);
 
   const user = useSelector((state) => state.user.value);
   const token = user.token;
@@ -35,6 +36,7 @@ export default function ProfileScreen({ navigation }) {
         if (data.result) {
           setAvatarUrl(data.user.avatar);
           setNickname(data.user.nickname);
+          setUserId(data.user._id);
         } else {
           console.log("Cannot fetch user data");
         }
@@ -47,7 +49,7 @@ export default function ProfileScreen({ navigation }) {
         if (data.result) {
           const games = data.games;
           const totalGames = games.length;
-          const wins = games.filter((game) => game.winner === token).length;
+          const wins = games.filter((game) => game.winner === userId).length;
 
           setGamesPlayed(totalGames);
           setGamesWon(wins);
@@ -91,20 +93,20 @@ export default function ProfileScreen({ navigation }) {
   const handleModifications = () => {
     if (image === null) {
       fetch(`${BACKEND_URL}/users/profile/nickname`, {
-        method: 'PUT',
-        headers: { 'Content-Type' : "application/json" },
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           token: token,
-          nickname: nickname
-        })
+          nickname: nickname,
+        }),
       })
-      .then(response => response.json())
-      .then(data => {
-        if (data.result) {
-          console.log("Nickname updated successfully")
-          setModified(true);
-        }
-      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.result) {
+            console.log("Nickname updated successfully");
+            setModified(true);
+          }
+        });
     } else {
       const formData = new FormData();
       formData.append("token", token);
