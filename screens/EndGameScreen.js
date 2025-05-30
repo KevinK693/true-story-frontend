@@ -16,6 +16,7 @@ import { Audio } from "expo-av";
 import * as Sharing from "expo-sharing";
 import { ScrollView } from "react-native";
 import * as FileSystem from "expo-file-system";
+import { Alert } from "react-native";
 
 export default function EndGameScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
