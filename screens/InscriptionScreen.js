@@ -36,13 +36,13 @@ export default function ConnexionScreen({ navigation }) {
         .then((response) => response.json())
         .then((data) => {
           if (data.result) {
-            console.log("Inscription réussie");
+            console.log("Signup successful");
             navigation.navigate("CreateProfile", { token: data.token })
             setEmail("");
             setPassword("");
           } else {
             setEmailAlreadyExists(true)
-            console.log("Erreur d'inscription");
+            console.log("Signup error");
           }
         });
     } else {

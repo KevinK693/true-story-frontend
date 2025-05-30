@@ -34,7 +34,6 @@ export default function ConnexionScreen({ navigation }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          console.log("Connexion réussie");
           dispatch(updateToken(data.token));
           dispatch(updateAvatar(data.avatar));
           dispatch(updateNickname(data.nickname));
@@ -42,7 +41,6 @@ export default function ConnexionScreen({ navigation }) {
           setPassword("");
         } else {
           setWrongInfo(true)
-          console.log("Erreur de connexion");
         }
       });
   };

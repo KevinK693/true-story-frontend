@@ -57,7 +57,7 @@ export default function WaitingForPlayers({ navigation, route }) {
               dispatch(updateAvatar(data.user.avatar));
             }
           } else {
-            console.log("Erreur de récupération de l'image utilisateur");
+            console.log("Failed to fetch user image");
           }
         });
     }
@@ -90,7 +90,7 @@ export default function WaitingForPlayers({ navigation, route }) {
               navigation.replace("StartingGame");
             }
           } else {
-            console.log("Erreur de récupération des données utilisateur");
+            console.log("Failed to fetch user info");
           }
         });
     }, 3000);
@@ -122,7 +122,7 @@ export default function WaitingForPlayers({ navigation, route }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          console.log("Scène envoyée");
+          console.log("Scene successfully sent");
         }
       });
   }, []);

@@ -56,7 +56,7 @@ export default function VotingScreen({ navigation }) {
           setGameImage(data.game.image);
           setGameTitle(data.game.title);
         } else {
-          console.log("Erreur de récupération des données du jeu");
+          console.log("Failed to fetch game data");
         }
       });
   }, []);
@@ -73,7 +73,7 @@ export default function VotingScreen({ navigation }) {
             checkAllPlayersReady(data.data.propositions);
             setLoading(false);
           } else {
-            console.log("Erreur de récupération des propositions");
+            console.log("Failed to fetch user propositions");
           }
         });
     }, 3000);
@@ -91,7 +91,7 @@ export default function VotingScreen({ navigation }) {
             setAllPlayersReady(true);
           }
         } else {
-          console.log("Erreur de récupérération des joueurs");
+          console.log("Failed to fetch players list");
         }
       });
   };
@@ -123,7 +123,7 @@ export default function VotingScreen({ navigation }) {
           if (data.result) {
             navigation.replace("WaitingForVoteResult");
           } else {
-            console.log("Erreur lors de l'enregistrement du vote");
+            console.log("Failed to register vote");
           }
         });
     }

@@ -148,7 +148,6 @@ export default function CreateGameScreen({ navigation }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          console.log("Partie créée avec succès");
           dispatch(addHost(token));
           setTitle(null);
           setImage(null);
@@ -158,7 +157,7 @@ export default function CreateGameScreen({ navigation }) {
           setSelectedPublic(null);
           navigation.navigate("WaitingForPlayers", { code: data.code });
         } else {
-          console.log("Erreur lors de la création du profil :", data.error);
+          console.log("Failed to create game :", data.error);
         }
       });
   };

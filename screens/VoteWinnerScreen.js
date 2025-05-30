@@ -29,7 +29,6 @@ export default function VoteWinnerScreen({ navigation }) {
   const scene = useSelector((state) => state.scene.value);
   const sceneNumber = scene.sceneNumber;
   const history = scene.fullstory;
-  console.log("FULLSTORY in VoteWinnerScreen =>", history);
 
   const remainingScenes = nbScenes - sceneNumber;
 
@@ -55,7 +54,7 @@ export default function VoteWinnerScreen({ navigation }) {
           setGameImage(data.game.image);
           setGameTitle(data.game.title);
         } else {
-          console.log("Erreur de récupération des données utilisateur");
+          console.log("Failed to fetch user info");
         }
       });
   }, []);
@@ -79,7 +78,7 @@ export default function VoteWinnerScreen({ navigation }) {
         return false;
       }
     } catch (error) {
-      console.error("Erreur lors du fetch du gagnant :", error);
+      console.error("Failed to fetch winner :", error);
       return false;
     }
   };
@@ -156,7 +155,7 @@ export default function VoteWinnerScreen({ navigation }) {
         );
       }
     } catch (error) {
-      console.error("Erreur dans handleResumeGame:", error);
+      console.error("Error in handleResumeGame:", error);
     }
   };
 
@@ -169,7 +168,7 @@ export default function VoteWinnerScreen({ navigation }) {
           const data = await response.json();
 
           if (!data.result) {
-            console.error("Erreur récupération des scènes :", data.error);
+            console.error("Failed to fetch scenes :", data.error);
             return;
           }
 
@@ -195,7 +194,7 @@ export default function VoteWinnerScreen({ navigation }) {
             );
           }
         } catch (error) {
-          console.error("Erreur dans le polling des scènes :", error);
+          console.error("Failed scenes polling :", error);
         }
       }, 3000);
 

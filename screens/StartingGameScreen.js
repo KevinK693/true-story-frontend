@@ -56,8 +56,8 @@ export default function StartingGameScreen({ navigation }) {
           setImage(data.game.image);
         } else {
           console.error(
-            "Erreur côté backend (game):",
-            data.error || "Structure de données inattendue"
+            "Backend error:",
+            data.error 
           );
         }
       });
@@ -76,8 +76,8 @@ export default function StartingGameScreen({ navigation }) {
             }
           } else {
             console.error(
-              "Erreur côté backend (scène):",
-              data.error || "Structure de données inattendue"
+              "Backend error :",
+              data.error
             );
           }
         });
@@ -104,7 +104,7 @@ export default function StartingGameScreen({ navigation }) {
           setUserText("");
           navigation.replace("Voting");
         } else {
-          console.error("Erreur lors de l'envoi du texte :", data.error);
+          console.error("Failed to send text :", data.error);
         }
       });
   };
