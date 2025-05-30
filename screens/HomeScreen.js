@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { removeToken, updateAvatar } from "../reducers/user";
 import { resetScene } from "../reducers/scene";
+import { removeGame } from '../reducers/game'
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -45,7 +46,14 @@ export default function HomeScreen({ navigation }) {
   const handleCreateGame = () => {
     navigation.navigate("CreateGame");
     dispatch(resetScene());
+    dispatch(removeGame())
   };
+
+  const handleJoinGame = () => {
+    navigation.navigate("JoinGame");
+    dispatch(resetScene());
+    dispatch(removeGame())
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -69,7 +77,7 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.textbutton}>NOUVELLE PARTIE</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate("JoinGame")}
+          onPress={() => handleJoinGame()}
           style={styles.button}
           activeOpacity={0.8}
         >

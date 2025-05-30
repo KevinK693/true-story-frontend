@@ -185,9 +185,10 @@ export default function VotingScreen({ navigation }) {
                         styles.checkIcon,
                         selectedButton === index && styles.checkIconSelected,
                         isOwnProposition && styles.checkIconDisabled,
+                        !allPlayersReady && styles.checkIconDisabled,
                       ]}
                       onPress={() => handleButtonPress(index)}
-                      disabled={isOwnProposition}
+                      disabled={isOwnProposition || !allPlayersReady}
                     >
                       <FontAwesome5
                         name={isOwnProposition ? "times" : "check"}

@@ -54,7 +54,7 @@ export default function ProfileScreen({ navigation }) {
           if (setGamesPlayed === 0) {
             setVictoryRate(0);
           } else {
-            setVictoryRate(((wins * 100) / totalGames).toFixed(1));
+            setVictoryRate(((wins * 100) / totalGames).toFixed());
           }
         }
       });
