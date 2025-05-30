@@ -3,7 +3,6 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Image,
   ScrollView,
   TextInput,
   KeyboardAvoidingView,
@@ -13,9 +12,9 @@ import {
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { addFirstScene } from "../reducers/scene";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useBackButtonHandler from "../hooks/useBackButtonHandler";
+import GameHeader from '../components/GameHeader'
 
 export default function StartingGameScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -46,22 +45,6 @@ export default function StartingGameScreen({ navigation }) {
   useBackButtonHandler(navigation);
 
   useEffect(() => {
-    fetch(`${BACKEND_URL}/games/game/${code}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.result) {
-          setPlayersNb(data.game.nbPlayers);
-          setTitle(data.game.title);
-          setTotalScenesNb(data.game.nbScenes);
-          setImage(data.game.image);
-        } else {
-          console.error(
-            "Backend error:",
-            data.error 
-          );
-        }
-      });
-
     // Récupérer la scène
     const interval = setInterval(() => {
       fetch(`${BACKEND_URL}/scenes/code/${code}/scene/${sceneNumber}`)
@@ -75,19 +58,13 @@ export default function StartingGameScreen({ navigation }) {
               dispatch(addFirstScene(data.data.text));
             }
           } else {
-            console.error(
-              "Backend error :",
-              data.error
-            );
+            console.error("Backend error :", data.error);
           }
         });
     }, 3000);
     return () => clearInterval(interval);
   }, [sceneNumber]);
 
-  const handleHistorySubmit = () => {
-    navigation.navigate("GameHistory");
-  };
   const handleNextScreen = () => {
     fetch(`${BACKEND_URL}/scenes/proposition/${code}/${sceneNumber}/${token}`, {
       method: "PUT",
@@ -115,23 +92,15 @@ export default function StartingGameScreen({ navigation }) {
       style={{ flex: 1 }}
     >
       <SafeAreaView style={styles.container}>
-        <View style={styles.topBar}>
-          <TouchableOpacity onPress={() => navigation.navigate("PlayersList")}>
-            <Image
-              source={{
-                uri: image,
-              }}
-              style={styles.logoImage}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.iconHistory}
-            onPress={handleHistorySubmit}
-          >
-            <FontAwesome5 name="history" size={35} color="#335561" />
-          </TouchableOpacity>
-        </View>
+        <GameHeader
+          navigation={navigation}
+          onGameDataLoaded={(data) => {
+            setTitle(data.title);
+            setImage(data.image);
+            setTotalScenesNb(data.nbScenes);
+            setPlayersNb(data.nbPlayers);
+          }}
+        />
         <Text style={[styles.textTitle, { textAlign: "center" }]}>{title}</Text>
         <Text style={[styles.textScene, { textAlign: "center" }]}>
           Scène actuelle: {sceneNumber}/{totalScenesNb}

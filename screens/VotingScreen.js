@@ -2,7 +2,6 @@ import {
   View,
   StyleSheet,
   Text,
-  Image,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
@@ -12,6 +11,7 @@ import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import useBackButtonHandler from "../hooks/useBackButtonHandler";
+import GameHeader from "../components/GameHeader";
 
 export default function VotingScreen({ navigation }) {
   const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -43,20 +43,6 @@ export default function VotingScreen({ navigation }) {
       .then((data) => {
         if (data.result) {
           setUserId(data.user._id);
-        }
-      });
-  }, []);
-
-  //Récupération de l'image de la partie
-  useEffect(() => {
-    fetch(`${BACKEND_URL}/games/game/${code}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.result) {
-          setGameImage(data.game.image);
-          setGameTitle(data.game.title);
-        } else {
-          console.log("Failed to fetch game data");
         }
       });
   }, []);
@@ -96,10 +82,6 @@ export default function VotingScreen({ navigation }) {
       });
   };
 
-  const handleHistorySubmit = () => {
-    navigation.navigate("GameHistory");
-  };
-
   const handleButtonPress = (buttonIndex) => {
     setSelectedButton(buttonIndex);
   };
@@ -131,22 +113,15 @@ export default function VotingScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.topBar}>
-        <TouchableOpacity onPress={() => navigation.navigate("PlayersList")}>
-          <Image
-            source={{
-              uri: gameImage,
-            }}
-            style={styles.gameImage}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.iconHistory}
-          onPress={handleHistorySubmit}
-        >
-          <FontAwesome5 name="history" size={35} color="#335561" />
-        </TouchableOpacity>
-      </View>
+      <GameHeader
+        navigation={navigation}
+        onGameDataLoaded={(data) => {
+          setTitle(data.title);
+          setImage(data.image);
+          setTotalScenesNb(data.nbScenes);
+          setPlayersNb(data.nbPlayers);
+        }}
+      />
       <Text style={styles.gameTitle}>{gameTitle}</Text>
       <Text style={styles.subtitle}>
         {allPlayersReady
