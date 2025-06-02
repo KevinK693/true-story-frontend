@@ -65,6 +65,7 @@ export default function StartingGameScreen({ navigation }) {
     return () => clearInterval(interval);
   }, [sceneNumber]);
 
+// Envoyer la proposition de l'utilisateur à la scène actuelle
   const handleNextScreen = () => {
     fetch(`${BACKEND_URL}/scenes/proposition/${code}/${sceneNumber}/${token}`, {
       method: "PUT",
