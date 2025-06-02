@@ -66,6 +66,7 @@ export default function ProfileScreen({ navigation }) {
     navigation.navigate("UserPastGames");
   };
 
+  //Choix d'un nouvel avatar de la galerie
   const pickImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
@@ -87,6 +88,7 @@ export default function ProfileScreen({ navigation }) {
     }
   };
 
+  //Enregistrement des modifications
   const handleModifications = () => {
     if (image === null) {
       fetch(`${BACKEND_URL}/users/profile/nickname`, {

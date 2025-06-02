@@ -102,6 +102,7 @@ export default function VoteWinnerScreen({ navigation }) {
       const statusData = await statusResponse.json();
 
       let sceneData;
+      // Si on n'est pas à l'avant-dernière scène, on envoie la scène suivante
       if (sceneNumber < nbScenes - 1) {
         const nextSceneRes = await fetch(`${BACKEND_URL}/scenes/nextScene`, {
           method: "POST",
@@ -116,6 +117,7 @@ export default function VoteWinnerScreen({ navigation }) {
         });
         sceneData = await nextSceneRes.json();
       } else {
+        // Si on est à l'avant-dernière scène, on envoie la scène finale
         const lastSceneRes = await fetch(`${BACKEND_URL}/scenes/lastScene`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },

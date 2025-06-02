@@ -21,6 +21,7 @@ export default function UserPastGamesScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
 
+  //Récupération des parties terminées du joueur
   useEffect(() => {
     fetch(`${BACKEND_URL}/games/user/${token}`)
       .then((response) => response.json())
@@ -35,6 +36,7 @@ export default function UserPastGamesScreen({ navigation }) {
       });
   }, []);
 
+  //Mapping des parties 
   const gamesList = games.map((game, index) => {
     return (
       <TouchableOpacity
@@ -47,6 +49,7 @@ export default function UserPastGamesScreen({ navigation }) {
     );
   });
 
+  //Ouverture de la modale du jeu sélectionné
   const handleShowGame = (game) => {
     setSelectedGame(game);
     setModalVisible(true);
