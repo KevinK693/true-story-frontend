@@ -29,17 +29,18 @@ export default function WaitingForVoteResultScreen({ navigation }) {
         .then((data) => {
           if (data.result) {
             const allPlayersHaveVoted = (data) => {
-              const totalVotes = data.data.propositions.reduce(
+              const totalVotes = data.data.propositions.reduce(    //on compte le nombre de votes dans chaque proposition
                 (acc, proposition) => acc + proposition.votes,
                 0
               );
-              return totalVotes === nbPlayers;
+              return totalVotes === nbPlayers;      //on compare le nombre de votes et le nombre de joueurs
             };
             if (allPlayersHaveVoted(data)) {
               clearInterval(interval);
               if (allPlayersHaveVoted(data)) {
                 clearInterval(interval);
 
+                // on modifie la collection pour ajouter le gagnant du vote
                 fetch(
                   `${BACKEND_URL}/scenes/voteWinner/${code}/${sceneNumber}`,
                   {

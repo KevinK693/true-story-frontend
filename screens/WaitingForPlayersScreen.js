@@ -47,6 +47,7 @@ export default function WaitingForPlayers({ navigation, route }) {
   // Gestion du bouton retour Android
   useBackButtonHandler(navigation);
 
+  // Récupération de l'avatar de l'hôte
   useEffect(() => {
     if (token) {
       fetch(`${BACKEND_URL}/users/${token}`)
@@ -63,6 +64,7 @@ export default function WaitingForPlayers({ navigation, route }) {
     }
   }, [token]);
 
+  // Récupération des informations de la partie et envoi au reducer 
   useEffect(() => {
     const interval = setInterval(() => {
       fetch(`${BACKEND_URL}/games/game/${code}`)
@@ -98,6 +100,7 @@ export default function WaitingForPlayers({ navigation, route }) {
     return () => clearInterval(interval);
   }, [code, navigation]);
 
+  // Récupération des joueurs qui ont entré le code
   useEffect(() => {
     const interval = setInterval(() => {
       fetch(`${BACKEND_URL}/games/players/${code}`)
@@ -113,6 +116,7 @@ export default function WaitingForPlayers({ navigation, route }) {
     return () => clearInterval(interval);
   }, [code]);
 
+  // Envoi de la 1ère scène à la base de données
   useEffect(() => {
     fetch(`${BACKEND_URL}/scenes/firstScene`, {
       method: "POST",
@@ -127,6 +131,7 @@ export default function WaitingForPlayers({ navigation, route }) {
       });
   }, []);
 
+  // Démarrage du jeu par l'hôte lorsque tous les joueurs sont présents
   const handleSubmit = () => {
     fetch(`${BACKEND_URL}/games/start/${code}`, {
       method: "PUT",
