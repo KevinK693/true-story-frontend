@@ -38,6 +38,7 @@ export default function VotingScreen() {
       })
   }, []);
 
+  //Affichage des scènes jouées
   useEffect(() => {
     fetch(`${BACKEND_URL}/scenes/all/${code}`)
       .then((response) => response.json())
