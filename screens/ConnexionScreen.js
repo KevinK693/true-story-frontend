@@ -19,7 +19,7 @@ export default function ConnexionScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [wrongInfo, setWrongInfo] = useState(false)
 
-  const BACKEND_URL = Constants.expoConfig.extra.EXPO_PUBLIC_BACKEND_URL;
+  const BACKEND_URL = "https://true-story-backend.vercel.app";
 
   const handleLogin = () => {
     fetch(`${BACKEND_URL}/users/signin`, {
