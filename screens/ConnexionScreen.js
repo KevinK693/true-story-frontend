@@ -11,6 +11,7 @@ import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
 import { updateToken, updateAvatar, updateNickname } from "../reducers/user";
+import Constants from 'expo-constants';
 
 export default function ConnexionScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -18,7 +19,7 @@ export default function ConnexionScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [wrongInfo, setWrongInfo] = useState(false)
 
-  const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+  const BACKEND_URL = Constants.expoConfig.extra.EXPO_PUBLIC_BACKEND_URL;
 
   const handleLogin = () => {
     fetch(`${BACKEND_URL}/users/signin`, {
