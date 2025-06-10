@@ -18,7 +18,7 @@ export default function ConnexionScreen({ navigation }) {
   const [emailAlreadyExists, setEmailAlreadyExists] = useState(false)
   
 
-  const BACKEND_URL = Constants.expoConfig.extra.EXPO_PUBLIC_BACKEND_URL;
+  const BACKEND_URL = Constants.manifest?.extra?.EXPO_PUBLIC_BACKEND_URL;
 
   const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
