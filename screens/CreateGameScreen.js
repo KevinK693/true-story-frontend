@@ -460,7 +460,6 @@ const styles = StyleSheet.create({
     color: "#335561",
     fontWeight: "bold",
     textAlign: "center",
-    marginTop: "5%",
   },
   dropdown: {
     borderWidth: 1,
@@ -513,7 +512,6 @@ const styles = StyleSheet.create({
     paddingVertical: "3%",
     borderRadius: 8,
     width: "80%",
-    marginTop: "5%",
     height: 50,
     justifyContent: "center",
   },
