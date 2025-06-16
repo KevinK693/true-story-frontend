@@ -17,7 +17,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { addHost } from "../reducers/game";
 
 export default function CreateGameScreen({ navigation }) {
-  const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+  const BACKEND_URL = "https://true-story-backend.vercel.app";
 
   const dispatch = useDispatch();
 
