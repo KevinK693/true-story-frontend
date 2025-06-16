@@ -34,7 +34,7 @@ const avatars = [
 ];
 
 export default function CreateProfileScreen({ navigation, route }) {
-  const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+  const BACKEND_URL = "https://true-story-backend.vercel.app";
 
   const [pseudo, setPseudo] = useState("");
   const [avatar, setAvatar] = useState(null);

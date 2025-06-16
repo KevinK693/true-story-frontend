@@ -11,7 +11,6 @@ import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
 import { updateToken, updateAvatar, updateNickname } from "../reducers/user";
-import Constants from 'expo-constants';
 
 export default function ConnexionScreen({ navigation }) {
   const dispatch = useDispatch();
